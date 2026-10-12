@@ -1,0 +1,34 @@
+{
+  "expense-categories": {
+    "expense_categories": "Expense Categories",
+    "new_expense_category": "New Category",
+    "edit_expense_category": "Edit Expense Category",
+    "id": "ID",
+    "name": "Name",
+    "dt_expense_description": "Description",
+    "expense_add_edit_name": "Category Name",
+    "expense_add_edit_description": "Category Description",
+    "expense_category_lowercase": "expense category",
+    "noun_expense_categories": "فئات المصروفات",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد فئات مصروفات بعد",
+    "empty_body": "أضف فئة لتجميع المصروفات حسبها.",
+    "no_match_heading": "لا توجد فئات مصروفات تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض كل الفئات.",
+    "enter_name": "أدخل اسم الفئة.",
+    "name_too_long": "يجب ألا يتجاوز اسم الفئة {max} حرفاً.",
+    "saved_toast": "تم حفظ فئة المصروفات",
+    "deleted_toast": "تم حذف فئة المصروفات",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف فئة المصروفات {name}",
+    "delete_title": "حذف فئة المصروفات {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "in_use_expenses": "{count, plural, one {يستخدم مصروف واحد ({countN}) هذه الفئة.} other {تستخدم {countN} من المصروفات هذه الفئة.}}",
+    "in_use_accounting_mappings": "{count, plural, one {يستخدم ربط محاسبي واحد ({countN}) هذه الفئة.} other {تستخدم {countN} من الروابط المحاسبية هذه الفئة.}}",
+    "in_use_petty_cash_advances": "{count, plural, one {تستخدم سلفة نثرية واحدة ({countN}) هذه الفئة.} other {تستخدم {countN} من السلف النثرية هذه الفئة.}}",
+    "errors": {
+      "ERP-CORE-0004": "فئة المصروفات هذه لم تعد موجودة. ربما تمت إزالتها.",
+      "ERP-EXPENSECATEGORIES-0001": "فئة المصروفات هذه ما زالت مستخدمة في مصروفات أو روابط محاسبية أو سلف نثرية، لذا لا يمكن حذفها. انقلها إلى فئة أخرى أولاً، ثم احذفها."
+    }
+  }
+}

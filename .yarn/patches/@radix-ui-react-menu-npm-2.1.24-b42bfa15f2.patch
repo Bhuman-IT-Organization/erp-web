@@ -1,0 +1,26 @@
+diff --git a/dist/index.d.mts b/dist/index.d.mts
+index 17fe602502883f456c04247dd56b285c81a16e99..28d3f270d5a81cbc17affb803595d5b4e99d6931 100644
+--- a/dist/index.d.mts
++++ b/dist/index.d.mts
+@@ -103,7 +103,7 @@ interface MenuItemImplProps extends PrimitiveDivProps {
+ }
+ type CheckedState = boolean | 'indeterminate';
+ interface MenuCheckboxItemProps extends MenuItemProps {
+-    checked?: CheckedState;
++    checked?: CheckedState | undefined;
+     onCheckedChange?: (checked: boolean) => void;
+ }
+ declare const MenuCheckboxItem: React.ForwardRefExoticComponent<MenuCheckboxItemProps & React.RefAttributes<HTMLDivElement>>;
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index 17fe602502883f456c04247dd56b285c81a16e99..28d3f270d5a81cbc17affb803595d5b4e99d6931 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -103,7 +103,7 @@ interface MenuItemImplProps extends PrimitiveDivProps {
+ }
+ type CheckedState = boolean | 'indeterminate';
+ interface MenuCheckboxItemProps extends MenuItemProps {
+-    checked?: CheckedState;
++    checked?: CheckedState | undefined;
+     onCheckedChange?: (checked: boolean) => void;
+ }
+ declare const MenuCheckboxItem: React.ForwardRefExoticComponent<MenuCheckboxItemProps & React.RefAttributes<HTMLDivElement>>;

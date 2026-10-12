@@ -1,0 +1,12 @@
+{
+  "status": {
+    "title": "API health through Nginx",
+    "requested": "Requested: {url}",
+    "http": "HTTP {status}",
+    "error": "Error: {message}",
+    "status_line": "Status: {status}",
+    "check": "{name}: {state}",
+    "breakers": "Breakers",
+    "unknown": "unknown"
+  }
+}

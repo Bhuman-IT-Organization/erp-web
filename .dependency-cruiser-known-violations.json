@@ -1,0 +1,32 @@
+[
+  {
+    "type": "cycle",
+    "from": "src/lib/i18n/format.ts",
+    "to": "src/lib/i18n/FormatSettingsProvider.tsx",
+    "unresolvedTo": "./FormatSettingsProvider",
+    "dependencyTypes": [
+      "local",
+      "import"
+    ],
+    "rule": {
+      "severity": "error",
+      "name": "no-circular"
+    },
+    "cycle": [
+      {
+        "name": "src/lib/i18n/FormatSettingsProvider.tsx",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      },
+      {
+        "name": "src/lib/i18n/format.ts",
+        "dependencyTypes": [
+          "local",
+          "import"
+        ]
+      }
+    ]
+  }
+]

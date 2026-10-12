@@ -1,0 +1,17 @@
+.next
+node_modules
+coverage
+yarn.lock
+src/components/ui
+app/globals.css
+storybook-static
+# The shared configs/; identical in erp-api and erp-web, never reformatted here.
+configs
+lefthook.yml
+# Generated state of the lint ratchet (erp-docs 01-typescript-and-lint TS-18); ESLint and check:ratchet own their layout.
+eslint-suppressions.json
+REFACTOR-BACKLOG.md
+.dependency-cruiser-known-violations.json
+# Stryker output (test:mutation), per machine; never committed or formatted.
+.stryker-tmp/
+reports/

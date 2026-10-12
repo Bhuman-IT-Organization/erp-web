@@ -1,0 +1,35 @@
+{
+  "cost-centers": {
+    "cost_centers": "Cost Centers",
+    "add_cost_center": "Add Cost Center",
+    "edit_cost_center": "Edit Cost Center",
+    "id": "ID",
+    "cost_center_name": "Cost Center Name",
+    "date_created": "Date Created",
+    "noun_cost_center": "مركز تكلفة",
+    "noun_cost_centers": "مراكز التكلفة",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد مراكز تكلفة بعد",
+    "empty_body": "أضف مركز تكلفة لتستخدمه المشتريات والمصروفات والأصول.",
+    "no_match_heading": "لا توجد مراكز تكلفة تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض كل مراكز التكلفة.",
+    "enter_name": "أدخل اسم مركز التكلفة.",
+    "name_too_long": "يجب ألا يتجاوز اسم مركز التكلفة {max} حرفاً.",
+    "saved_toast": "تم حفظ مركز التكلفة",
+    "deleted_toast": "تم حذف مركز التكلفة",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف مركز التكلفة {name}",
+    "delete_title": "حذف مركز التكلفة {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "in_use_purchase_requests": "{count, plural, one {يستخدم طلب شراء واحد ({countN}) مركز التكلفة هذا.} other {تستخدم {countN} من طلبات الشراء مركز التكلفة هذا.}}",
+    "in_use_purchase_orders": "{count, plural, one {يستخدم أمر شراء واحد ({countN}) مركز التكلفة هذا.} other {تستخدم {countN} من أوامر الشراء مركز التكلفة هذا.}}",
+    "in_use_purchase_quotations": "{count, plural, one {يستخدم عرض سعر شراء واحد ({countN}) مركز التكلفة هذا.} other {تستخدم {countN} من عروض أسعار الشراء مركز التكلفة هذا.}}",
+    "in_use_shipping_charges": "{count, plural, one {تستخدم رسوم شحن واحدة ({countN}) مركز التكلفة هذا.} other {تستخدم {countN} من رسوم الشحن مركز التكلفة هذا.}}",
+    "in_use_expenses": "{count, plural, one {يستخدم مصروف واحد ({countN}) مركز التكلفة هذا.} other {تستخدم {countN} من المصروفات مركز التكلفة هذا.}}",
+    "in_use_assets": "{count, plural, one {يستخدم أصل واحد ({countN}) مركز التكلفة هذا.} other {تستخدم {countN} من الأصول مركز التكلفة هذا.}}",
+    "errors": {
+      "ERP-CORE-0004": "مركز التكلفة هذا لم يعد موجوداً. ربما تمت إزالته.",
+      "ERP-COSTCENTERS-0001": "مركز التكلفة هذا ما زال مستخدماً، لذا لا يمكن حذفه. أزله أولاً من كل ما يستخدمه، ثم احذفه."
+    }
+  }
+}

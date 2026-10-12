@@ -1,0 +1,35 @@
+{
+  "cost-centers": {
+    "cost_centers": "Cost Centers",
+    "add_cost_center": "Add Cost Center",
+    "edit_cost_center": "Edit Cost Center",
+    "id": "ID",
+    "cost_center_name": "Cost Center Name",
+    "date_created": "Date Created",
+    "noun_cost_center": "cost center",
+    "noun_cost_centers": "cost centers",
+    "section_details": "Details",
+    "empty_heading": "No cost centers yet",
+    "empty_body": "Add a cost center so purchases, expenses and assets can use it.",
+    "no_match_heading": "No cost centers match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every cost center.",
+    "enter_name": "Enter a cost center name.",
+    "name_too_long": "Keep the cost center name to {max} characters or fewer.",
+    "saved_toast": "Cost center saved",
+    "deleted_toast": "Cost center deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete cost center {name}",
+    "delete_title": "Delete cost center {name}?",
+    "delete_body": "This cannot be undone.",
+    "in_use_purchase_requests": "{count, plural, one {{countN} purchase request uses this cost center.} other {{countN} purchase requests use this cost center.}}",
+    "in_use_purchase_orders": "{count, plural, one {{countN} purchase order uses this cost center.} other {{countN} purchase orders use this cost center.}}",
+    "in_use_purchase_quotations": "{count, plural, one {{countN} purchase quotation uses this cost center.} other {{countN} purchase quotations use this cost center.}}",
+    "in_use_shipping_charges": "{count, plural, one {{countN} shipping charge uses this cost center.} other {{countN} shipping charges use this cost center.}}",
+    "in_use_expenses": "{count, plural, one {{countN} expense uses this cost center.} other {{countN} expenses use this cost center.}}",
+    "in_use_assets": "{count, plural, one {{countN} asset uses this cost center.} other {{countN} assets use this cost center.}}",
+    "errors": {
+      "ERP-CORE-0004": "This cost center no longer exists. It may have been removed.",
+      "ERP-COSTCENTERS-0001": "This cost center is still in use, so it can't be deleted. Remove it from everything that uses it first, then delete it."
+    }
+  }
+}

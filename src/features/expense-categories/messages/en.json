@@ -1,0 +1,34 @@
+{
+  "expense-categories": {
+    "expense_categories": "Expense Categories",
+    "new_expense_category": "New Category",
+    "edit_expense_category": "Edit Expense Category",
+    "id": "ID",
+    "name": "Name",
+    "dt_expense_description": "Description",
+    "expense_add_edit_name": "Category Name",
+    "expense_add_edit_description": "Category Description",
+    "expense_category_lowercase": "expense category",
+    "noun_expense_categories": "expense categories",
+    "section_details": "Details",
+    "empty_heading": "No expense categories yet",
+    "empty_body": "Add a category so expenses can be grouped by it.",
+    "no_match_heading": "No expense categories match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every category.",
+    "enter_name": "Enter a category name.",
+    "name_too_long": "Keep the category name to {max} characters or fewer.",
+    "saved_toast": "Expense category saved",
+    "deleted_toast": "Expense category deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete expense category {name}",
+    "delete_title": "Delete expense category {name}?",
+    "delete_body": "This cannot be undone.",
+    "in_use_expenses": "{count, plural, one {{countN} expense uses this category.} other {{countN} expenses use this category.}}",
+    "in_use_accounting_mappings": "{count, plural, one {{countN} accounting mapping uses this category.} other {{countN} accounting mappings use this category.}}",
+    "in_use_petty_cash_advances": "{count, plural, one {{countN} petty cash advance uses this category.} other {{countN} petty cash advances use this category.}}",
+    "errors": {
+      "ERP-CORE-0004": "This expense category no longer exists. It may have been removed.",
+      "ERP-EXPENSECATEGORIES-0001": "This expense category is still used by expenses, accounting mappings or petty cash advances, so it can't be deleted. Move them to another category first, then delete it."
+    }
+  }
+}

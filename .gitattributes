@@ -1,0 +1,7 @@
+# Normalise line endings: LF in the repository and in working copies on every OS.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.node binary
+*.wasm binary

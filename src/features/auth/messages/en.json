@@ -1,0 +1,32 @@
+{
+  "auth": {
+    "admin_auth_login_heading": "Login",
+    "welcome_back_sign_in": "Welcome, please sign in to your dashboard",
+    "admin_auth_login_email": "Email Address",
+    "admin_auth_login_password": "Password",
+    "admin_auth_login_fp": "Forgot Password?",
+    "admin_auth_login_button": "Login",
+    "page_title": "Sign in",
+    "logging_in": "Logging in…",
+    "sign_in_with_active_directory": "Sign in with Active Directory",
+    "handoff_failed": "Signed in, but the legacy session could not be opened",
+    "sign_in_again": "Sign in again",
+    "open_legacy_sign_in_form": "Open the legacy sign-in form",
+    "enter_valid_email": "Enter a valid email address",
+    "enter_password": "Enter your password",
+    "logout_title": "Sign out",
+    "logout_body": "This ends your session in the ERP and in the legacy system.",
+    "logout_button": "Sign out",
+    "signing_out": "Signing out…",
+    "errors": {
+      "ERP-AUTH-0001": "Email or password is incorrect",
+      "ERP-AUTH-0006": "Too many failed attempts. Try again in {seconds, select, none {a moment} other {{seconds} seconds}}",
+      "ERP-AUTH-0007": "This account uses two-factor authentication. Sign in with the legacy form for now.",
+      "ERP-VALIDATION-0001": "Check the email and password fields",
+      "ERP-UPSTREAM-0001": "A system we depend on is unavailable. Try again {seconds, select, none {shortly} other {in {seconds} seconds}}.",
+      "ERP-NETWORK-0001": "Could not reach the server",
+      "ERP-TIMEOUT-0001": "The server took too long to answer",
+      "unknown": "Sign-in failed. Try again in a moment."
+    }
+  }
+}

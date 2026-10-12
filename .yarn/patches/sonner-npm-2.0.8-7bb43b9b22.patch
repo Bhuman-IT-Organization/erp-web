@@ -1,0 +1,26 @@
+diff --git a/dist/index.d.mts b/dist/index.d.mts
+index a25db7918f195250e345bc25c587b3f4d11f9dcb..91610539fc51bdd2cbf467d6a202940c55609a09 100644
+--- a/dist/index.d.mts
++++ b/dist/index.d.mts
+@@ -97,7 +97,7 @@ type Offset = {
+ interface ToasterProps {
+     id?: string;
+     invert?: boolean;
+-    theme?: 'light' | 'dark' | 'system';
++    theme?: 'light' | 'dark' | 'system' | undefined;
+     position?: Position;
+     hotkey?: string[];
+     richColors?: boolean;
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index a25db7918f195250e345bc25c587b3f4d11f9dcb..91610539fc51bdd2cbf467d6a202940c55609a09 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -97,7 +97,7 @@ type Offset = {
+ interface ToasterProps {
+     id?: string;
+     invert?: boolean;
+-    theme?: 'light' | 'dark' | 'system';
++    theme?: 'light' | 'dark' | 'system' | undefined;
+     position?: Position;
+     hotkey?: string[];
+     richColors?: boolean;

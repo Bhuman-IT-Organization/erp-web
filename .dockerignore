@@ -1,0 +1,12 @@
+node_modules
+.next
+coverage
+.git
+*.log
+.yarn/cache
+tsconfig.tsbuildinfo
+storybook-static
+.storybook
+# Stryker output (test:mutation), per machine; a leftover sandbox breaks the build context (plan 04-06).
+.stryker-tmp
+reports

@@ -1,0 +1,32 @@
+{
+  "auth": {
+    "admin_auth_login_heading": "تسجيل الدخول",
+    "welcome_back_sign_in": "مرحباً، يرجى تسجيل الدخول إلى لوحة التحكم",
+    "admin_auth_login_email": "البريد الإلكتروني",
+    "admin_auth_login_password": "كلمة المرور",
+    "admin_auth_login_fp": "هل نسيت كلمة المرور؟",
+    "admin_auth_login_button": "تسجيل الدخول",
+    "page_title": "تسجيل الدخول",
+    "logging_in": "جارٍ تسجيل الدخول…",
+    "sign_in_with_active_directory": "تسجيل الدخول عبر Active Directory",
+    "handoff_failed": "تم تسجيل الدخول، لكن تعذّر فتح جلسة النظام القديم",
+    "sign_in_again": "سجّل الدخول مرة أخرى",
+    "open_legacy_sign_in_form": "افتح نموذج تسجيل الدخول القديم",
+    "enter_valid_email": "أدخل بريداً إلكترونياً صالحاً",
+    "enter_password": "أدخل كلمة المرور",
+    "logout_title": "تسجيل الخروج",
+    "logout_body": "هذا ينهي جلستك في نظام ERP وفي النظام القديم.",
+    "logout_button": "تسجيل الخروج",
+    "signing_out": "جارٍ تسجيل الخروج…",
+    "errors": {
+      "ERP-AUTH-0001": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+      "ERP-AUTH-0006": "محاولات فاشلة كثيرة. حاول مرة أخرى بعد {seconds, select, none {لحظات} other {{seconds} ثانية}}",
+      "ERP-AUTH-0007": "يستخدم هذا الحساب المصادقة الثنائية. سجّل الدخول عبر النموذج القديم حالياً.",
+      "ERP-VALIDATION-0001": "تحقق من حقلي البريد الإلكتروني وكلمة المرور",
+      "ERP-UPSTREAM-0001": "أحد الأنظمة التي نعتمد عليها غير متاح. حاول مرة أخرى {seconds, select, none {بعد قليل} other {بعد {seconds} ثانية}}.",
+      "ERP-NETWORK-0001": "تعذّر الوصول إلى الخادم",
+      "ERP-TIMEOUT-0001": "استغرق الخادم وقتاً طويلاً في الرد",
+      "unknown": "فشل تسجيل الدخول"
+    }
+  }
+}

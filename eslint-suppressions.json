@@ -1,0 +1,266 @@
+{
+  "src/components/molecules/Breadcrumbs/Breadcrumbs.tsx": {
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "src/components/molecules/ChoiceField/ChoiceField.tsx": {
+    "erp/no-nested-loops": {
+      "count": 1
+    }
+  },
+  "src/components/organisms/ConfirmDialog/ConfirmDialog.tsx": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/components/organisms/PageSkeleton/PageSkeleton.tsx": {
+    "erp/no-nested-loops": {
+      "count": 1
+    }
+  },
+  "src/components/organisms/PermissionPicker/PermissionPicker.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "erp/no-nested-loops": {
+      "count": 10
+    },
+    "max-depth": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "src/components/organisms/SchemaForm/SchemaForm.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "erp/no-nested-loops": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "src/components/organisms/Sidebar/Sidebar.tsx": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/components/templates/ListPageTemplate/ListPageTemplate.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "erp/no-nested-loops": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "src/config/route-gates.ts": {
+    "erp/no-nested-loops": {
+      "count": 2
+    }
+  },
+  "src/features/auth/components/LoginForm.tsx": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/features/staff/components/RoleForm.tsx": {
+    "complexity": {
+      "count": 1
+    },
+    "no-nested-ternary": {
+      "count": 2
+    }
+  },
+  "src/features/staff/components/RoleMembers.tsx": {
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "src/features/staff/components/StaffMemberForm.tsx": {
+    "complexity": {
+      "count": 2
+    },
+    "no-nested-ternary": {
+      "count": 6
+    }
+  },
+  "src/features/staff/schemas/save-summary.ts": {
+    "@typescript-eslint/switch-exhaustiveness-check": {
+      "count": 1
+    },
+    "complexity": {
+      "count": 1
+    },
+    "max-depth": {
+      "count": 2
+    }
+  },
+  "src/features/staff/schemas/staff.schema.ts": {
+    "erp/no-nested-loops": {
+      "count": 2
+    }
+  },
+  "src/features/status/pages/StatusPage.tsx": {
+    "erp/no-nested-loops": {
+      "count": 1
+    }
+  },
+  "src/hocs/withPermission.tsx": {
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "src/lib/api/SwrProvider.tsx": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/api-error.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/api-status.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 4
+    }
+  },
+  "src/lib/api/call-api.ts": {
+    "complexity": {
+      "count": 1
+    },
+    "jsdoc/require-jsdoc": {
+      "count": 4
+    }
+  },
+  "src/lib/api/client-timings.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/create-resource-hooks.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/download-file.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/keys.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/row-seed.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/server-fetch.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/swr-config.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 2
+    }
+  },
+  "src/lib/api/use-common-api.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/api/use-common-mutation.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 3
+    }
+  },
+  "src/lib/auth/safe-next.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/auth/session.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 5
+    }
+  },
+  "src/lib/auth/use-permissions.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 3
+    },
+    "no-nested-ternary": {
+      "count": 1
+    }
+  },
+  "src/lib/config/env.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 2
+    }
+  },
+  "src/lib/config/server-timings.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/errors/error-messages.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/hooks/use-page-size.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/hooks/use-session.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 3
+    }
+  },
+  "src/lib/hooks/use-unsaved-changes.ts": {
+    "complexity": {
+      "count": 1
+    }
+  },
+  "src/lib/i18n/DirectionProvider.tsx": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/i18n/FormatSettingsProvider.tsx": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/i18n/format.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 3
+    }
+  },
+  "src/lib/log.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/url/UrlStateProvider.tsx": {
+    "jsdoc/require-jsdoc": {
+      "count": 1
+    }
+  },
+  "src/lib/url/use-query-state.ts": {
+    "jsdoc/require-jsdoc": {
+      "count": 3
+    }
+  }
+}

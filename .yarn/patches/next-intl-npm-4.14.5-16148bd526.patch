@@ -1,0 +1,18 @@
+diff --git a/dist/types/plugin/types.d.ts b/dist/types/plugin/types.d.ts
+index 9b088d86e7be803c217705e640687457c34ce4d6..a6beead1815cbc1005a7f3df469b34c9093bf742 100644
+--- a/dist/types/plugin/types.d.ts
++++ b/dist/types/plugin/types.d.ts
+@@ -1,4 +1,3 @@
+-import type { LoaderContext } from 'webpack';
+ import type { ExtractorConfigInput } from '../extractor/types.js';
+ export type PluginConfig = {
+     requestConfig?: string;
+@@ -22,4 +21,7 @@ export type PluginConfig = {
+         extract?: ExtractorConfigInput['extract'];
+     };
+ };
+-export type TurbopackLoaderContext<Options> = Pick<LoaderContext<Options>, 'rootContext' | 'sourceMap' | 'getOptions' | 'getResolve' | 'emitWarning' | 'emitError' | 'getLogger' | 'context' | 'loaderIndex' | 'loaders' | 'resourcePath' | 'resourceQuery' | 'resourceFragment' | 'async' | 'callback' | 'cacheable' | 'addDependency' | 'dependency' | 'addContextDependency' | 'addMissingDependency' | 'getDependencies' | 'getContextDependencies' | 'getMissingDependencies' | 'clearDependencies' | 'resource' | 'request' | 'remainingRequest' | 'currentRequest' | 'previousRequest' | 'query' | 'data'>;
++export type TurbopackLoaderContext<Options> = {
++    getOptions(): Options;
++    [member: string]: unknown;
++};
