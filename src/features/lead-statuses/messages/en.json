@@ -1,0 +1,35 @@
+{
+  "lead-statuses": {
+    "saved_toast": "Lead status saved successfully",
+    "lead_statuses": "Lead Statuses",
+    "noun_lead_status": "lead status",
+    "noun_lead_statuses": "lead statuses",
+    "id": "ID",
+    "status_name": "Status Name",
+    "color": "Color",
+    "order": "Order",
+    "built_in": "Built-in",
+    "add_lead_status": "Add Lead Status",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete {name}",
+    "deleted_toast": "Lead status deleted successfully",
+    "delete_title": "Delete {name}?",
+    "delete_body": "This action cannot be undone.",
+    "in_use_leads": "Used by {countN} lead(s)",
+    "in_use_email_integration": "Used by {countN} email integration record(s)",
+    "empty_heading": "No lead statuses yet",
+    "empty_body": "Add a lead status to get started.",
+    "no_match_heading": "No results for {query}",
+    "no_match_body": "Try a different search.",
+    "enter_name": "Enter a status name",
+    "name_too_long": "Name must contain 50 characters or fewer",
+    "invalid_color": "Enter a valid hex color such as #RRGGBB",
+    "invalid_order": "Order must be a positive whole number",
+    "errors": {
+      "ERP-CORE-0004": "Lead status not found.",
+      "ERP-LEADSTATUSES-0001": "This status is still in use and cannot be deleted.",
+      "ERP-LEADSTATUSES-0002": "The built-in status cannot be deleted.",
+      "ERP-LEADSTATUSES-0003": "The default lead status cannot be deleted."
+    }
+  }
+}
