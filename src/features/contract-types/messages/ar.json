@@ -1,0 +1,37 @@
+{
+  "contract-types": {
+    "contract_types": "أنواع العقود",
+    "add_contract_type": "إضافة نوع عقد",
+    "edit_contract_type": "تعديل نوع العقد",
+    "new_title": "نوع عقد جديد",
+    "id": "المعرّف",
+    "name": "الاسم",
+    "contract_type_name": "اسم نوع العقد",
+    "date_created": "تاريخ الإنشاء",
+    "noun_contract_type": "نوع عقد",
+    "noun_contract_types": "أنواع العقود",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد أنواع عقود بعد",
+    "empty_body": "أضف نوع عقد لتستخدمه العقود.",
+    "no_match_heading": "لا توجد أنواع عقود تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض كل أنواع العقود.",
+    "enter_name": "أدخل اسم نوع العقد.",
+    "name_too_long": "يجب ألا يتجاوز اسم نوع العقد {max} حرفاً.",
+    "saved_toast": "تم حفظ نوع العقد",
+    "deleted_toast": "تم حذف نوع العقد",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف نوع العقد {name}",
+    "delete_title": "حذف نوع العقد {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "in_use_purchase_requests": "{count, plural, one {يستخدم طلب شراء واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من طلبات الشراء نوع العقد هذا.}}",
+    "in_use_purchase_orders": "{count, plural, one {يستخدم أمر شراء واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من أوامر الشراء نوع العقد هذا.}}",
+    "in_use_purchase_quotations": "{count, plural, one {يستخدم عرض سعر شراء واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من عروض أسعار الشراء نوع العقد هذا.}}",
+    "in_use_shipping_charges": "{count, plural, one {تستخدم رسوم شحن واحدة ({countN}) نوع العقد هذا.} other {تستخدم {countN} من رسوم الشحن نوع العقد هذا.}}",
+    "in_use_expenses": "{count, plural, one {يستخدم مصروف واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من المصروفات نوع العقد هذا.}}",
+    "in_use_assets": "{count, plural, one {يستخدم أصل واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من الأصول نوع العقد هذا.}}",
+    "errors": {
+      "ERP-CORE-0004": "نوع العقد هذا لم يعد موجوداً. ربما تمت إزالته.",
+      "ERP-CONTRACTTYPES-0001": "نوع العقد هذا ما زال مستخدماً، لذا لا يمكن حذفه. أزله أولاً من كل ما يستخدمه، ثم احذفه."
+    }
+  }
+}

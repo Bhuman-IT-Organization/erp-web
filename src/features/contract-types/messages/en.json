@@ -1,0 +1,37 @@
+{
+  "contract-types": {
+    "contract_types": "Contract Types",
+    "add_contract_type": "Add Contract Type",
+    "edit_contract_type": "Edit Contract Type",
+    "new_title": "New Contract Type",
+    "id": "ID",
+    "name": "Contract Type Name",
+    "contract_type_name": "Contract Type Name",
+    "date_created": "Date Created",
+    "noun_contract_type": "contract type",
+    "noun_contract_types": "contract types",
+    "section_details": "Details",
+    "empty_heading": "No contract types yet",
+    "empty_body": "Add a contract type so contracts can use it.",
+    "no_match_heading": "No contract types match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every contract type.",
+    "enter_name": "Enter a contract type name.",
+    "name_too_long": "Keep the contract type name to {max} characters or fewer.",
+    "saved_toast": "Contract type saved",
+    "deleted_toast": "Contract type deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete contract type {name}",
+    "delete_title": "Delete contract type {name}?",
+    "delete_body": "This cannot be undone.",
+    "in_use_purchase_requests": "{count, plural, one {{countN} purchase request uses this contract type.} other {{countN} purchase requests use this contract type.}}",
+    "in_use_purchase_orders": "{count, plural, one {{countN} purchase order uses this contract type.} other {{countN} purchase orders use this contract type.}}",
+    "in_use_purchase_quotations": "{count, plural, one {{countN} purchase quotation uses this contract type.} other {{countN} purchase quotations use this contract type.}}",
+    "in_use_shipping_charges": "{count, plural, one {{countN} shipping charge uses this contract type.} other {{countN} shipping charges use this contract type.}}",
+    "in_use_expenses": "{count, plural, one {{countN} expense uses this contract type.} other {{countN} expenses use this contract type.}}",
+    "in_use_assets": "{count, plural, one {{countN} asset uses this contract type.} other {{countN} assets use this contract type.}}",
+    "errors": {
+      "ERP-CORE-0004": "This contract type no longer exists. It may have been removed.",
+      "ERP-CONTRACTTYPES-0001": "This contract type is still in use, so it can't be deleted. Remove it from everything that uses it first, then delete it."
+    }
+  }
+}
