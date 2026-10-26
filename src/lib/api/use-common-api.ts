@@ -94,7 +94,7 @@ export function listSchema<T>(item: z.ZodType<T>): z.ZodType<ListPage<T>> {
 
 /** `useCommonApi` over the list envelope: `data.data` is the page, `data.meta.nextCursor` the cursor. */
 export function useList<T>(
-  path: ApiPath,
+  path: ApiPath | null,
   item: z.ZodType<T>,
   params?: Params,
   options?: SWRConfiguration<ListPage<T>, ApiError>,

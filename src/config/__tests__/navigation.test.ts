@@ -173,14 +173,13 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
     const routes = nextRoutes();
     expect(routes.length).toBeGreaterThan(0);
     const nodeItems = ALL.filter((item) => item.legacy !== true && item.href !== undefined);
-    // Wave 1 opened Setup > Staff and Setup > Roles; Wave 2a's Cost Centers (W2A-03, plan 04.1-19,
-    // D-25) sits in the main menu, so it comes first in this flattened order. Wave 2a's Taxes
-    // (W2A-02, D-05), Currencies (W2A-05, plan 04.1-29), Payment Modes (W2A-04, plan 04.1-24) and
-    // Expense Categories (W2A-01) are Setup > Finance's items edited in place, in Perfex's order.
-    // Setup > Email's three Node screens (W2C) follow; the rest is still Perfex's.
+    // Cost Centers is the main-menu item; Staff and Ticket Statuses are the first Setup entries.
+    // Taxes, Currencies, Payment Modes and Expense Categories are Setup > Finance's items, followed
+    // by Setup > Email's three Node screens and Roles.
     expect(nodeItems.map((item) => item.href)).toEqual([
       '/setup/cost-centers',
       '/setup/staff',
+      '/setup/ticket-statuses',
       '/setup/taxes',
       '/setup/currencies',
       '/setup/payment-modes',

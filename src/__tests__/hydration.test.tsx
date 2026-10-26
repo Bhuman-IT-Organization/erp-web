@@ -66,6 +66,10 @@ const shell = (branding: Branding): ReactElement => (
 
 let root: Root | null = null;
 let container: HTMLElement | null = null;
+const imageDescriptors = {
+  complete: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'complete'),
+  naturalWidth: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'naturalWidth'),
+};
 
 /** Server render, browser parse, client hydration; returns the server HTML and React's recoverable errors. */
 async function hydrate(tree: ReactElement): Promise<{ html: string; errors: unknown[] }> {
@@ -88,6 +92,14 @@ async function hydrate(tree: ReactElement): Promise<{ html: string; errors: unkn
 
 beforeEach(() => {
   clearSession();
+  Object.defineProperty(HTMLImageElement.prototype, 'complete', {
+    configurable: true,
+    get: () => true,
+  });
+  Object.defineProperty(HTMLImageElement.prototype, 'naturalWidth', {
+    configurable: true,
+    get: () => 100,
+  });
   // The shell's bootstrap takes the no-Web-Locks path here; the lock itself is use-session's test.
   Object.defineProperty(window.navigator, 'locks', { value: undefined, configurable: true });
   // React DOM warns about invalid nesting through console.error; the assertion is the hydration itself.
@@ -104,6 +116,10 @@ afterEach(() => {
   delete http.defaults.adapter;
   clearSession();
   Reflect.deleteProperty(window.navigator, 'locks');
+  for (const [key, descriptor] of Object.entries(imageDescriptors)) {
+    if (descriptor === undefined) Reflect.deleteProperty(HTMLImageElement.prototype, key);
+    else Object.defineProperty(HTMLImageElement.prototype, key, descriptor);
+  }
   vi.restoreAllMocks();
 });
 

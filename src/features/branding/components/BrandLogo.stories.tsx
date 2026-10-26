@@ -3,7 +3,7 @@ import { FALLBACK_BRANDING } from '@/features/branding/api/branding.fetch';
 import { BrandLogo } from './BrandLogo';
 
 // Neutral fixture data only (W0-05): the paths are same-origin ones the api would serve; in
-// Storybook they 404 and the `alt` (the company name) shows in their place.
+// Storybook they 404 and BrandLogo falls back to the company name.
 const NAME = 'Acme';
 const LOGO = '/uploads/company/logo.png';
 const LOGO_DARK = '/uploads/company/logo-dark.png';

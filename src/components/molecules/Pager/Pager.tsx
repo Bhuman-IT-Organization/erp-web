@@ -57,6 +57,10 @@ export function Pager({
   const f = useFormat();
   const labelId = useId();
   const { rangeStart, total } = meta;
+  const currentPage =
+    pageSize !== undefined && rangeStart !== undefined && rangeStart > 0
+      ? Math.ceil(rangeStart / pageSize)
+      : 1;
   const showRange =
     total !== undefined && rangeStart !== undefined && rangeStart > 0 && rowsOnPage > 0;
   return (
@@ -106,6 +110,11 @@ export function Pager({
             <Icon name="chevron-left" className="rtl:rotate-180" />
             {t('previous')}
           </Button>
+
+          <span aria-current="page" className="min-w-8 text-center text-sm tabular-nums">
+            {f.number(currentPage)}
+          </span>
+
           <Button
             type="button"
             variant="outline"

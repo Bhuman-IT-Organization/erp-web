@@ -263,6 +263,65 @@ describe('ListPageTemplate — states in the D-39 precedence', () => {
     expect(screen.queryByTestId('list-loading')).toBeNull();
   });
 
+  it('an unpaginated list reads `{ data }` without query params and searches rows locally', async () => {
+    answer = () => ({ status: HTTP_OK, body: { data: people(3) } });
+    show(
+      <ListPageTemplate
+        {...props({
+          unpaginated: {
+            responseSchema: z.strictObject({ data: z.array(rowSchema).readonly() }).readonly(),
+            matchesSearch: (row, query) =>
+              row.id.toString().includes(query) ||
+              row.name.toLowerCase().includes(query.toLowerCase()),
+          },
+        })}
+      />,
+      { searchParams: '?q=Person+2' },
+    );
+    const table = await screen.findByTestId('list-table');
+    expect(within(table).getAllByRole('row')).toHaveLength(2);
+    expect(within(table).getByRole('link', { name: 'Person 2' })).toBeTruthy();
+    expect(within(table).queryByRole('link', { name: 'Person 1' })).toBeNull();
+    expect(screen.queryByTestId('list-pager')).toBeNull();
+    expect(listRequests().map((url) => `${url.pathname}${url.search}`)).toEqual([PATH]);
+  });
+
+  it('an unpaginated list sorts locally while keeping its bare list request', async () => {
+    answer = () => ({ status: HTTP_OK, body: { data: people(3) } });
+    show(
+      <ListPageTemplate
+        {...props({
+          columns: [
+            {
+              id: 'name',
+              header: 'Full Name',
+              sortField: 'firstName',
+              sortValue: (row) => row.name,
+              primary: true,
+              cell: (row) => row.name,
+            },
+            ...COLUMNS.slice(1),
+          ],
+          unpaginated: {
+            responseSchema: z.strictObject({ data: z.array(rowSchema).readonly() }).readonly(),
+            matchesSearch: (row, query) =>
+              row.id.toString().includes(query) ||
+              row.name.toLowerCase().includes(query.toLowerCase()),
+          },
+        })}
+      />,
+      { searchParams: '?sort=-firstName' },
+    );
+    const table = await screen.findByTestId('list-table');
+    const rows = within(table).getAllByRole('row');
+    expect(rows.slice(1).map((row) => row.textContent)).toEqual([
+      expect.stringContaining('Person 3'),
+      expect.stringContaining('Person 2'),
+      expect.stringContaining('Person 1'),
+    ]);
+    expect(listRequests().map((url) => `${url.pathname}${url.search}`)).toEqual([PATH]);
+  });
+
   it('options (opt-in, plan 04.7-23): the answer meta.options reach each cell and row menu; {} when absent', async () => {
     const seen: unknown[] = [];
     const withOptions = (options?: object) => {

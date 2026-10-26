@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import type { Branding } from '@/features/branding/api/branding.fetch';
 
 interface BrandLogoProps {
@@ -13,10 +16,12 @@ interface BrandLogoProps {
  * build asset, so Next's image optimiser (remote allow-list, build-time sizing) does not apply.
  */
 export function BrandLogo({ branding, variant = 'light', className }: BrandLogoProps) {
+  const [failedSrcs, setFailedSrcs] = useState<readonly string[]>([]);
+  const preferredSrc = variant === 'dark' ? branding.logoDarkUrl : branding.logoUrl;
+  const alternateSrc = variant === 'dark' ? branding.logoUrl : branding.logoDarkUrl;
   const src =
-    variant === 'dark'
-      ? (branding.logoDarkUrl ?? branding.logoUrl)
-      : (branding.logoUrl ?? branding.logoDarkUrl);
+    (preferredSrc !== null && !failedSrcs.includes(preferredSrc) ? preferredSrc : null) ??
+    (alternateSrc !== null && !failedSrcs.includes(alternateSrc) ? alternateSrc : null);
   if (src === null) {
     return (
       <span data-testid="brand-name" className={className}>
@@ -24,8 +29,28 @@ export function BrandLogo({ branding, variant = 'light', className }: BrandLogoP
       </span>
     );
   }
+  const failedSource = src;
+
+  function recordFailure(image: HTMLImageElement | null): void {
+    if (image === null || !image.complete || image.naturalWidth !== 0) return;
+    setFailedSrcs((previous) =>
+      previous.includes(failedSource) ? previous : [...previous, failedSource],
+    );
+  }
+
   return (
     // eslint-disable-next-line @next/next/no-img-element -- customer-uploaded file, see above
-    <img src={src} alt={branding.companyName} className={className} data-testid="brand-logo" />
+    <img
+      src={src}
+      alt={branding.companyName}
+      className={className}
+      data-testid="brand-logo"
+      ref={recordFailure}
+      onError={() => {
+        setFailedSrcs((previous) =>
+          previous.includes(failedSource) ? previous : [...previous, failedSource],
+        );
+      }}
+    />
   );
 }

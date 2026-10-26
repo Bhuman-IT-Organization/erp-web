@@ -2,7 +2,15 @@
 
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import { Fragment, useId, useRef, useState, type ReactElement, type ReactNode } from 'react';
+import {
+  Fragment,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 import { z } from 'zod';
 import { Icon } from '@/components/atoms/Icon';
 import { EmptyState } from '@/components/molecules/EmptyState';
@@ -52,7 +60,7 @@ import { CLIENT_TIMINGS } from '@/lib/api/client-timings';
 import { downloadFile, type DownloadFormat } from '@/lib/api/download-file';
 import { readExportRows, type ExportRows } from '@/lib/api/export-rows';
 import type { Params } from '@/lib/api/keys';
-import { useList } from '@/lib/api/use-common-api';
+import { useCommonApi, useList } from '@/lib/api/use-common-api';
 import { isRetryableCode, type FeatureErrorCodes } from '@/lib/errors/error-messages';
 import { useErrorText } from '@/lib/errors/use-error-text';
 import { useColumnVisibility } from '@/lib/hooks/use-column-visibility';
@@ -73,7 +81,7 @@ import {
 import { cn } from '@/lib/utils';
 
 /** The api path type, taken from the read door (a component never imports `call-api`, FE-08). */
-type ApiPath = Parameters<typeof useList>[0];
+type ApiPath = Exclude<Parameters<typeof useList>[0], null>;
 
 export interface ListColumn<Row> {
   readonly id: string;
@@ -82,6 +90,8 @@ export interface ListColumn<Row> {
   readonly headerHidden?: boolean;
   /** A BE-19 keyset sort field: present → a SortableHeader and `aria-sort`; absent → a plain header (D-41). */
   readonly sortField?: string;
+  /** The local sort value when this column is sorted in an unpaginated list. */
+  readonly sortValue?: (row: Row) => string | number | null;
   readonly hideBelow?: 'md' | 'lg' | 'xl';
   /** `'end'`: amounts and counts, `text-end tabular-nums`. */
   readonly align?: 'start' | 'end';
@@ -158,6 +168,14 @@ export interface ListColumnsMenu {
   readonly defaultHidden?: readonly string[];
 }
 
+/** A list endpoint that returns all rows as `{ data }`, without server-side query parameters. */
+export interface UnpaginatedList<Row> {
+  readonly responseSchema: z.ZodType<{ readonly data: readonly Row[] }>;
+  readonly matchesSearch: (row: Row, query: string) => boolean;
+  /** Shows the shared pager over the rows already returned by the endpoint. */
+  readonly clientPagination?: boolean;
+}
+
 export interface ListPageTemplateProps<Row, ExportColumn extends string = string> {
   /** The page's `<h1>` (and the PDF and Print title). */
   readonly title: string;
@@ -165,6 +183,8 @@ export interface ListPageTemplateProps<Row, ExportColumn extends string = string
   readonly header?: ReactNode;
   readonly path: ApiPath;
   readonly rowSchema: z.ZodType<Row>;
+  /** Opt-in for endpoints whose strict contract is an unpaginated `{ data }` response. */
+  readonly unpaginated?: UnpaginatedList<Row>;
   /** Fixed query parameters a screen adds to every request and the export (`'filter[active]': true`). */
   readonly filters?: Params;
   /** Filters the member chooses, in the URL (K1) and shown by the filter bar (K2). */
@@ -279,6 +299,7 @@ function CreateButton({ action }: { readonly action: CreateAction }): ReactEleme
       </Button>
     );
   }
+
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -297,6 +318,37 @@ function CreateButton({ action }: { readonly action: CreateAction }): ReactEleme
       </DropdownMenuContent>
     </DropdownMenu>
   );
+}
+
+function compareSortValues(left: string | number | null, right: string | number | null): number {
+  if (left === right) return 0;
+  if (left === null) return 1;
+  if (right === null) return -1;
+  if (typeof left === 'number' && typeof right === 'number') return left - right;
+  return String(left).localeCompare(String(right), undefined, {
+    numeric: true,
+    sensitivity: 'base',
+  });
+}
+
+function sortUnpaginatedRows<Row>(
+  rows: readonly Row[],
+  sort: string | null,
+  columns: readonly ListColumn<Row>[],
+): readonly Row[] {
+  if (sort === null) return rows;
+  const descending = sort.startsWith('-');
+  const field = descending ? sort.slice(1) : sort;
+  const valueOf = columns.find((column) => column.sortField === field)?.sortValue;
+  if (valueOf === undefined) return rows;
+  return rows
+    .map((row, index) => ({ row, index, value: valueOf(row) }))
+    .sort(
+      (left, right) =>
+        (descending ? -1 : 1) * compareSortValues(left.value, right.value) ||
+        left.index - right.index,
+    )
+    .map(({ row }) => row);
 }
 
 /**
@@ -478,6 +530,13 @@ function ExportError({ state, onRetry, errorText }: ExportErrorProps): ReactElem
 function refusesCursor(issues: unknown): boolean {
   const parsed = issuesSchema.safeParse(issues);
   return parsed.success && parsed.data.some((issue) => issue.path[0] === 'cursor');
+}
+
+function localPageOf(cursor: string | null): number {
+  const match = /^client:(\d+)$/.exec(cursor ?? '');
+  if (match === null) return 0;
+  const page = Number(match[1]);
+  return Number.isSafeInteger(page) ? page : 0;
 }
 
 /** The checked rows, remembered for ONE view of the list (its query, sort, page and size). */
@@ -701,6 +760,7 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
   header,
   path,
   rowSchema,
+  unpaginated,
   filters,
   filterBar,
   filterQuery = filterParams,
@@ -759,8 +819,12 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
     if (dirty > 0) setHeld({ run });
     else run();
   };
-  const { data, error, isLoading, isValidating, mutate } = useList(
-    path,
+  const unpaginatedResponseSchema = useMemo<z.ZodType<{ readonly data: readonly Row[] }>>(
+    () => unpaginated?.responseSchema ?? z.object({ data: z.array(rowSchema).readonly() }),
+    [rowSchema, unpaginated?.responseSchema],
+  );
+  const paged = useList(
+    unpaginated === undefined ? path : null,
     rowSchema,
     {
       ...filters,
@@ -772,6 +836,31 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
     },
     { revalidateOnFocus: false, keepPreviousData: true },
   );
+  const unpaged = useCommonApi<{ readonly data: readonly Row[] }>(
+    unpaginated === undefined ? null : path,
+    unpaginatedResponseSchema,
+    undefined,
+    { revalidateOnFocus: false, keepPreviousData: true },
+  );
+  let data = paged.data;
+  if (unpaginated !== undefined) {
+    data =
+      unpaged.data === undefined
+        ? undefined
+        : {
+            data: unpaged.data.data,
+            meta: {
+              nextCursor: null,
+              prevCursor: null,
+              total: unpaged.data.data.length,
+              rangeStart: unpaged.data.data.length === 0 ? 0 : 1,
+            },
+          };
+  }
+  const error = unpaginated === undefined ? paged.error : unpaged.error;
+  const isLoading = unpaginated === undefined ? paged.isLoading : unpaged.isLoading;
+  const isValidating = unpaginated === undefined ? paged.isValidating : unpaged.isValidating;
+  const mutate = unpaginated === undefined ? paged.mutate : unpaged.mutate;
   useRestoreListScroll(listBase, data !== undefined);
 
   if (isLoading && data === undefined) {
@@ -793,8 +882,29 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
   const off = data === undefined && error !== undefined ? offState?.(error.code) : undefined;
   if (off !== undefined && off !== null) return <>{off}</>;
 
-  const rows = data?.data ?? [];
-  const total = data?.meta.total;
+  const responseRows = data?.data ?? [];
+  const searchedRows =
+    unpaginated !== undefined && q !== ''
+      ? responseRows.filter((row) => unpaginated.matchesSearch(row, q))
+      : responseRows;
+  let rows = searchedRows;
+  if (unpaginated !== undefined) {
+    rows = sortUnpaginatedRows(searchedRows, url.sort, columns);
+  }
+  let pageMeta = data?.meta;
+  if (unpaginated?.clientPagination === true && data !== undefined) {
+    const pageCount = Math.ceil(rows.length / pageSize);
+    const page = Math.min(localPageOf(url.cursor), Math.max(0, pageCount - 1));
+    rows = rows.slice(page * pageSize, (page + 1) * pageSize);
+    pageMeta = {
+      ...data.meta,
+      nextCursor: page + 1 < pageCount ? `client:${String(page + 1)}` : null,
+      prevCursor: page > 0 ? `client:${String(page - 1)}` : null,
+      total: searchedRows.length,
+      rangeStart: rows.length === 0 ? 0 : page * pageSize + 1,
+    };
+  }
+  const total = pageMeta?.total;
   // The api's per-list options reach each cell and row menu (opt-in, plan 04.7-23).
   const listOptions = data?.meta.options ?? NO_OPTIONS;
   const bodyColumns = shownColumns.map((column) => ({
@@ -815,6 +925,7 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
   // A cursor that names no page any more: a refusal on `cursor`, or an empty answer to a cursor.
   // Never on the first page (no cursor), where the ordinary empty states apply (lead decision 3).
   const stalePage =
+    unpaginated === undefined &&
     url.cursor !== null &&
     (error === undefined
       ? data !== undefined && rows.length === 0
@@ -1007,13 +1118,16 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
   // editable table is dirty: then the save bar is the pinned bar. In flow after the table, so at the
   // end of the scroll it sits below the last row and never covers it.
   const pager =
-    data === undefined || rows.length === 0 ? null : (
+    (unpaginated !== undefined && unpaginated.clientPagination !== true) ||
+    data === undefined ||
+    pageMeta === undefined ||
+    rows.length === 0 ? null : (
       <div
         data-testid="list-pager"
         className={cn('bg-background border-t py-3', dirty === 0 && 'sticky bottom-0 z-10')}
       >
         <Pager
-          meta={data.meta}
+          meta={pageMeta}
           rowsOnPage={rows.length}
           pageSize={pageSize}
           onPageSize={(size) => {
@@ -1023,12 +1137,12 @@ export function ListPageTemplate<Row, ExportColumn extends string = string>({
           }}
           onPrevious={() => {
             guarded(() => {
-              actions.setCursor(data.meta.prevCursor);
+              actions.setCursor(pageMeta.prevCursor);
             });
           }}
           onNext={() => {
             guarded(() => {
-              actions.setCursor(data.meta.nextCursor);
+              actions.setCursor(pageMeta.nextCursor);
             });
           }}
         />
