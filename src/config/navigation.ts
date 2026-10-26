@@ -1520,6 +1520,14 @@ export const NAVIGATION: readonly NavItem[] = [
     module: 'cost-centers',
   },
   {
+    id: 'predefined-replies',
+    labelKey: 'shell.acs_ticket_predefined_replies_submenu',
+    icon: 'sitemap',
+    href: '/setup/predefined-replies',
+    ...navGateOf('/setup/predefined-replies'),
+    module: 'predefined-replies',
+  },
+  {
     id: 'tasks',
     labelKey: 'shell.als_tasks',
     icon: 'circle-check',
@@ -1745,6 +1753,7 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         legacy: true,
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
+      // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
         id: 'tickets-predefined-replies',
         labelKey: 'shell.acs_ticket_predefined_replies_submenu',
@@ -1752,7 +1761,6 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         adminOnly: true,
         legacy: true,
       },
-      // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
         id: 'tickets-priorities',
         labelKey: 'shell.acs_ticket_priority_submenu',

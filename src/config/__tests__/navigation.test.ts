@@ -17,7 +17,7 @@ const ROOT = resolve(import.meta.dirname, '../../..');
 const ALL = flattenNavigation();
 
 /** The counts the legacy registration calls produce; they move only with a deliberate menu change. */
-const NAVIGATION_ITEMS = 165;
+const NAVIGATION_ITEMS = 166;
 // 04.3-10: Setup > Email replaced the one Email Templates item with a container of four (+4).
 const SETUP_ITEMS = 38;
 
@@ -180,6 +180,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
     // Setup > Email's three Node screens (W2C) follow; the rest is still Perfex's.
     expect(nodeItems.map((item) => item.href)).toEqual([
       '/setup/cost-centers',
+      '/setup/predefined-replies',
       '/setup/staff',
       '/setup/taxes',
       '/setup/currencies',
