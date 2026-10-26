@@ -1,0 +1,27 @@
+{
+  "customer-groups": {
+    "customer_groups": "Customer Groups",
+    "add_customer_group": "Add Customer Group",
+    "edit_customer_group": "Edit Customer Group",
+    "id": "ID",
+    "customer_group_name": "Name",
+    "noun_customer_group": "customer group",
+    "noun_customer_groups": "customer groups",
+    "section_details": "Details",
+    "empty_heading": "No customer groups yet",
+    "empty_body": "Add a customer group to organize your customers.",
+    "no_match_heading": "No customer groups match “{query}”.",
+    "no_match_body": "Try a different search.",
+    "enter_name": "Enter the customer group name.",
+    "name_too_long": "The customer group name must not exceed {max} characters.",
+    "saved_toast": "Customer group saved",
+    "deleted_toast": "Customer group deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete customer group {name}",
+    "delete_title": "Delete customer group {name}?",
+    "delete_body": "This action cannot be undone.",
+    "errors": {
+      "ERP-CORE-0004": "This customer group no longer exists. It may have been removed."
+    }
+  }
+}

@@ -1723,10 +1723,9 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'customer-groups',
         labelKey: 'shell.customer_groups',
-        href: '/admin/clients/groups',
-        adminOnly: true,
+        href: '/setup/customer-groups',
+        ...navGateOf('/setup/customer-groups'),
         module: 'crm',
-        legacy: true,
       },
     ],
   },
