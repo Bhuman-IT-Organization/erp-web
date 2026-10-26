@@ -19,6 +19,8 @@ import staffEn from '@/features/staff/messages/en.json';
 import statusEn from '@/features/status/messages/en.json';
 import taxesAr from '@/features/taxes/messages/ar.json';
 import taxesEn from '@/features/taxes/messages/en.json';
+import servicesAr from '@/features/services/messages/ar.json';
+import servicesEn from '@/features/services/messages/en.json';
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
@@ -33,6 +35,7 @@ import commonEn from './common/en.json';
 export const NAMESPACES = [
   'common',
   // registry start: namespaces
+  'services',
   'auth',
   'shell',
   'status',
@@ -62,6 +65,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     mailEn,
     paymentModesEn,
     currenciesEn,
+    servicesEn,
     // registry end: en
   ],
   ar: [
@@ -76,6 +80,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     mailAr,
     paymentModesAr,
     currenciesAr,
+    servicesAr,
     // registry end: ar
   ],
 };
