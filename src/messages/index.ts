@@ -6,6 +6,8 @@ import costCentersAr from '@/features/cost-centers/messages/ar.json';
 import costCentersEn from '@/features/cost-centers/messages/en.json';
 import currenciesAr from '@/features/currencies/messages/ar.json';
 import currenciesEn from '@/features/currencies/messages/en.json';
+import customerGroupsAr from '@/features/customer-groups/messages/ar.json';
+import customerGroupsEn from '@/features/customer-groups/messages/en.json';
 import expenseCategoriesAr from '@/features/expense-categories/messages/ar.json';
 import expenseCategoriesEn from '@/features/expense-categories/messages/en.json';
 import mailAr from '@/features/mail/messages/ar.json';
@@ -47,6 +49,7 @@ export const NAMESPACES = [
   'payment-modes',
   'currencies',
   'ticket-statuses',
+  'customer-groups',
   // registry end: namespaces
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
@@ -67,6 +70,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     paymentModesEn,
     currenciesEn,
     ticketStatusesEn,
+    customerGroupsEn,
     // registry end: en
   ],
   ar: [
@@ -82,6 +86,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     paymentModesAr,
     currenciesAr,
     ticketStatusesAr,
+    customerGroupsAr,
     // registry end: ar
   ],
 };
