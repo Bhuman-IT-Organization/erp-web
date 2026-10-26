@@ -1,0 +1,28 @@
+{
+  "predefined-replies": {
+    "list_title": "Predefined Replies",
+    "new_title": "New Predefined Reply",
+    "record_title": "Predefined Reply",
+    "noun_predefined_reply": "predefined reply",
+    "noun_predefined_replies": "predefined replies",
+    "section_details": "Details",
+    "id": "ID",
+    "name": "Name",
+    "message": "Message",
+    "empty_heading": "No predefined replies yet",
+    "empty_body": "Create the first one and it appears here.",
+    "no_match_heading": "No predefined replies match “{query}”",
+    "no_match_body": "Check the spelling or search for fewer words.",
+    "enter_name": "Enter a name.",
+    "enter_message": "Enter a message.",
+    "saved_toast": "Predefined reply saved",
+    "name_too_long": "Keep the name to {max} characters or fewer.",
+    "delete_title": "Delete {name}?",
+    "delete_body": "This action cannot be undone.",
+    "delete_action_named": "Delete predefined reply {name}",
+    "deleted_toast": "Predefined reply deleted",
+    "errors": {
+      "ERP-CORE-0004": "This predefined reply no longer exists. It may have been removed."
+    }
+  }
+}

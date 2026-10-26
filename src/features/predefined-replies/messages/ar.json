@@ -1,0 +1,24 @@
+{
+  "predefined-replies": {
+    "list_title": "الردود المحددة مسبقاً",
+    "new_title": "رد محدد مسبقاً جديد",
+    "record_title": "رد محدد مسبقاً",
+    "noun_predefined_reply": "رد محدد مسبقاً",
+    "noun_predefined_replies": "الردود المحددة مسبقاً",
+    "section_details": "التفاصيل",
+    "id": "المعرّف",
+    "name": "الاسم",
+    "message": "الرسالة",
+    "empty_heading": "لا توجد ردود محددة مسبقاً بعد",
+    "empty_body": "أنشئ أول رد وسيظهر هنا.",
+    "no_match_heading": "لا توجد ردود محددة مسبقاً تطابق «{query}»",
+    "no_match_body": "تحقق من الإملاء أو جرّب البحث بكلمات أقل.",
+    "enter_name": "أدخل اسماً.",
+    "enter_message": "أدخل رسالة.",
+    "saved_toast": "تم حفظ الرد المحدد مسبقاً",
+    "name_too_long": "يجب ألا يتجاوز الاسم {max} حرفاً.",
+    "errors": {
+      "ERP-CORE-0004": "هذا الرد المحدد مسبقاً غير موجود. ربما تمت إزالته."
+    }
+  }
+}

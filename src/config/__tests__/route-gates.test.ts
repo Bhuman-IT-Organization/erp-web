@@ -59,6 +59,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/payment-modes',
       '/setup/payment-modes/:id',
       '/setup/payment-modes/new',
+      '/setup/predefined-replies',
+      '/setup/predefined-replies/:id',
+      '/setup/predefined-replies/new',
       '/setup/roles',
       '/setup/roles/:id',
       '/setup/roles/new',
@@ -146,7 +149,11 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
     const end = lines.indexOf('// registry end: route-gates');
     expect(start, 'the start marker inside ROUTE_GATES').toBeGreaterThan(0);
     expect(end, 'the end marker after the start marker').toBeGreaterThan(start);
-    expect(lines.slice(start + 1).filter((line) => line.startsWith("'/"))).toEqual([]);
+    expect(lines.slice(start + 1, end).filter((line) => line.startsWith("'/"))).toEqual([
+      "'/setup/predefined-replies': ADMIN_GATE,",
+      "'/setup/predefined-replies/new': ADMIN_GATE,",
+      "'/setup/predefined-replies/:id': ADMIN_GATE,",
+    ]);
   });
 
   it('turns a gate into the menu fields, one or the other and never both', () => {
