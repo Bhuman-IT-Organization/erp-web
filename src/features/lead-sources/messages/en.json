@@ -1,0 +1,31 @@
+{
+  "lead-sources": {
+    "lead_sources": "Lead Sources",
+    "add_lead_source": "Add Lead Source",
+    "edit_lead_source": "Edit Lead Source",
+    "id": "ID",
+    "lead_source_name": "Lead Source Name",
+    "total_leads": "Total Leads: {countN}",
+    "total_leads_export": "Total Leads",
+    "noun_lead_source": "lead source",
+    "noun_lead_sources": "lead sources",
+    "section_details": "Details",
+    "empty_heading": "No lead sources yet",
+    "empty_body": "Add a lead source so incoming leads can be tracked against it.",
+    "no_match_heading": "No lead sources match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every lead source.",
+    "enter_name": "Enter a source name.",
+    "name_too_long": "Keep the source name to {max} characters or fewer.",
+    "saved_toast": "Lead source saved",
+    "deleted_toast": "Lead source deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete lead source {name}",
+    "delete_title": "Delete lead source {name}?",
+    "delete_body": "This cannot be undone.",
+    "in_use_leads": "{count, plural, one {{countN} lead uses this lead source.} other {{countN} leads use this lead source.}}",
+    "errors": {
+      "ERP-CORE-0004": "This lead source no longer exists. It may have been removed.",
+      "ERP-LEADSOURCES-0001": "This lead source is still in use, so it can't be deleted. Remove it from everything that uses it first, then delete it."
+    }
+  }
+}
