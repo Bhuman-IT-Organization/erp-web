@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { PrioritiesList } from '../components/PrioritiesList';
-import { LABELS, ROUTES } from '../constants';
+import { LABELS, ROUTES } from '../schemas/ticket-priorities.constants';
 
 /**
  * Page layout for the ticket priorities list: heading, Create button and the table.

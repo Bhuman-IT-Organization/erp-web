@@ -3,9 +3,9 @@
 import type { KeyboardEvent } from 'react';
 import type { TicketPriority } from '@/lib/hooks/useTicketPriorities';
 import { PRIORITY_NAME_MAX } from '../api/schemas';
-import { LABELS, STYLES } from '../constants';
-import { getPriorityId } from '../validation';
-import type { TableApi } from './usePrioritiesTable';
+import { LABELS, STYLES } from '../schemas/ticket-priorities.constants';
+import { getPriorityId } from '../schemas/ticket-priorities.validation';
+import type { TableApi } from '../hooks/use-priorities-table';
 
 type RowMode = 'edit' | 'confirm' | 'view';
 
