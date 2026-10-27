@@ -1,3 +1,4 @@
+import type { TicketPriority } from '@/lib/hooks/useTicketPriorities';
 export type SortOrder = 'latest' | 'asc' | 'desc';
 
 const NEXT: Record<SortOrder, SortOrder> = { latest: 'asc', asc: 'desc', desc: 'latest' };
