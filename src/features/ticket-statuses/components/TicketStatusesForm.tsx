@@ -18,26 +18,28 @@ import {
 import { PageSkeleton } from '@/components/organisms/PageSkeleton';
 import { SchemaForm } from '@/components/organisms/SchemaForm';
 import {
-  TICKETSTATUSES_ERRORS,
-  TICKETSTATUSES_PATH,
+  TICKET_STATUSES_ERRORS,
+  TICKET_STATUSES_PATH,
   ticketStatusesPath,
   VALIDATION_CODE,
-} from '@/features/ticket/api/ticket-status.endpoints';
-import { useTicketStatuses } from '@/features/ticket/hooks/use-ticket-status';
-import { useSaveTicketStatuses } from '@/features/ticket/hooks/use-save-ticket-status';
+} from '@/features/ticket-statuses/api/ticket-statuses.endpoints';
+import { useTicketStatuses } from '@/features/ticket-statuses/hooks/use-ticket-statuses';
+import { useSaveTicketStatuses } from '@/features/ticket-statuses/hooks/use-save-ticket-statuses';
 import {
   EMPTY_TICKET_STATUS_FORM,
   isTicketStatusField,
   TICKET_STATUS_MESSAGE_KEYS,
   TICKET_STATUS_NAME_MAX,
+  toTicketStatusWriteValues,
   ticketStatusFormSchema,
   ticketStatusRowSchema,
   toTicketStatusForm,
   validationIssuesSchema,
   type TicketStatus,
+  type TicketStatusFormInput,
   type TicketStatusFormValues,
   type TicketStatusRow,
-} from '@/features/ticket/schemas/ticket-status.schema';
+} from '@/features/ticket-statuses/schemas/ticket-status.schema';
 import { withAuth } from '@/hocs/withAuth';
 import { withPermission } from '@/hocs/withPermission';
 import type { ApiResult } from '@/lib/api/call-api';
@@ -54,7 +56,7 @@ import { useFormat } from '@/lib/i18n/format';
 const LIST_BASE = '/setup/ticket-statuses';
 const FORM_ID = 'ticket-statuses';
 
-interface TicketStatusFormProps {
+interface TicketStatusesFormProps {
   /** The record's id from `[id]/page.tsx`; `null` on `/setup/ticket-statuses/new`. */
   readonly id: string | null;
 }
@@ -66,7 +68,7 @@ function recordPath(id: string | null): ReturnType<typeof ticketStatusesPath> | 
   return id === null ? null : ticketStatusesPath(id);
 }
 
-function knownValues(record: TicketStatus | undefined): { values?: TicketStatusFormValues } {
+function knownValues(record: TicketStatus | undefined): { values?: TicketStatusFormInput } {
   return record === undefined ? {} : { values: toTicketStatusForm(record) };
 }
 
@@ -144,16 +146,16 @@ function RecordState({
 }
 
 /**
- * The Ticket Statuses create and edit pages of Perfex's `ticket_status.php` (a modal there, a page here) on the
+ * The create and edit pages for Perfex's `tickets_statuses/manage.php` (a modal there, a page here) on the
  * kit's `SchemaForm`: one "Details" section with Perfex's editable name, colour and order fields.
  * Every save is confirmed by a summary; names render as React text only.
  */
-export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement {
-  const t = useTranslations('ticket');
+export function TicketStatusesForm({ id }: TicketStatusesFormProps): ReactElement {
+  const t = useTranslations('ticket-statuses');
   const tc = useTranslations('common');
   const router = useRouter();
   const f = useFormat();
-  const errorText = useErrorText(TICKETSTATUSES_ERRORS);
+  const errorText = useErrorText(TICKET_STATUSES_ERRORS);
   const copy = useConfirmCopy();
   const seed = useRowSeed(recordPath(id), ticketStatusRowSchema);
   const item = useTicketStatuses(id);
@@ -174,11 +176,11 @@ export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement 
     form.reset(toTicketStatusForm(saved));
     if (id !== null) await item.mutate(saved, { revalidate: false });
     if (id === null || seed === undefined) {
-      await revalidateLists(TICKETSTATUSES_PATH);
+      await revalidateLists(TICKET_STATUSES_PATH);
     } else {
       const row: TicketStatusRow = { ...seed, ...saved };
       await replaceRowInLists(
-        TICKETSTATUSES_PATH,
+        TICKET_STATUSES_PATH,
         row,
         (one: TicketStatusRow) => one.id === row.id,
       );
@@ -189,7 +191,7 @@ export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement 
 
   async function send(values: TicketStatusFormValues): Promise<ConfirmOutcome> {
     lastSent.current = values;
-    const outcome = await mutation.trigger(values);
+    const outcome = await mutation.trigger(toTicketStatusWriteValues(values));
     if (outcome.ok) {
       await afterSave(outcome.data);
       return { ok: true };
@@ -228,7 +230,7 @@ export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement 
   const noun = t('noun_ticket_status');
   const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
   const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
-  const changes = nameChanges(pending, record, t('ticket_status_name'));
+  const changes = nameChanges(pending, record, t('ticket_statuses_dt_name'));
 
   function summaryTitle(): string {
     return id === null
@@ -238,7 +240,7 @@ export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement 
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{record?.name ?? t('add_ticket_status')}</h1>
+      <h1 className="text-2xl font-semibold">{record?.name ?? t('new_ticket_status')}</h1>
       <SchemaForm
         id={FORM_ID}
         form={form}
@@ -250,27 +252,24 @@ export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement 
             fields: [
               {
                 name: 'name',
-                label: t('ticket_status_name'),
+                label: t('ticket_statuses_dt_name'),
                 kind: 'text',
                 required: true,
               },
               {
                 name: 'statuscolor',
-                label: t('status_color'),
+                label: t('ticket_status_add_edit_color'),
                 kind: 'color',
               },
               {
                 name: 'statusorder',
-                label: t('status_order'),
+                label: t('ticket_status_add_edit_order'),
                 kind: 'number',
-                required: true,
               },
             ],
           },
         ]}
-        onValid={(values) => {
-          setPending({ ...values, statusorder: Number(values.statusorder) });
-        }}
+        onValid={setPending}
         translateError={(key) => t(key, { max: f.number(TICKET_STATUS_NAME_MAX) })}
         submitLabel={submitLabel}
         pendingLabel={pendingLabel}
@@ -302,7 +301,7 @@ export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement 
         dismissLabel={copy.backToForm}
         confirmLabel={submitLabel}
         pendingLabel={pendingLabel}
-        featureErrors={TICKETSTATUSES_ERRORS}
+        featureErrors={TICKET_STATUSES_ERRORS}
         onConfirm={() => (pending === null ? { ok: true } : send(pending))}
       />
       <ConfirmDialog

@@ -7,11 +7,12 @@ import { http } from '@/lib/api/http';
 import { clearSession, setSession } from '@/lib/auth/session';
 import { fakeAdapter, problem } from '@/test/axios-fakes';
 import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
-import { useDeleteTicketStatus, useTicketStatuses } from '../use-ticket-status';
+import { useDeleteTicketStatus, useTicketStatuses } from '../use-ticket-statuses';
 
 const STATUS = {
   ticketstatusid: 'a 1',
   name: 'Waiting',
+  ticket_count: 4,
   isdefault: 0,
   statuscolor: '#a1b2c3',
   statusorder: 2,

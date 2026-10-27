@@ -8,21 +8,21 @@ export const TICKET_STATUS_MESSAGE_KEYS = {
 } as const;
 
 export const TICKET_STATUS_NAME_MAX = 50;
-const TICKET_STATUS_COLOR = /^#[\da-f]{6}$/i;
+export const TICKET_STATUS_COLOR_MAX = 7;
 
 export const ticketStatusSchema = z
   .strictObject({
     ticketstatusid: z.string(),
     name: z.string().max(TICKET_STATUS_NAME_MAX),
+    ticket_count: z.number().int().nonnegative(),
     isdefault: z.number().int(),
     statuscolor: z.string().nullable(),
     statusorder: z.number().int().nullable(),
   })
-  .transform(({ ticketstatusid, statuscolor, statusorder, ...status }) => ({
+  .transform(({ ticketstatusid, statuscolor, ...status }) => ({
     ...status,
     id: ticketstatusid,
     statuscolor: statuscolor ?? '',
-    statusorder: statusorder ?? 0,
   }));
 
 /** The backend list response has no pagination metadata: `GET /ticket-statuses` returns `{ data }`. */
@@ -41,27 +41,38 @@ export const ticketStatusFormSchema = z.object({
     .trim()
     .min(1, TICKET_STATUS_MESSAGE_KEYS.name)
     .max(TICKET_STATUS_NAME_MAX, TICKET_STATUS_MESSAGE_KEYS.nameTooLong),
-  statuscolor: z.union([
+  statuscolor: z.string().max(TICKET_STATUS_COLOR_MAX, TICKET_STATUS_MESSAGE_KEYS.statuscolor),
+  statusorder: z.union([
     z.literal(''),
-    z.string().regex(TICKET_STATUS_COLOR, TICKET_STATUS_MESSAGE_KEYS.statuscolor),
+    z.number().int(TICKET_STATUS_MESSAGE_KEYS.statusorder),
+    z.string().regex(/^-?\d+$/, TICKET_STATUS_MESSAGE_KEYS.statusorder),
   ]),
-  statusorder: z.coerce.number().int().min(0, TICKET_STATUS_MESSAGE_KEYS.statusorder),
 });
 
-export type TicketStatusFormValues = z.infer<typeof ticketStatusFormSchema>;
-
-export const EMPTY_TICKET_STATUS_FORM: TicketStatusFormValues = {
-  name: '',
-  // eslint-disable-next-line no-restricted-syntax -- Perfex's color input requires a concrete initial color value.
-  statuscolor: '#777777',
-  statusorder: 0,
+export type TicketStatusFormInput = z.input<typeof ticketStatusFormSchema>;
+export type TicketStatusFormValues = z.output<typeof ticketStatusFormSchema>;
+export type TicketStatusWriteValues = Omit<TicketStatusFormValues, 'statusorder'> & {
+  readonly statusorder: number | null;
 };
 
-export function toTicketStatusForm(item: TicketStatus): TicketStatusFormValues {
+export function toTicketStatusWriteValues(values: TicketStatusFormValues): TicketStatusWriteValues {
+  return {
+    ...values,
+    statusorder: values.statusorder === '' ? null : Number(values.statusorder),
+  };
+}
+
+export const EMPTY_TICKET_STATUS_FORM: TicketStatusFormInput = {
+  name: '',
+  statuscolor: '',
+  statusorder: '',
+};
+
+export function toTicketStatusForm(item: TicketStatus): TicketStatusFormInput {
   return {
     name: item.name,
     statuscolor: item.statuscolor,
-    statusorder: item.statusorder,
+    statusorder: item.statusorder ?? '',
   };
 }
 

@@ -1,29 +1,10 @@
-// import type { Meta, StoryObj } from '@storybook/nextjs-vite';
-// import { TicketStatusList } from './TicketStatusList';
-
-// const meta = {
-//   title: 'Features/Ticket/TicketStatusList',
-//   component: TicketStatusList,
-//   parameters: {
-//     nextjs: { appDirectory: true, navigation: { pathname: '/setup/ticket-statuses' } },
-//   },
-// } satisfies Meta<typeof TicketStatusList>;
-
-// export default meta;
-// type Story = StoryObj<typeof meta>;
-
-// export const Loading: Story = {};
-// export const Empty: Story = {};
-// export const Error: Story = {};
-// export const Loaded: Story = {};
-
 import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { SWRConfig } from 'swr';
 import type { ApiAdapter } from '@/lib/api/call-api';
 import { http } from '@/lib/api/http';
 import { setSession } from '@/lib/auth/session';
-import { TicketStatusList } from './TicketStatusList';
+import { TicketStatusesList } from './TicketStatusesList';
 
 const ADMIN = {
   staffId: 1,
@@ -40,6 +21,7 @@ const ticketStatuses = [
   {
     ticketstatusid: '11',
     name: 'Open',
+    ticket_count: 7,
     isdefault: 1,
     statuscolor: '#03a9f4',
     statusorder: 1,
@@ -47,6 +29,7 @@ const ticketStatuses = [
   {
     ticketstatusid: '12',
     name: 'Waiting',
+    ticket_count: 2,
     isdefault: 0,
     statuscolor: null,
     statusorder: null,
@@ -104,8 +87,8 @@ const LOADED: Answer = {
 };
 
 const meta = {
-  title: 'Features/Ticket/TicketStatusList',
-  component: TicketStatusList,
+  title: 'Features/TicketStatuses/TicketStatusesList',
+  component: TicketStatusesList,
   parameters: {
     nextjs: {
       appDirectory: true,
@@ -113,7 +96,7 @@ const meta = {
     },
   },
   decorators: [withApi(api(LOADED))],
-} satisfies Meta<typeof TicketStatusList>;
+} satisfies Meta<typeof TicketStatusesList>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -143,3 +126,19 @@ export const Error: Story = {
 };
 
 export const Loaded: Story = {};
+export const BuiltInStatusHasNoDelete: Story = {
+  play: async ({ canvasElement }) => {
+    const { expect, within } = await import('storybook/test');
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('link', { name: /Open/ })).toBeVisible();
+    await expect(canvas.queryByRole('button', { name: 'Delete Open' })).toBeNull();
+    await expect(canvas.getByRole('button', { name: 'Delete Waiting' })).toBeVisible();
+  },
+};
+export const Mobile: Story = {
+  globals: { viewport: 'mobile1' },
+};
+export const ArabicRTL: Story = {
+  globals: { locale: 'ar' },
+};

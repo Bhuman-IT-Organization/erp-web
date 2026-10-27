@@ -7,7 +7,7 @@ import { http } from '@/lib/api/http';
 import { clearSession, setSession } from '@/lib/auth/session';
 import { fakeAdapter } from '@/test/axios-fakes';
 import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
-import { TicketStatusesForm } from '../TicketStatusForm';
+import { TicketStatusesForm } from '../TicketStatusesForm';
 
 const navigation = vi.hoisted(() => ({ push: vi.fn() }));
 
@@ -16,8 +16,8 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/setup/ticket-statuses/new',
 }));
 
-const VALUES = { name: 'Waiting', statuscolor: '#777777', statusorder: 0 };
-const STATUS = { ticketstatusid: '13', ...VALUES, isdefault: 0 };
+const VALUES = { name: 'Waiting', statuscolor: '', statusorder: null };
+const STATUS = { ticketstatusid: '13', ...VALUES, ticket_count: 0, isdefault: 0 };
 
 function show() {
   return renderWithProviders(

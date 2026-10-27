@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { TicketStatusListPage } from '@/features/ticket/pages/TicketStatusListPage';
-
+import { TicketStatusesListPage } from '@/features/ticket-statuses/pages/TicketStatusesListPage';
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('ticket-statuses');
-  return { title: t('ticket_statuses') };
+  return { title: t('acs_ticket_statuses_submenu') };
 }
 
 // Request-time render: the list is the signed-in member's own view of the api, never baked in at
@@ -12,5 +11,5 @@ export async function generateMetadata(): Promise<Metadata> {
 export const dynamic = 'force-dynamic';
 
 export default function Page() {
-  return <TicketStatusListPage />;
+  return <TicketStatusesListPage />;
 }

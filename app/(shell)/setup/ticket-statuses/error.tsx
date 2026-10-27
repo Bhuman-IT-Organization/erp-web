@@ -9,7 +9,7 @@ interface RouteErrorProps {
 }
 
 /**
- * The route-segment error boundary for `/setup/cost-centers/**` (FE-05). It sits inside the feature's
+ * The route-segment error boundary for /setup/ticket-statuses/** (FE-05). It sits inside the feature's
  * route folder so it moves with the screens, inside the shell's one `<main>` (so it renders none).
  * The shell's layout (and with it the `common` slice) is still mounted, so both strings are
  * message keys; `error.message` and `digest` are NEVER rendered (T-3-12), and the prop is received
@@ -20,7 +20,7 @@ export default function RouteError({ reset }: RouteErrorProps) {
   return (
     <div
       role="alert"
-      data-testid="cost-centers-route-error"
+      data-testid="ticket-statuses-route-error"
       className="flex flex-col items-start gap-4"
     >
       <p>{t('something_went_wrong')}</p>
