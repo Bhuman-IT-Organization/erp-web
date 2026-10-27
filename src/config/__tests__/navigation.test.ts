@@ -182,6 +182,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/cost-centers',
       '/setup/staff',
       '/setup/customer-groups',
+      '/setup/ticket-priorities',
       '/setup/ticket-statuses',
       '/setup/services',
       '/setup/lead-sources',
