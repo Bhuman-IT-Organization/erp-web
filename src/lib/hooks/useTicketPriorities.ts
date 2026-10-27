@@ -8,6 +8,7 @@ import { callApi } from '@/lib/api/call-api';
  * Shape of the ticket priority record matching the backend DTO.
  */
 export interface TicketPriority {
+  priorityid: number;
   id: number;
   name: string;
 }
@@ -32,15 +33,12 @@ export function useTicketPriorities() {
   const loadPriorities = useCallback(async (isInitial = false) => {
     try {
       if (!isInitial) setLoading(true);
-
       const res = await callApi('/api/v1/ticket-priorities', {
         method: 'GET',
         schema: listResponseSchema,
       });
-
-      if (!res.ok) throw new Error('Failed to fetch ticket priorities');
-
-      setPriorities(res.data.data);
+      if (!res.ok) throw new Error(res.code);
+      setPriorities(res.data.data.map((p) => ({ ...p, priorityid: p.id })));
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch ticket priorities');
@@ -49,7 +47,7 @@ export function useTicketPriorities() {
     }
   }, []);
 
-  // effect: load priorities on mount
+  // effect: subscribe: load the priorities list on mount
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- Initial data fetch on mount
     void loadPriorities(true);
@@ -61,16 +59,17 @@ export function useTicketPriorities() {
       body: data,
       schema: priorityResponseSchema,
     });
-    if (!res.ok) throw new Error('Failed to update priority');
+    if (!res.ok) throw new Error(res.code);
     await loadPriorities();
   };
 
   const deletePriority = async (id: number) => {
     const res = await callApi(`/api/v1/ticket-priorities/${id.toString()}`, {
       method: 'DELETE',
-      schema: z.any(),
+      schema: z.null(),
+      expectNoContent: true,
     });
-    if (!res.ok) throw new Error('Failed to delete priority');
+    if (!res.ok) throw new Error(res.code);
     await loadPriorities();
   };
 
@@ -80,7 +79,7 @@ export function useTicketPriorities() {
       body: data,
       schema: priorityResponseSchema,
     });
-    if (!res.ok) throw new Error('Failed to create priority');
+    if (!res.ok) throw new Error(res.code);
     await loadPriorities();
   };
 
