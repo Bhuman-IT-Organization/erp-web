@@ -6,7 +6,8 @@ Services is the modernised ERP support feature for managing ticket services. The
 
 ## Legacy screen
 
-None: The legacy Perfex screen is `/admin/tickets/services`. The quick-add route `/admin/tickets/service` must remain available. The legacy delete route `/admin/tickets/delete_service` must be refused by Nginx.
+`application/views/admin/tickets/services/manage.php` (the list) and `application/views/admin/tickets/services/service.php` (the add/edit modal), served by `controllers/admin/Tickets.php` (`services`, `service`, `delete_service`).
+The quick add on the ticket form (`/admin/tickets/service`) stays on Perfex.
 
 ## Legacy parity
 

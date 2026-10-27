@@ -25,8 +25,8 @@ export const SERVICES_PATH = SERVICES_ENDPOINTS.list.path satisfies ApiPath;
 export const SERVICES_EXPORT_PATH = SERVICES_ENDPOINTS.export.path satisfies ApiPath;
 
 /**
- * The export's columns in the api's order (erp-api's export columns: Perfex's ID, Cost Center Name
- * and Date Created); `ListExport` types one label per column against it. The usage is never exported.
+ * The export's columns in the api's order (erp-api's export columns: Perfex's ID, Service Name);
+ * `ListExport` types one label per column against it. The usage is never exported.
  */
 export const SERVICES_EXPORT_COLUMNS = ['id', 'name'] as const;
 export type ServicesExportColumn = (typeof SERVICES_EXPORT_COLUMNS)[number];

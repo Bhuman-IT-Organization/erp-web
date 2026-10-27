@@ -21,7 +21,7 @@ import {
 } from '@/test/render';
 import ar from '../../messages/ar.json';
 import en from '../../messages/en.json';
-import { ServicesList, GuardedServicesList } from '../ServiceList';
+import { ServicesList, GuardedServicesList } from '../ServicesList';
 
 /**
  * The list screen on `ListPageTemplate` (UIK-06). The template's own tests cover the URL state, the
@@ -196,23 +196,11 @@ async function openDelete(user = userEvent.setup(), one: ServicesRow = SPARE) {
   await user.click(inline(one.name).getByRole('button', { name: `Delete service ${one.name}` }));
   return { user, open: await dialog() };
 }
-/** The dialog's usage lines, one block span each. */
-// const linesOf = (open: HTMLElement): (string | null)[] =>
-//   [...open.querySelectorAll('[data-slot="alert-dialog-description"] > span')].map(
-//     (span) => span.textContent,
-//   );
+
 /** The dialog's body (its description). */
 const bodyOf = (open: HTMLElement): string | null | undefined =>
   open.querySelector('[data-slot="alert-dialog-description"]')?.textContent;
-/** The cell of a row under the column whose header reads `header`. */
-// const cellOf = (list: HTMLElement, name: string, header: string): HTMLElement => {
-//   const index = within(list)
-//     .getAllByRole('columnheader')
-//     .findIndex((th) => th.textContent === header);
-//   const cell = row(name).querySelectorAll('td')[index];
-//   if (cell === undefined) throw new Error(`no ${header} cell for ${name}`);
-//   return cell;
-// };
+
 const settle = () => new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
 
 describe('ServicesList: the states (FE-27, D-39)', () => {
@@ -244,7 +232,7 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
     const empty = await screen.findByTestId('list-empty');
     expect(within(empty).getByRole('heading').textContent).toBe(EN.empty_heading);
     expect(empty.textContent).toContain(EN.empty_body);
-    const create = within(empty).getByRole('link', { name: EN.add_service });
+    const create = within(empty).getByRole('link', { name: EN.new_service });
     expect(create.getAttribute('href')).toBe('/setup/services/new');
   });
 
@@ -274,14 +262,18 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
     const list = await table();
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(EN.services);
     const headers = within(list).getAllByRole('columnheader');
-    expect(headers.map((th) => th.textContent)).toEqual([EN.id, EN.service_name, COMMON.actions]);
+    expect(headers.map((th) => th.textContent)).toEqual([
+      EN.id,
+      EN.services_dt_name,
+      COMMON.actions,
+    ]);
     expect(screen.getByRole('link', { name: 'Office' }).getAttribute('href')).toBe(
       '/setup/services/7',
     );
     const sortable = within(list).getAllByRole('button', { name: /^Sort by / });
     expect(sortable.map((b) => b.getAttribute('aria-label'))).toEqual([
       `Sort by ${EN.id}`,
-      `Sort by ${EN.service_name}`,
+      `Sort by ${EN.services_dt_name}`,
     ]);
     // Date Created is not a keyset key (nullable): its header has no sort button and no aria-sort.
     const dateHeader = headers[2];
@@ -312,11 +304,6 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
     expect(sorts).not.toContain('descending');
   });
 
-  // it('Mobile: only Date Created is hidden below md (ID, the name and the actions stay)', async () => {
-  //   show(<ServicesList />);
-  //   await table();
-  // });
-
   it('Mobile: only Date Created is hidden below md (ID, the name and the actions stay)', async () => {
     show(<ServicesList />);
     const list = await table();
@@ -325,7 +312,7 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
 
     expect(headers.map((header) => header.textContent)).toEqual([
       EN.id,
-      EN.service_name,
+      EN.services_dt_name,
       COMMON.actions,
     ]);
 
@@ -459,53 +446,6 @@ describe('ServicesList: Delete (D-07, D-28, D-25.1, UI-SPEC G8)', () => {
     });
   });
 
-  // it('DeleteInUse: a service 2 purchase orders and 1 asset use shows exactly those two lines in group order, the ERP-SERVICES-0001 refusal from the start, a disabled Delete, and NEVER sends a DELETE', async () => {
-  //   show(<ServicesList />);
-  //   const { user, open } = await openDelete(undefined, OFFICE);
-  //   expect(within(open).getByRole('heading').textContent).toBe('Delete service Office?');
-  //   expect(linesOf(open)).toEqual([
-  //     '2 purchase orders use this service.',
-  //     '1 asset uses this service.',
-  //   ]);
-  //   expect(bodyOf(open)).not.toContain(EN.delete_body);
-  //   expect(within(open).getByTestId('confirm-dialog-error').textContent).toBe(EN.errors[IN_USE]);
-  //   const confirm = within(open).getByTestId('confirm-dialog-confirm');
-  //   expect(confirm.hasAttribute('disabled')).toBe(true);
-  //   expect(document.activeElement).toBe(within(open).getByTestId('confirm-dialog-dismiss'));
-  //   await user.click(confirm);
-  //   await settle();
-  //   expect(deletes()).toHaveLength(0);
-  // });
-
-  // it('every one of the six groups has its line, in the order purchase requests, purchase orders, purchase quotations, shipping charges, expenses, assets', async () => {
-  //   api.list = { status: HTTP_OK, body: page([SPARE, OFFICE]) };
-  //   const user = userEvent.setup();
-  //   show(<ServicesList />);
-  //   const first = await openDelete(user);
-
-  //   await user.click(within(first.open).getByTestId('confirm-dialog-dismiss'));
-  //   await closed();
-
-  //   expect(deletes()).toHaveLength(0);
-  // });
-
-  // it('under ar the counts keep Western digits (D-34)', async () => {
-  //   show(<ServicesList />, { locale: 'ar' });
-  //   await table();
-  //   const [, remove] = within(
-  //     within(row(OFFICE.name)).getByTestId('row-actions-inline'),
-  //   ).getAllByRole('button');
-  //   if (remove === undefined) throw new Error('no delete button');
-  //   await userEvent.click(remove);
-  //   const body = (await dialog()).querySelector('[data-slot="alert-dialog-description"]');
-  //   expect(body?.textContent).toContain('2');
-  //   expect(body?.textContent).not.toMatch(/[٠-٩۰-۹]/);
-  // });
-
-  // it('the six in_use_* messages are ICU plurals on count whose number is the formatted countN, never # (D-34), in both packs', () => {
-
-  // });
-
   it('DeleteRefused: the race: the list said nothing used it, the api answers 409: the in-use text inside the dialog, Delete disabled, a second click sends nothing, and the list pages ask again (G8)', async () => {
     api.remove = { status: CONFLICT, body: problem(CONFLICT, IN_USE) };
     window.history.replaceState(null, '', '/setup/services?q=race-409');
@@ -610,13 +550,13 @@ describe('ServicesList: the toolbar (D-19, D-26, D-42, ADR-0043)', () => {
     const sent = requests.find((r) => r.url.pathname === EXPORT);
     expect(sent?.url.searchParams.get('format')).toBe('csv');
     expect(sent?.url.searchParams.getAll('column')).toEqual(['id', 'name']);
-    expect(sent?.url.searchParams.getAll('header')).toEqual([EN.id, EN.service_name]);
+    expect(sent?.url.searchParams.getAll('header')).toEqual([EN.id, EN.services_dt_name]);
   });
 
   it('Add Service links to /setup/services/new', async () => {
     show(<ServicesList />);
     await table();
-    expect(screen.getByRole('link', { name: EN.add_service }).getAttribute('href')).toBe(
+    expect(screen.getByRole('link', { name: EN.new_service }).getAttribute('href')).toBe(
       '/setup/services/new',
     );
   });

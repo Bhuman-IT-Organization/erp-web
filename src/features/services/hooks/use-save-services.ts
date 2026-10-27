@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import {
   SERVICES_ENDPOINTS,
   SERVICES_PATH,

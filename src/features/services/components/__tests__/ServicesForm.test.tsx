@@ -22,7 +22,7 @@ import {
 } from '@/test/render';
 import en from '../../messages/en.json';
 import ar from '../../messages/ar.json';
-import { ServicesForm, GuardedServicesForm } from '../ServiceForm';
+import { ServicesForm, GuardedServicesForm } from '../ServicesForm';
 
 /**
  * The form on `SchemaForm` (UIK-06): the verb + noun labels, the save summary (D-25.4), where a
@@ -110,9 +110,9 @@ function ListProbe({ q }: { readonly q: string }): ReactElement {
   const { data } = servicesHooks.useList({ q, limit: 25 });
   return <output data-testid="list-probe">{data?.data.map((row) => row.name).join(',')}</output>;
 }
-const CREATE = COMMON.create_noun.replace('{noun}', EN.noun_service);
-const CREATING = COMMON.creating_noun.replace('{noun}', EN.noun_service);
-const SAVE = COMMON.save_noun.replace('{noun}', EN.noun_service);
+const CREATE = COMMON.create_noun.replace('{noun}', EN.service_lowercase);
+const CREATING = COMMON.creating_noun.replace('{noun}', EN.service_lowercase);
+const SAVE = COMMON.save_noun.replace('{noun}', EN.service_lowercase);
 
 const ISOLATED = { provider: () => new Map(), shouldRetryOnError: false, dedupingInterval: 0 };
 const GLOBAL = { shouldRetryOnError: false, dedupingInterval: 0 };
@@ -124,7 +124,7 @@ function show(ui: ReactElement, locale?: 'ar', swr: typeof GLOBAL = ISOLATED) {
   });
 }
 
-const nameBox = () => screen.findByRole('textbox', { name: EN.service_name });
+const nameBox = () => screen.findByRole('textbox', { name: EN.services_dt_name });
 /** Types a name, as a member does, and asks to save. */
 async function typeAndSubmit(value: string, submit = CREATE) {
   const user = userEvent.setup();
@@ -170,7 +170,7 @@ describe('ServicesForm: create (D-25.4, D-28)', () => {
     // A clean form cannot be submitted (the save bar); spaces make it dirty and still blank.
     await typeAndSubmit('   ');
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.service_name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.services_dt_name}: ${EN.enter_name}`);
     await waitFor(() => {
       expect(document.activeElement).toBe(summary);
     });
@@ -196,7 +196,9 @@ describe('ServicesForm: create (D-25.4, D-28)', () => {
     const user = await typeAndSubmit('Alpha');
     const open = await screen.findByTestId('confirm-dialog');
     expect(within(open).getByRole('heading').textContent).toBe(
-      COMMON.create_summary_title.replace('{noun}', EN.noun_service).replace('{name}', 'Alpha'),
+      COMMON.create_summary_title
+        .replace('{noun}', EN.service_lowercase)
+        .replace('{name}', 'Alpha'),
     );
     expect(within(open).getByTestId('confirm-dialog-dismiss').textContent).toBe(
       COMMON.back_to_form,
@@ -237,7 +239,7 @@ describe('ServicesForm: when a save fails (D-29)', () => {
     await confirmSave(user);
     await closed();
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.service_name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.services_dt_name}: ${EN.enter_name}`);
     await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
     expect(document.activeElement).toBe(summary);
     expect(document.body.textContent).not.toContain('raw server text');
@@ -287,7 +289,7 @@ describe('ServicesForm: edit (D-25.4, D-36, D-25.3)', () => {
     const open = await screen.findByTestId('confirm-dialog');
     expect(within(open).getByTestId('confirm-dialog-changes').textContent).toBe(
       COMMON.change_from_to
-        .replace('{label}', EN.service_name)
+        .replace('{label}', EN.services_dt_name)
         .replace('{from}', 'Alpha')
         .replace('{to}', 'Beta'),
     );
@@ -336,7 +338,7 @@ describe('ServicesForm: edit (D-25.4, D-36, D-25.3)', () => {
     expect(screen.getByTestId('confirm-dialog-confirm').hasAttribute('disabled')).toBe(true);
     expect(push).not.toHaveBeenCalled();
     // Behind the modal dialog (hidden from the accessibility tree while it is open), the edit is kept.
-    expect(screen.getByRole('textbox', { name: EN.service_name, hidden: true })).toHaveProperty(
+    expect(screen.getByRole('textbox', { name: EN.services_dt_name, hidden: true })).toHaveProperty(
       'value',
       'Beta',
     );
@@ -512,7 +514,7 @@ describe('GuardedServicesForm: the generated gate is ADMIN_GATE (fail closed)', 
 describe('ServicesForm: Arabic (FE-20)', () => {
   it("renders under ar with the legacy label (the pack's text until the reviewer translates it) and no physical-direction class", async () => {
     const { container } = show(<ServicesForm id={null} />, 'ar');
-    expect(await screen.findByRole('textbox', { name: ar.services.service_name })).toBeTruthy();
+    expect(await screen.findByRole('textbox', { name: ar.services.services_dt_name })).toBeTruthy();
     expect(document.documentElement.dir).toBe('rtl');
     expect(physicalClassesIn(container)).toEqual([]);
   });
@@ -521,7 +523,7 @@ describe('ServicesForm: Arabic (FE-20)', () => {
 describe("ServicesForm: Perfex's one field (W2A-03, D-29)", () => {
   it('/new is titled "Add Service" with Service Name empty and required, in one Details section', async () => {
     show(<ServicesForm id={null} />);
-    expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(EN.add_service);
+    expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(EN.new_service);
     const name = await nameBox();
     expect(name).toHaveProperty('value', '');
     expect(name.getAttribute('aria-required')).toBe('true');

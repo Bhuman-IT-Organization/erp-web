@@ -20,11 +20,6 @@ export type Services = z.infer<typeof servicesSchema>;
 export const servicesRowSchema = servicesSchema.extend({});
 export type ServicesRow = z.infer<typeof servicesRowSchema>;
 
-/** The groups that still use the cost center, in the api's order: one dialog line each (D-07). */
-// export function inUseGroups(usage: ServicesUsageGroup): readonly ServicesUsageGroup[] {
-//   return USAGE_GROUPS.filter((group) => usage[group] > 0);
-// }
-
 /** The form's values for create (POST) and edit (PATCH): trimmed, 1 to 50 characters. */
 export const servicesFormSchema = z.object({
   name: z

@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { servicesHooks } from '@/features/services/api/services.endpoints';
 import type { CommonApiResult } from '@/lib/api/use-common-api';
 import type { CommonMutation } from '@/lib/api/use-common-mutation';

@@ -1,4 +1,3 @@
-// @vitest-environment happy-dom
 import { cleanup } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';

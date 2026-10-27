@@ -11,7 +11,7 @@ import commonAr from '@/messages/common/ar.json';
 import commonEn from '@/messages/common/en.json';
 import ar from '../messages/ar.json';
 import en from '../messages/en.json';
-import { ServicesForm } from './ServiceForm';
+import { ServicesForm } from './ServicesForm';
 
 // The transport seam the tests use: a fake axios adapter on the shared instance, set by a decorator
 // before the story renders, a private SWR cache per story and the tab's session seeded. A GET
