@@ -1,3 +1,4 @@
+import type { TicketPriority } from '@/lib/hooks/useTicketPriorities';
 import { ticketPriorityNameSchema } from '../api/schemas';
 
 /**
