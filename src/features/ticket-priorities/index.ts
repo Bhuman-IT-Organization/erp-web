@@ -4,4 +4,4 @@ export * from './pages/TicketPrioritiesListPage';
 export { PrioritiesList } from './components/PrioritiesList';
 export { TicketPrioritiesListPage } from './pages/TicketPrioritiesListPage';
 // export { PrioritiesForm } from './components/PrioritiesForm';  // keep your existing export
-export { getPriorityId, validatePriorityName } from './validation';
+export { getPriorityId, validatePriorityName } from './schemas/ticket-priorities.validation';

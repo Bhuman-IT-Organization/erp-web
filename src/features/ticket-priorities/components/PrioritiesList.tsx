@@ -1,9 +1,9 @@
 'use client';
 
-import { LABELS, STYLES } from '../constants';
-import { SORT_INDICATOR, type SortOrder } from '../sort';
+import { LABELS, STYLES } from '../schemas/ticket-priorities.constants';
+import { SORT_INDICATOR, type SortOrder } from '../schemas/ticket-priorities.sort';
 import { PriorityRow } from './PriorityRow';
-import { usePrioritiesTable } from './usePrioritiesTable';
+import { usePrioritiesTable } from '../hooks/use-priorities-table';
 
 const COLUMN_COUNT = 3;
 

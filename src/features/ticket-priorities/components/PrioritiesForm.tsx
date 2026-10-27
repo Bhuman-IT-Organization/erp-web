@@ -1,8 +1,8 @@
 'use client';
 
 import { PRIORITY_NAME_MAX } from '../api/schemas';
-import { LABELS, STYLES } from '../constants';
-import { usePriorityForm } from './usePriorityForm';
+import { LABELS, STYLES } from '../schemas/ticket-priorities.constants';
+import { usePriorityForm } from '../hooks/use-priority-form';
 
 interface Props {
   priorityId?: number;
