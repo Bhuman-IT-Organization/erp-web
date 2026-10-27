@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'; // remove this line if you use Jest
-import { validatePriorityName } from '../../validation';
+import { validatePriorityName } from '../../schemas/ticket-priorities.schema';
 import type { TicketPriority } from '@/lib/hooks/useTicketPriorities';
 
 const list = [

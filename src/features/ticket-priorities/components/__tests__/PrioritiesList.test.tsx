@@ -16,9 +16,9 @@ vi.mock('@/lib/hooks/useTicketPriorities', () => ({
 }));
 
 const PRIORITIES = [
-  { id: 1, name: 'Low' },
-  { id: 2, name: 'High' },
-  { id: 3, name: 'Medium' },
+  { id: 3, priorityid: 3, name: 'Medium' },
+  { id: 2, priorityid: 2, name: 'High' },
+  { id: 1, priorityid: 1, name: 'Low' },
 ];
 
 function setHook(overrides: Record<string, unknown> = {}) {

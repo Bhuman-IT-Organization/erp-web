@@ -1,0 +1,46 @@
+export const ROUTES = {
+  list: '/setup/ticket-priorities',
+  create: '/setup/ticket-priorities/new',
+} as const;
+
+export const LABELS = {
+  title: 'Ticket Priorities',
+  subtitle: 'Manage priority levels for support tickets.',
+  createButton: 'Create Priority',
+  createTitle: 'Create Priority',
+  editTitle: 'Edit Priority',
+  nameField: 'Priority Name',
+  colId: 'ID',
+  colActions: 'Actions',
+  loading: 'Loading...',
+  loadingList: 'Loading priorities...',
+  error: 'Error:',
+  empty: 'No ticket priorities found.',
+  create: 'Create',
+  update: 'Update',
+  save: 'Save',
+  saving: 'Saving...',
+  cancel: 'Cancel',
+  edit: 'Edit',
+  delete: 'Delete',
+  deleting: 'Deleting...',
+  confirmDelete: 'Delete this priority?',
+  yes: 'Yes',
+  no: 'No',
+  sortHint: 'Sort: latest → A-Z → Z-A',
+  updateFailed: 'Failed to update priority',
+  deleteFailed: 'Failed to delete priority',
+  saveFailed: 'Something went wrong',
+} as const;
+
+export const STYLES = {
+  th: 'px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider',
+  thEnd: 'px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider',
+  primaryBtn: 'rounded-md bg-blue-600 px-3 py-1 text-white hover:bg-blue-700 disabled:opacity-50',
+  dangerBtn: 'rounded-md bg-red-600 px-3 py-1 text-white hover:bg-red-700 disabled:opacity-50',
+  neutralBtn: 'rounded-md border border-gray-300 px-3 py-1 text-gray-700 hover:bg-gray-50',
+  editBtn: 'rounded-md border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50',
+  deleteBtn: 'rounded-md border border-red-200 px-3 py-1 text-red-600 hover:bg-red-50',
+  inputOk: 'border-gray-300 focus:ring-blue-300',
+  inputError: 'border-red-400 focus:ring-red-300',
+} as const;
