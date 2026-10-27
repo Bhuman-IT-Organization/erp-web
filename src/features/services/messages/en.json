@@ -3,7 +3,6 @@
     "services": "Services",
     "new_service": "New Service",
     "id": "ID",
-    "ticket_service_edit": "Edit Service",
     "services_dt_name": "Service Name",
     "section_details": "Details",
     "service_lowercase": "service",
@@ -19,7 +18,7 @@
     "empty_heading": "No entries found",
     "empty_body": "Add a service to use it on tickets.",
     "no_match_heading": "No services match “{query}”",
-    "no_match_body": "Check the spelling or clear the search to see every services.",
+    "no_match_body": "Check the spelling or clear the search to see all services.",
     "errors": {
       "ERP-CORE-0004": "This service no longer exists.",
       "ERP-SERVICES-0001": "This service is used by tickets and cannot be deleted."

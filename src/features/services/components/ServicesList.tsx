@@ -52,7 +52,7 @@ export function ServicesList(): ReactElement {
   } | null>(null);
   // One mutation for the list's one dialog, keyed on the row it names (never triggered while none).
   const remove = useDeleteService(deleting?.row.id ?? '0');
-  const noun = t('service_lowercase');
+  const noun = t('noun_services');
 
   /** Opening a service: record the list's URL and scroll, seed the form from the row (D-28, D-35). */
   const open = (row: ServicesRow): void => {
@@ -147,7 +147,7 @@ export function ServicesList(): ReactElement {
           noResultsHeading: (query) => t('no_match_heading', { query }),
           noResultsBody: t('no_match_body'),
         }}
-        recordsNoun={t('service_lowercase')}
+        recordsNoun={t('noun_services')}
         featureErrors={SERVICES_ERRORS}
       />
 

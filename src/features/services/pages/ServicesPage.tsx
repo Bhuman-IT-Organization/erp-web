@@ -1,15 +1,3 @@
-// import type { ReactElement } from 'react';
-// import { GuardedServicesForm } from '@/features/services/components/ServiceForm';
-
-// interface ServicesPageProps {
-//   /** The record's id on `/setup/services/[id]`; `null` on `/setup/services/new`. */
-//   readonly id: string | null;
-// }
-
-// export function ServicesPage({ id }: ServicesPageProps): ReactElement {
-//   return <GuardedServicesForm id={id} />;
-// }
-
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import type { ReactElement } from 'react';

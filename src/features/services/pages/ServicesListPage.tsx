@@ -1,9 +1,3 @@
-// import type { ReactElement } from 'react';
-// import { GuardedServicesList } from '@/features/services/components/ServiceList';
-
-// export function ServicesListPage(): ReactElement {
-//   return <GuardedServicesList />;
-// }
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import type { ReactElement } from 'react';
