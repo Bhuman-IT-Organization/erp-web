@@ -1,6 +1,6 @@
 {
   "extends": "@erp/configs/tsconfig/next.json",
-  "compilerOptions": { "paths": { "@/*": ["./src/*"] } },
+  "compilerOptions": { "skipLibCheck": true, "paths": { "@/*": ["./src/*"] } },
   "include": [
     "next-env.d.ts",
     "reset.d.ts",
