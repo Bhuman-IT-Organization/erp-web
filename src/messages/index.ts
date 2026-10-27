@@ -28,6 +28,7 @@ import leadsourcesEn from '@/features/lead-sources/messages/en.json';
 import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
 import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
 
+import '@/features/ticket-priorities/messages/en.json';
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
