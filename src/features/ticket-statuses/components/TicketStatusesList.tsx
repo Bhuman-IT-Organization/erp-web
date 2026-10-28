@@ -8,6 +8,7 @@ import { ConfirmDialog, type ConfirmOutcome } from '@/components/organisms/Confi
 import { ListPageTemplate, type ListColumn } from '@/components/templates/ListPageTemplate';
 import {
   BUILT_IN_CODE,
+  DEFAULT_REPLY_STATUS_CODE,
   IN_USE_CODE,
   TICKET_STATUSES_EXPORT_COLUMNS,
   TICKET_STATUSES_EXPORT_PATH,
@@ -18,7 +19,6 @@ import {
 import { useDeleteTicketStatus } from '@/features/ticket-statuses/hooks/use-ticket-statuses';
 import {
   ticketStatusRowSchema,
-  ticketStatusesListResponseSchema,
   type TicketStatusRow,
 } from '@/features/ticket-statuses/schemas/ticket-status.schema';
 import { withAuth } from '@/hocs/withAuth';
@@ -38,6 +38,7 @@ export function TicketStatusesList(): ReactElement {
   const refusalText = (code: string): string | undefined => {
     if (code === IN_USE_CODE) return t('is_referenced');
     if (code === BUILT_IN_CODE) return t('cant_delete_default');
+    if (code === DEFAULT_REPLY_STATUS_CODE) return t('change_setting_first');
     return undefined;
   };
 
@@ -65,7 +66,8 @@ export function TicketStatusesList(): ReactElement {
     } else if (
       outcome.code === 'ERP-CORE-0004' ||
       outcome.code === IN_USE_CODE ||
-      outcome.code === BUILT_IN_CODE
+      outcome.code === BUILT_IN_CODE ||
+      outcome.code === DEFAULT_REPLY_STATUS_CODE
     ) {
       await revalidateLists(TICKET_STATUSES_PATH);
     }
@@ -78,14 +80,12 @@ export function TicketStatusesList(): ReactElement {
       id: 'id',
       header: t('id'),
       sortField: 'id',
-      sortValue: (one) => Number(one.id),
       cell: (one) => <bdi className="tabular-nums">{one.id}</bdi>,
     },
     {
       id: 'name',
       header: t('ticket_statuses_dt_name'),
       sortField: 'name',
-      sortValue: (one) => one.name,
       primary: true,
       cell: (one) => (
         <div className="flex flex-col">
@@ -106,13 +106,6 @@ export function TicketStatusesList(): ReactElement {
         title={t('acs_ticket_statuses_submenu')}
         path={TICKET_STATUSES_PATH}
         rowSchema={ticketStatusRowSchema}
-        unpaginated={{
-          responseSchema: ticketStatusesListResponseSchema,
-          clientPagination: true,
-          matchesSearch: (one, query) =>
-            one.id.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
-            one.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
-        }}
         listBase={LIST_BASE}
         rowKey={(one) => one.id}
         rowHref={itemRoute}
@@ -157,6 +150,7 @@ export function TicketStatusesList(): ReactElement {
           labels: {
             id: t('id'),
             name: t('ticket_statuses_dt_name'),
+            ticket_count: t('ticket_statuses_table_total'),
           },
         }}
         empty={{

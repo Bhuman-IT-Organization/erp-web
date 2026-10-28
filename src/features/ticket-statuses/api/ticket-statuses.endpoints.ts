@@ -24,7 +24,7 @@ export const TICKET_STATUSES_ENDPOINTS = {
 
 export const TICKET_STATUSES_PATH = TICKET_STATUSES_ENDPOINTS.list.path satisfies ApiPath;
 export const TICKET_STATUSES_EXPORT_PATH = TICKET_STATUSES_ENDPOINTS.export.path satisfies ApiPath;
-export const TICKET_STATUSES_EXPORT_COLUMNS = ['id', 'name'] as const;
+export const TICKET_STATUSES_EXPORT_COLUMNS = ['id', 'name', 'ticket_count'] as const;
 export type TicketStatusesExportColumn = (typeof TICKET_STATUSES_EXPORT_COLUMNS)[number];
 
 /** One record's path, the id encoded. */
@@ -48,8 +48,10 @@ export const NOT_FOUND_CODE = 'ERP-CORE-0004';
 export const IN_USE_CODE = 'ERP-TICKETSTATUSES-0001';
 /** The api refuses deletion of statuses marked `isdefault = 1`. */
 export const BUILT_IN_CODE = 'ERP-TICKETSTATUSES-0002';
+/** The api refuses deletion of status configured as default ticket reply status. */
+export const DEFAULT_REPLY_STATUS_CODE = 'ERP-TICKETSTATUSES-0003';
 
 export const TICKET_STATUSES_ERRORS: FeatureErrorCodes = {
   namespace: 'ticket-statuses',
-  codes: [NOT_FOUND_CODE, IN_USE_CODE, BUILT_IN_CODE],
+  codes: [NOT_FOUND_CODE, IN_USE_CODE, BUILT_IN_CODE, DEFAULT_REPLY_STATUS_CODE],
 };

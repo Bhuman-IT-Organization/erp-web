@@ -8,7 +8,7 @@ It supports create, edit, delete, and export.
 
 ## Legacy screen
 
-`erp-legacy/public_html/application/views/admin/tickets/tickets_statuses/manage.php`
+`application/views/admin/tickets/tickets_statuses/manage.php`
 (`views/admin/tickets/tickets_statuses/manage.php` in the legacy application).
 
 ## Legacy parity

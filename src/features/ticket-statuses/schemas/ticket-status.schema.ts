@@ -25,9 +25,19 @@ export const ticketStatusSchema = z
     statuscolor: statuscolor ?? '',
   }));
 
-/** The backend list response has no pagination metadata: `GET /ticket-statuses` returns `{ data }`. */
+/** The backend list response envelope: `GET /ticket-statuses` returns `{ data, meta }`. */
 export const ticketStatusesListResponseSchema = z
-  .strictObject({ data: z.array(ticketStatusSchema).readonly() })
+  .object({
+    data: z.array(ticketStatusSchema),
+    meta: z.object({
+      nextCursor: z.string().nullable(),
+      prevCursor: z.string().nullable(),
+      total: z.number().int().nonnegative(),
+      rangeStart: z.number().int().nonnegative(),
+      exportLimit: z.number().int().positive().optional(),
+      printLimit: z.number().int().positive().optional(),
+    }),
+  })
   .readonly();
 
 export type TicketStatus = z.infer<typeof ticketStatusSchema>;

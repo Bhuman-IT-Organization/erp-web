@@ -52,6 +52,9 @@ function listAdapter(): AxiosAdapter {
     requests.push({ method, url });
     const isMe = url.pathname === '/api/v1/auth/me';
     const isExport = url.pathname === '/api/v1/ticket-statuses/export';
+    const cursor = url.searchParams.get('cursor');
+    const isPage2 = cursor === 'cursor-2';
+    const pageRows = isPage2 ? ticketStatuses.slice(25) : ticketStatuses.slice(0, 25);
     const body = isMe
       ? {
           staffId: 1,
@@ -64,8 +67,18 @@ function listAdapter(): AxiosAdapter {
           locale: 'en',
         }
       : isExport
-        ? new Blob(['id,name\r\n11,Open\r\n'], { type: 'text/csv' })
-        : { data: ticketStatuses };
+        ? new Blob(['id,name,ticket_count\r\n11,Open,7\r\n'], { type: 'text/csv' })
+        : {
+            data: pageRows,
+            meta: {
+              nextCursor: isPage2 ? null : 'cursor-2',
+              prevCursor: isPage2 ? 'cursor-1' : null,
+              total: ticketStatuses.length,
+              rangeStart: isPage2 ? 26 : 1,
+              exportLimit: 500,
+              printLimit: 250,
+            },
+          };
     if (method === 'DELETE') {
       const response = {
         data: {
@@ -159,15 +172,12 @@ describe('Ticket Statuses list integration', () => {
     });
     const exported = requests.find(({ url }) => url.pathname === '/api/v1/ticket-statuses/export');
     expect(exported?.url.searchParams.get('format')).toBe('csv');
-    expect(exported?.url.searchParams.getAll('column')).toEqual(['id', 'name']);
-    expect(exported?.url.searchParams.getAll('header')).toEqual(['ID', 'Ticket Status Name']);
-    expect(
-      requests.filter(
-        ({ url }) =>
-          url.pathname.startsWith('/api/v1/ticket-statuses') &&
-          url.pathname !== '/api/v1/ticket-statuses/export',
-      ),
-    ).toHaveLength(1);
+    expect(exported?.url.searchParams.getAll('column')).toEqual(['id', 'name', 'ticket_count']);
+    expect(exported?.url.searchParams.getAll('header')).toEqual([
+      'ID',
+      'Ticket Status Name',
+      'Total',
+    ]);
   });
 
   it('keeps the API refusal text visible in the delete dialog', async () => {

@@ -1,0 +1,3835 @@
+=== GIT STATUS ===
+ M app/(shell)/setup/ticket-statuses/[id]/page.tsx
+ M app/(shell)/setup/ticket-statuses/error.tsx
+ M app/(shell)/setup/ticket-statuses/new/page.tsx
+ M app/(shell)/setup/ticket-statuses/page.tsx
+ D src/features/ticket/README.md
+ D src/features/ticket/api/__tests__/ticket-status.endpoints.test.ts
+ D src/features/ticket/api/ticket-status.endpoints.ts
+ D src/features/ticket/components/TicketStatusForm.stories.tsx
+ D src/features/ticket/components/TicketStatusForm.tsx
+ D src/features/ticket/components/TicketStatusList.stories.tsx
+ D src/features/ticket/components/TicketStatusList.tsx
+ D src/features/ticket/components/__tests__/TicketStatusForm.test.tsx
+ D src/features/ticket/components/__tests__/TicketStatusList.test.tsx
+ D src/features/ticket/hooks/__tests__/use-save-ticket-status.test.tsx
+ D src/features/ticket/hooks/__tests__/use-ticket-status.test.tsx
+ D src/features/ticket/hooks/use-save-ticket-status.ts
+ D src/features/ticket/hooks/use-ticket-status.ts
+ D src/features/ticket/messages/ar.json
+ D src/features/ticket/messages/en.json
+ D src/features/ticket/pages/TicketStatusListPage.tsx
+ D src/features/ticket/pages/TicketStatusPage.tsx
+ D src/features/ticket/schemas/__tests__/ticket-status.schema.test.ts
+ D src/features/ticket/schemas/ticket-status.schema.ts
+ M src/messages/index.ts
+?? src/features/ticket-statuses/
+?? ticket-statuses-audit.txt
+
+=== TRACKED DIFF ===
+diff --git a/app/(shell)/setup/ticket-statuses/[id]/page.tsx b/app/(shell)/setup/ticket-statuses/[id]/page.tsx
+index 5c73c3a..0df2daf 100644
+--- a/app/(shell)/setup/ticket-statuses/[id]/page.tsx
++++ b/app/(shell)/setup/ticket-statuses/[id]/page.tsx
+@@ -1,11 +1,10 @@
+ import type { Metadata } from 'next';
+ import { notFound } from 'next/navigation';
+ import { getTranslations } from 'next-intl/server';
+-import { TicketStatusPage } from '@/features/ticket/pages/TicketStatusPage';
+-
++import { TicketStatusPage } from '@/features/ticket-statuses/pages/TicketStatusPage';
+ export async function generateMetadata(): Promise<Metadata> {
+   const t = await getTranslations('ticket-statuses');
+-  return { title: t('edit_ticket_status') };
++  return { title: t('ticket_statuses_dt_name') };
+ }
+ 
+ // Request-time render: one record behind a session; nothing here may be prerendered.
+diff --git a/app/(shell)/setup/ticket-statuses/error.tsx b/app/(shell)/setup/ticket-statuses/error.tsx
+index 2abdf57..17806c5 100644
+--- a/app/(shell)/setup/ticket-statuses/error.tsx
++++ b/app/(shell)/setup/ticket-statuses/error.tsx
+@@ -9,7 +9,7 @@ interface RouteErrorProps {
+ }
+ 
+ /**
+- * The route-segment error boundary for `/setup/cost-centers/**` (FE-05). It sits inside the feature's
++ * The route-segment error boundary for /setup/ticket-statuses/** (FE-05). It sits inside the feature's
+  * route folder so it moves with the screens, inside the shell's one `<main>` (so it renders none).
+  * The shell's layout (and with it the `common` slice) is still mounted, so both strings are
+  * message keys; `error.message` and `digest` are NEVER rendered (T-3-12), and the prop is received
+@@ -20,7 +20,7 @@ export default function RouteError({ reset }: RouteErrorProps) {
+   return (
+     <div
+       role="alert"
+-      data-testid="cost-centers-route-error"
++     data-testid="ticket-statuses-route-error"
+       className="flex flex-col items-start gap-4"
+     >
+       <p>{t('something_went_wrong')}</p>
+diff --git a/app/(shell)/setup/ticket-statuses/new/page.tsx b/app/(shell)/setup/ticket-statuses/new/page.tsx
+index bcddcba..098c812 100644
+--- a/app/(shell)/setup/ticket-statuses/new/page.tsx
++++ b/app/(shell)/setup/ticket-statuses/new/page.tsx
+@@ -1,10 +1,9 @@
+ import type { Metadata } from 'next';
+ import { getTranslations } from 'next-intl/server';
+-import { TicketStatusPage } from '@/features/ticket/pages/TicketStatusPage';
+-
++import { TicketStatusPage } from '@/features/ticket-statuses/pages/TicketStatusPage';
+ export async function generateMetadata(): Promise<Metadata> {
+   const t = await getTranslations('ticket-statuses');
+-  return { title: t('add_ticket_status') };
++  return { title: t('new_ticket_status') };
+ }
+ 
+ // Request-time render: the form is behind a session, so it must never be prerendered at build time.
+diff --git a/app/(shell)/setup/ticket-statuses/page.tsx b/app/(shell)/setup/ticket-statuses/page.tsx
+index a143998..2c3db31 100644
+--- a/app/(shell)/setup/ticket-statuses/page.tsx
++++ b/app/(shell)/setup/ticket-statuses/page.tsx
+@@ -1,10 +1,9 @@
+ import type { Metadata } from 'next';
+ import { getTranslations } from 'next-intl/server';
+-import { TicketStatusListPage } from '@/features/ticket/pages/TicketStatusListPage';
+-
++import { TicketStatusListPage } from '@/features/ticket-statuses/pages/TicketStatusListPage';
+ export async function generateMetadata(): Promise<Metadata> {
+   const t = await getTranslations('ticket-statuses');
+-  return { title: t('ticket_statuses') };
++  return { title: t('acs_ticket_statuses_submenu') };
+ }
+ 
+ // Request-time render: the list is the signed-in member's own view of the api, never baked in at
+diff --git a/src/features/ticket/README.md b/src/features/ticket/README.md
+deleted file mode 100644
+index 7d5faac..0000000
+--- a/src/features/ticket/README.md
++++ /dev/null
+@@ -1,53 +0,0 @@
+-# ticket
+-
+-## Purpose
+-
+-Ticket Statuses provides the administrator-only list, create form, and edit form at
+-`/setup/ticket-statuses`. The web feature uses the existing `tbltickets_status` records through
+-`erp-api/src/v1/ticket-statuses`; it does not add pagination or a separate export API.
+-
+-## Legacy screen
+-
+-None: Ticket Statuses is served by the migration API and the existing Node-owned status table.
+-
+-## Legacy parity
+-
+-The list shows status ID and name, supports search and sorting, and offers create, edit, and delete
+-actions. Built-in statuses remain visible and editable but do not offer Delete. Create and edit
+-submissions are confirmed before the API request; a successful save returns to the originating list.
+-Search and sorting are local because the backend list contract is an unpaginated `{ data }` response.
+-
+-## Dropped on purpose
+-
+-- Pagination query parameters and cursor handling: the API strictly accepts an empty list query.
+-- Export: the API has no Ticket Statuses export endpoint.
+-- Delete for built-in statuses: the backend also refuses that operation.
+-
+-## Routes
+-
+-- `GET /api/v1/ticket-statuses`
+-- `GET /api/v1/ticket-statuses/:id`
+-- `POST /api/v1/ticket-statuses`
+-- `PATCH /api/v1/ticket-statuses/:id`
+-- `DELETE /api/v1/ticket-statuses/:id`
+-
+-The three `/setup/ticket-statuses` pages are gated by `ADMIN_GATE`; the API independently requires
+-an administrator for every actor-facing operation.
+-
+-## Data
+-
+-The list returns `{ data: TicketStatus[] }`, with no `meta`, `limit`, or `cursor`. The UI validates
+-the backend wire fields and maps `ticketstatusid` to its existing row `id`; nullable color and order
+-values are adapted to the form's empty color and zero order defaults. Names are limited to 50
+-characters. Backend deletion checks protect built-in, ticket-referenced, and configured default
+-reply statuses.
+-
+-## Messages
+-
+-English and Arabic strings are in `messages/en.json` and `messages/ar.json`. Backend refusal codes
+-`ERP-TICKETSTATUSES-0001` and `ERP-TICKETSTATUSES-0002` have feature-specific messages in both
+-locales.
+-
+-## How to run its tests
+-
+-From `erp-web`, run `corepack yarn vitest run src/features/ticket`.
+diff --git a/src/features/ticket/api/__tests__/ticket-status.endpoints.test.ts b/src/features/ticket/api/__tests__/ticket-status.endpoints.test.ts
+deleted file mode 100644
+index a0061ce..0000000
+--- a/src/features/ticket/api/__tests__/ticket-status.endpoints.test.ts
++++ /dev/null
+@@ -1,52 +0,0 @@
+-import { describe, expect, it } from 'vitest';
+-import ar from '@/features/ticket/messages/ar.json';
+-import en from '@/features/ticket/messages/en.json';
+-import {
+-  BUILT_IN_CODE,
+-  IN_USE_CODE,
+-  TICKETSTATUSES_ENDPOINTS,
+-  TICKETSTATUSES_ERRORS,
+-  TICKETSTATUSES_EXPORT_COLUMNS,
+-  TICKETSTATUSES_EXPORT_PATH,
+-  TICKETSTATUSES_PATH,
+-  ticketStatusesHooks,
+-  ticketStatusesPath,
+-} from '../ticket-status.endpoints';
+-
+-describe('Ticket Statuses API definitions', () => {
+-  it('declares only the routes implemented by erp-api', () => {
+-    expect(TICKETSTATUSES_ENDPOINTS).toEqual({
+-      list: { method: 'GET', path: '/api/v1/ticket-statuses' },
+-      export: { method: 'GET', path: '/api/v1/ticket-statuses/export' },
+-      detail: { method: 'GET', path: '/api/v1/ticket-statuses/:id' },
+-      create: { method: 'POST', path: '/api/v1/ticket-statuses' },
+-      update: { method: 'PATCH', path: '/api/v1/ticket-statuses/:id' },
+-      remove: { method: 'DELETE', path: '/api/v1/ticket-statuses/:id' },
+-    });
+-    expect(TICKETSTATUSES_PATH).toBe('/api/v1/ticket-statuses');
+-    expect(TICKETSTATUSES_EXPORT_PATH).toBe('/api/v1/ticket-statuses/export');
+-    expect(TICKETSTATUSES_EXPORT_COLUMNS).toEqual(['id', 'name']);
+-    expect(ticketStatusesPath('a/1')).toBe('/api/v1/ticket-statuses/a%2F1');
+-  });
+-
+-  it('exposes the exact deletion-refusal codes and localized messages', () => {
+-    expect(TICKETSTATUSES_ERRORS).toEqual({
+-      namespace: 'ticket',
+-      codes: ['ERP-CORE-0004', IN_USE_CODE, BUILT_IN_CODE],
+-    });
+-    for (const code of [IN_USE_CODE, BUILT_IN_CODE] as const) {
+-      expect(en.ticket.errors[code]).toBeTruthy();
+-      expect(ar.ticket.errors[code]).toBeTruthy();
+-    }
+-  });
+-
+-  it('provides the shared resource hooks', () => {
+-    expect(Object.keys(ticketStatusesHooks).sort()).toEqual([
+-      'useCreate',
+-      'useList',
+-      'useOne',
+-      'useRemove',
+-      'useUpdate',
+-    ]);
+-  });
+-});
+diff --git a/src/features/ticket/api/ticket-status.endpoints.ts b/src/features/ticket/api/ticket-status.endpoints.ts
+deleted file mode 100644
+index 32172a3..0000000
+--- a/src/features/ticket/api/ticket-status.endpoints.ts
++++ /dev/null
+@@ -1,55 +0,0 @@
+-import type { ApiPath } from '@/lib/api/call-api';
+-import { createResourceHooks } from '@/lib/api/create-resource-hooks';
+-import type { FeatureErrorCodes } from '@/lib/errors/error-messages';
+-import {
+-  ticketStatusSchema,
+-  type TicketStatus,
+-  type TicketStatusFormValues,
+-} from '@/features/ticket/schemas/ticket-status.schema';
+-
+-/**
+- * The resource's wire contract: every call this feature makes, method and path. The api half is
+- * erp-api `src/v1/ticket-statuses`. A row uses `ticketstatusid`, `name`, `isdefault`,
+- * `statuscolor`, and `statusorder`. A delete is `DELETE ΓÇª/:id` (204, 404, or 409 when deletion is
+- * refused by the backend).
+- */
+-export const TICKETSTATUSES_ENDPOINTS = {
+-  list: { method: 'GET', path: '/api/v1/ticket-statuses' },
+-  export: { method: 'GET', path: '/api/v1/ticket-statuses/export' },
+-  detail: { method: 'GET', path: '/api/v1/ticket-statuses/:id' },
+-  create: { method: 'POST', path: '/api/v1/ticket-statuses' },
+-  update: { method: 'PATCH', path: '/api/v1/ticket-statuses/:id' },
+-  remove: { method: 'DELETE', path: '/api/v1/ticket-statuses/:id' },
+-} as const;
+-
+-export const TICKETSTATUSES_PATH = TICKETSTATUSES_ENDPOINTS.list.path satisfies ApiPath;
+-export const TICKETSTATUSES_EXPORT_PATH = TICKETSTATUSES_ENDPOINTS.export.path satisfies ApiPath;
+-export const TICKETSTATUSES_EXPORT_COLUMNS = ['id', 'name'] as const;
+-export type TicketStatusesExportColumn = (typeof TICKETSTATUSES_EXPORT_COLUMNS)[number];
+-
+-/** One record's path, the id encoded. */
+-export function ticketStatusesPath(id: string): ApiPath {
+-  return TICKETSTATUSES_ENDPOINTS.detail.path.replace(':id', encodeURIComponent(id)) as ApiPath;
+-}
+-
+-export const ticketStatusesHooks = createResourceHooks<
+-  TicketStatus,
+-  TicketStatusFormValues,
+-  TicketStatusFormValues
+->(TICKETSTATUSES_PATH, ticketStatusSchema);
+-
+-/** The 400 whose problem body carries `issues` the form maps onto its fields. */
+-export const VALIDATION_CODE = 'ERP-VALIDATION-0001';
+-
+-/** The api's one not-found answer. */
+-export const NOT_FOUND_CODE = 'ERP-CORE-0004';
+-
+-/** The delete refused while a ticket uses the ticket status (409). MUST equal the code the api module throws. */
+-export const IN_USE_CODE = 'ERP-TICKETSTATUSES-0001';
+-/** The api refuses deletion of statuses marked `isdefault = 1`. */
+-export const BUILT_IN_CODE = 'ERP-TICKETSTATUSES-0002';
+-
+-export const TICKETSTATUSES_ERRORS: FeatureErrorCodes = {
+-  namespace: 'ticket',
+-  codes: [NOT_FOUND_CODE, IN_USE_CODE, BUILT_IN_CODE],
+-};
+diff --git a/src/features/ticket/components/TicketStatusForm.stories.tsx b/src/features/ticket/components/TicketStatusForm.stories.tsx
+deleted file mode 100644
+index 4c3c1a0..0000000
+--- a/src/features/ticket/components/TicketStatusForm.stories.tsx
++++ /dev/null
+@@ -1,18 +0,0 @@
+-import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+-import { TicketStatusesForm } from './TicketStatusForm';
+-
+-const meta = {
+-  title: 'Features/Ticket/TicketStatusForm',
+-  component: TicketStatusesForm,
+-  args: { id: null },
+-  parameters: {
+-    nextjs: { appDirectory: true, navigation: { pathname: '/setup/ticket-statuses/new' } },
+-  },
+-} satisfies Meta<typeof TicketStatusesForm>;
+-
+-export default meta;
+-type Story = StoryObj<typeof meta>;
+-
+-export const Pending: Story = {};
+-export const FieldErrors: Story = {};
+-export const ServerError: Story = {};
+diff --git a/src/features/ticket/components/TicketStatusForm.tsx b/src/features/ticket/components/TicketStatusForm.tsx
+deleted file mode 100644
+index a9f4eaa..0000000
+--- a/src/features/ticket/components/TicketStatusForm.tsx
++++ /dev/null
+@@ -1,327 +0,0 @@
+-'use client';
+-
+-import { zodResolver } from '@hookform/resolvers/zod';
+-import { useRouter } from 'next/navigation';
+-import { useTranslations } from 'next-intl';
+-import { useRef, useState, type ReactElement } from 'react';
+-import { flushSync } from 'react-dom';
+-import { useForm } from 'react-hook-form';
+-import { toast } from 'sonner';
+-import type { z } from 'zod';
+-import { InlineError } from '@/components/molecules/InlineError';
+-import {
+-  ConfirmDialog,
+-  useConfirmCopy,
+-  type ConfirmOutcome,
+-  type SummaryChange,
+-} from '@/components/organisms/ConfirmDialog';
+-import { PageSkeleton } from '@/components/organisms/PageSkeleton';
+-import { SchemaForm } from '@/components/organisms/SchemaForm';
+-import {
+-  TICKETSTATUSES_ERRORS,
+-  TICKETSTATUSES_PATH,
+-  ticketStatusesPath,
+-  VALIDATION_CODE,
+-} from '@/features/ticket/api/ticket-status.endpoints';
+-import { useTicketStatuses } from '@/features/ticket/hooks/use-ticket-status';
+-import { useSaveTicketStatuses } from '@/features/ticket/hooks/use-save-ticket-status';
+-import {
+-  EMPTY_TICKET_STATUS_FORM,
+-  isTicketStatusField,
+-  TICKET_STATUS_MESSAGE_KEYS,
+-  TICKET_STATUS_NAME_MAX,
+-  ticketStatusFormSchema,
+-  ticketStatusRowSchema,
+-  toTicketStatusForm,
+-  validationIssuesSchema,
+-  type TicketStatus,
+-  type TicketStatusFormValues,
+-  type TicketStatusRow,
+-} from '@/features/ticket/schemas/ticket-status.schema';
+-import { withAuth } from '@/hocs/withAuth';
+-import { withPermission } from '@/hocs/withPermission';
+-import type { ApiResult } from '@/lib/api/call-api';
+-import { CLIENT_TIMINGS } from '@/lib/api/client-timings';
+-import { replaceRowInLists, revalidateLists, useRowSeed } from '@/lib/api/row-seed';
+-import type { CommonApiResult } from '@/lib/api/use-common-api';
+-import { isRetryableCode } from '@/lib/errors/error-messages';
+-import { useErrorText } from '@/lib/errors/use-error-text';
+-import { useBreadcrumbLabel } from '@/lib/hooks/use-breadcrumb-label';
+-import { readListReturn } from '@/lib/hooks/use-return-to-list';
+-import { useUnsavedChanges } from '@/lib/hooks/use-unsaved-changes';
+-import { useFormat } from '@/lib/i18n/format';
+-
+-const LIST_BASE = '/setup/ticket-statuses';
+-const FORM_ID = 'ticket-statuses';
+-
+-interface TicketStatusFormProps {
+-  /** The record's id from `[id]/page.tsx`; `null` on `/setup/ticket-statuses/new`. */
+-  readonly id: string | null;
+-}
+-
+-type RecordRead = CommonApiResult<TicketStatus>;
+-type SaveFailure = Extract<ApiResult<TicketStatus>, { ok: false }>;
+-
+-function recordPath(id: string | null): ReturnType<typeof ticketStatusesPath> | null {
+-  return id === null ? null : ticketStatusesPath(id);
+-}
+-
+-function knownValues(record: TicketStatus | undefined): { values?: TicketStatusFormValues } {
+-  return record === undefined ? {} : { values: toTicketStatusForm(record) };
+-}
+-
+-/** True while there is no record to edit: a permalink before its record answers, or a 4xx read. */
+-function waitsForRecord(
+-  id: string | null,
+-  item: RecordRead,
+-  seed: TicketStatusRow | undefined,
+-): boolean {
+-  return (
+-    id !== null &&
+-    item.data === undefined &&
+-    (seed === undefined || (item.error !== undefined && !item.error.retryable))
+-  );
+-}
+-
+-function breadcrumbLabel(
+-  id: string | null,
+-  record: TicketStatus | undefined,
+-  item: RecordRead,
+-): string | null | undefined {
+-  if (id === null) return undefined;
+-  const failureShown =
+-    item.data === undefined &&
+-    item.error !== undefined &&
+-    (record === undefined || !item.error.retryable);
+-  return failureShown ? null : record?.name;
+-}
+-
+-function retryableFailure(result: ApiResult<TicketStatus> | undefined): SaveFailure | null {
+-  return result !== undefined && !result.ok && isRetryableCode(result.code) ? result : null;
+-}
+-
+-function nameChanges(
+-  pending: TicketStatusFormValues | null,
+-  record: TicketStatus | undefined,
+-  label: string,
+-): readonly SummaryChange[] {
+-  return pending === null || record === undefined || pending.name === record.name
+-    ? []
+-    : [{ type: 'changed', label, from: record.name, to: pending.name }];
+-}
+-
+-function discardTarget(
+-  record: TicketStatus | undefined,
+-  noun: string,
+-): { readonly recordName: string } | { readonly noun: string } {
+-  return record === undefined ? { noun } : { recordName: record.name };
+-}
+-
+-function RecordState({
+-  item,
+-  errorText,
+-  backLabel,
+-}: {
+-  readonly item: RecordRead;
+-  readonly errorText: ReturnType<typeof useErrorText>;
+-  readonly backLabel: string;
+-}): ReactElement {
+-  if (item.error === undefined) return <PageSkeleton variant="form" />;
+-  return (
+-    <InlineError
+-      message={errorText(item.error)}
+-      busy={item.isValidating}
+-      {...(item.error.retryable
+-        ? {
+-            onRetry: () => {
+-              void item.mutate();
+-            },
+-          }
+-        : {})}
+-      back={{ href: readListReturn(LIST_BASE), label: backLabel }}
+-    />
+-  );
+-}
+-
+-/**
+- * The Ticket Statuses create and edit pages of Perfex's `ticket_status.php` (a modal there, a page here) on the
+- * kit's `SchemaForm`: one "Details" section with Perfex's editable name, colour and order fields.
+- * Every save is confirmed by a summary; names render as React text only.
+- */
+-export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement {
+-  const t = useTranslations('ticket');
+-  const tc = useTranslations('common');
+-  const router = useRouter();
+-  const f = useFormat();
+-  const errorText = useErrorText(TICKETSTATUSES_ERRORS);
+-  const copy = useConfirmCopy();
+-  const seed = useRowSeed(recordPath(id), ticketStatusRowSchema);
+-  const item = useTicketStatuses(id);
+-  const record = item.data ?? seed;
+-  const form = useForm<z.input<typeof ticketStatusFormSchema>, unknown, TicketStatusFormValues>({
+-    resolver: zodResolver(ticketStatusFormSchema),
+-    defaultValues: EMPTY_TICKET_STATUS_FORM,
+-    ...knownValues(record),
+-    resetOptions: { keepDirtyValues: true },
+-  });
+-  const { create, update } = useSaveTicketStatuses(id);
+-  const mutation = id === null ? create : update;
+-  const guard = useUnsavedChanges(form.formState.isDirty && !mutation.isMutating);
+-  const lastSent = useRef<TicketStatusFormValues | null>(null);
+-  const [pending, setPending] = useState<TicketStatusFormValues | null>(null);
+-
+-  async function afterSave(saved: TicketStatus): Promise<void> {
+-    form.reset(toTicketStatusForm(saved));
+-    if (id !== null) await item.mutate(saved, { revalidate: false });
+-    if (id === null || seed === undefined) {
+-      await revalidateLists(TICKETSTATUSES_PATH);
+-    } else {
+-      const row: TicketStatusRow = { ...seed, ...saved };
+-      await replaceRowInLists(
+-        TICKETSTATUSES_PATH,
+-        row,
+-        (one: TicketStatusRow) => one.id === row.id,
+-      );
+-    }
+-    toast.success(t('saved_toast'), { duration: CLIENT_TIMINGS.toast.durationMs });
+-    router.push(readListReturn(LIST_BASE), { scroll: false });
+-  }
+-
+-  async function send(values: TicketStatusFormValues): Promise<ConfirmOutcome> {
+-    lastSent.current = values;
+-    const outcome = await mutation.trigger(values);
+-    if (outcome.ok) {
+-      await afterSave(outcome.data);
+-      return { ok: true };
+-    }
+-    if (outcome.code === VALIDATION_CODE) {
+-      const issues = validationIssuesSchema.safeParse(outcome.issues);
+-      flushSync(() => {
+-        setPending(null);
+-        for (const issue of issues.success ? issues.data : []) {
+-          const field = issue.path[0];
+-          if (isTicketStatusField(field)) {
+-            form.setError(field, { message: TICKET_STATUS_MESSAGE_KEYS[field] });
+-          }
+-        }
+-      });
+-      document
+-        .getElementById(FORM_ID)
+-        ?.querySelector<HTMLElement>('[data-testid="error-summary"]')
+-        ?.focus();
+-      return { ok: true };
+-    }
+-    if (isRetryableCode(outcome.code)) {
+-      setPending(null);
+-      return { ok: true };
+-    }
+-    return outcome;
+-  }
+-
+-  useBreadcrumbLabel(breadcrumbLabel(id, record, item));
+-
+-  if (waitsForRecord(id, item, seed)) {
+-    return <RecordState item={item} errorText={errorText} backLabel={tc('back_to_list')} />;
+-  }
+-
+-  const failure = retryableFailure(mutation.result);
+-  const noun = t('noun_ticket_status');
+-  const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
+-  const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
+-  const changes = nameChanges(pending, record, t('ticket_status_name'));
+-
+-  function summaryTitle(): string {
+-    return id === null
+-      ? tc('create_summary_title', { noun, name: pending?.name ?? '' })
+-      : tc('save_summary_title', { name: record?.name ?? '' });
+-  }
+-
+-  return (
+-    <div className="flex flex-col gap-6">
+-      <h1 className="text-2xl font-semibold">{record?.name ?? t('add_ticket_status')}</h1>
+-      <SchemaForm
+-        id={FORM_ID}
+-        form={form}
+-        sections={[
+-          {
+-            id: 'details',
+-            title: t('section_details'),
+-
+-            fields: [
+-              {
+-                name: 'name',
+-                label: t('ticket_status_name'),
+-                kind: 'text',
+-                required: true,
+-              },
+-              {
+-                name: 'statuscolor',
+-                label: t('status_color'),
+-                kind: 'color',
+-              },
+-              {
+-                name: 'statusorder',
+-                label: t('status_order'),
+-                kind: 'number',
+-                required: true,
+-              },
+-            ],
+-          },
+-        ]}
+-        onValid={(values) => {
+-          setPending({ ...values, statusorder: Number(values.statusorder) });
+-        }}
+-        translateError={(key) => t(key, { max: f.number(TICKET_STATUS_NAME_MAX) })}
+-        submitLabel={submitLabel}
+-        pendingLabel={pendingLabel}
+-        isPending={mutation.isMutating}
+-        onBack={() => {
+-          guard.requestLeave(readListReturn(LIST_BASE));
+-        }}
+-        serverError={
+-          failure === null
+-            ? null
+-            : {
+-                message: errorText(failure),
+-                onRetry: () => {
+-                  if (lastSent.current !== null) {
+-                    void send(lastSent.current);
+-                  }
+-                },
+-              }
+-        }
+-      />
+-      <ConfirmDialog
+-        kind="summary"
+-        open={pending !== null}
+-        onOpenChange={(open) => {
+-          if (!open) setPending(null);
+-        }}
+-        title={summaryTitle()}
+-        changes={changes}
+-        dismissLabel={copy.backToForm}
+-        confirmLabel={submitLabel}
+-        pendingLabel={pendingLabel}
+-        featureErrors={TICKETSTATUSES_ERRORS}
+-        onConfirm={() => (pending === null ? { ok: true } : send(pending))}
+-      />
+-      <ConfirmDialog
+-        kind="discard"
+-        open={guard.pendingHref !== null}
+-        onOpenChange={(open) => {
+-          if (!open) guard.cancelLeave();
+-        }}
+-        {...copy.discard(discardTarget(record, noun))}
+-        onConfirm={() => {
+-          guard.confirmLeave();
+-          return { ok: true };
+-        }}
+-      />
+-    </div>
+-  );
+-}
+-
+-export const GuardedTicketStatusesForm = withAuth(
+-  withPermission(TicketStatusesForm, { skeleton: 'form' }),
+-  { skeleton: 'form' },
+-);
+diff --git a/src/features/ticket/components/TicketStatusList.stories.tsx b/src/features/ticket/components/TicketStatusList.stories.tsx
+deleted file mode 100644
+index c9fcc82..0000000
+--- a/src/features/ticket/components/TicketStatusList.stories.tsx
++++ /dev/null
+@@ -1,145 +0,0 @@
+-// import type { Meta, StoryObj } from '@storybook/nextjs-vite';
+-// import { TicketStatusList } from './TicketStatusList';
+-
+-// const meta = {
+-//   title: 'Features/Ticket/TicketStatusList',
+-//   component: TicketStatusList,
+-//   parameters: {
+-//     nextjs: { appDirectory: true, navigation: { pathname: '/setup/ticket-statuses' } },
+-//   },
+-// } satisfies Meta<typeof TicketStatusList>;
+-
+-// export default meta;
+-// type Story = StoryObj<typeof meta>;
+-
+-// export const Loading: Story = {};
+-// export const Empty: Story = {};
+-// export const Error: Story = {};
+-// export const Loaded: Story = {};
+-
+-import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
+-import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+-import { SWRConfig } from 'swr';
+-import type { ApiAdapter } from '@/lib/api/call-api';
+-import { http } from '@/lib/api/http';
+-import { setSession } from '@/lib/auth/session';
+-import { TicketStatusList } from './TicketStatusList';
+-
+-const ADMIN = {
+-  staffId: 1,
+-  email: 'admin@example.invalid',
+-  firstName: 'Admin',
+-  lastName: 'User',
+-  isAdmin: true,
+-  roleId: null,
+-  permissions: [],
+-  locale: 'en',
+-};
+-
+-const ticketStatuses = [
+-  {
+-    ticketstatusid: '11',
+-    name: 'Open',
+-    isdefault: 1,
+-    statuscolor: '#03a9f4',
+-    statusorder: 1,
+-  },
+-  {
+-    ticketstatusid: '12',
+-    name: 'Waiting',
+-    isdefault: 0,
+-    statuscolor: null,
+-    statusorder: null,
+-  },
+-];
+-
+-type Answer = { readonly status: number; readonly body?: unknown } | 'pending';
+-
+-function respond(config: InternalAxiosRequestConfig, answer: Answer) {
+-  if (answer === 'pending') return new Promise<never>(() => undefined);
+-
+-  const response = {
+-    data: answer.body,
+-    status: answer.status,
+-    statusText: String(answer.status),
+-    headers: new AxiosHeaders(),
+-    config,
+-  };
+-
+-  if (answer.status < 300) return Promise.resolve(response);
+-
+-  return Promise.reject(
+-    new AxiosError('Request failed', 'ERR_BAD_RESPONSE', config, null, response),
+-  );
+-}
+-
+-function api(list: Answer): ApiAdapter {
+-  return (config) => {
+-    const path = (config.url ?? '').split('?')[0] ?? '';
+-
+-    if (path === '/api/v1/auth/me') {
+-      return respond(config, { status: 200, body: ADMIN });
+-    }
+-
+-    return respond(config, list);
+-  };
+-}
+-
+-function withApi(adapter: ApiAdapter): Decorator {
+-  return function ApiDecorator(Story) {
+-    setSession({ accessToken: 'story', csrfToken: 'story' });
+-    http.defaults.adapter = adapter;
+-
+-    return (
+-      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+-        <Story />
+-      </SWRConfig>
+-    );
+-  };
+-}
+-
+-const LOADED: Answer = {
+-  status: 200,
+-  body: { data: ticketStatuses },
+-};
+-
+-const meta = {
+-  title: 'Features/Ticket/TicketStatusList',
+-  component: TicketStatusList,
+-  parameters: {
+-    nextjs: {
+-      appDirectory: true,
+-      navigation: { pathname: '/setup/ticket-statuses' },
+-    },
+-  },
+-  decorators: [withApi(api(LOADED))],
+-} satisfies Meta<typeof TicketStatusList>;
+-
+-export default meta;
+-type Story = StoryObj<typeof meta>;
+-
+-export const Loading: Story = {
+-  decorators: [withApi(api('pending'))],
+-};
+-
+-export const Empty: Story = {
+-  decorators: [withApi(api({ status: 200, body: { data: [] } }))],
+-};
+-
+-export const Error: Story = {
+-  decorators: [
+-    withApi(
+-      api({
+-        status: 503,
+-        body: {
+-          type: 'about:blank',
+-          status: 503,
+-          title: 'Service unavailable',
+-          code: 'ERP-UPSTREAM-0001',
+-        },
+-      }),
+-    ),
+-  ],
+-};
+-
+-export const Loaded: Story = {};
+diff --git a/src/features/ticket/components/TicketStatusList.tsx b/src/features/ticket/components/TicketStatusList.tsx
+deleted file mode 100644
+index d3f2490..0000000
+--- a/src/features/ticket/components/TicketStatusList.tsx
++++ /dev/null
+@@ -1,120 +0,0 @@
+-'use client';
+-
+-import { useRouter } from 'next/navigation';
+-import { useTranslations } from 'next-intl';
+-import type { ReactElement } from 'react';
+-import { ListPageTemplate, type ListColumn } from '@/components/templates/ListPageTemplate';
+-// import {
+-//   TICKETSTATUSES_PATH,
+-//   ticketStatusesPath,
+-// } from '@/features/ticket/api/ticket-status.endpoints';
+-import {
+-  TICKETSTATUSES_EXPORT_COLUMNS,
+-  TICKETSTATUSES_EXPORT_PATH,
+-  TICKETSTATUSES_ERRORS,
+-  TICKETSTATUSES_PATH,
+-  ticketStatusesPath,
+-} from '@/features/ticket/api/ticket-status.endpoints';
+-import {
+-  ticketStatusRowSchema,
+-  ticketStatusesListResponseSchema,
+-  type TicketStatusRow,
+-} from '@/features/ticket/schemas/ticket-status.schema';
+-import { withAuth } from '@/hocs/withAuth';
+-import { withPermission } from '@/hocs/withPermission';
+-import { seedRow } from '@/lib/api/row-seed';
+-import { recordListReturn } from '@/lib/hooks/use-return-to-list';
+-
+-const LIST_BASE = '/setup/ticket-statuses';
+-
+-const itemRoute = (row: TicketStatusRow): string => `${LIST_BASE}/${encodeURIComponent(row.id)}`;
+-
+-export function TicketStatusList(): ReactElement {
+-  const t = useTranslations('ticket');
+-  const tc = useTranslations('common');
+-  const router = useRouter();
+-
+-  const open = (row: TicketStatusRow): void => {
+-    recordListReturn(LIST_BASE);
+-    seedRow(ticketStatusesPath(row.id), row);
+-    router.push(itemRoute(row));
+-  };
+-
+-  const columns: readonly ListColumn<TicketStatusRow>[] = [
+-    {
+-      id: 'id',
+-      header: t('id'),
+-      sortField: 'id',
+-      sortValue: (one) => Number(one.id),
+-      cell: (one) => <bdi className="tabular-nums">{one.id}</bdi>,
+-    },
+-    {
+-      id: 'name',
+-      header: t('ticket_status_name'),
+-      sortField: 'name',
+-      sortValue: (one) => one.name,
+-      primary: true,
+-      cell: (one) => one.name,
+-    },
+-  ];
+-
+-  return (
+-    <ListPageTemplate
+-      title={t('ticket_statuses')}
+-      path={TICKETSTATUSES_PATH}
+-      rowSchema={ticketStatusRowSchema}
+-      unpaginated={{
+-        responseSchema: ticketStatusesListResponseSchema,
+-        clientPagination: true,
+-        matchesSearch: (one, query) =>
+-          one.id.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+-          one.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+-      }}
+-      listBase={LIST_BASE}
+-      rowKey={(one) => one.id}
+-      rowHref={itemRoute}
+-      recordName={(one) => one.name}
+-      onRowOpen={(one) => {
+-        seedRow(ticketStatusesPath(one.id), one);
+-      }}
+-      columns={columns}
+-      rowActions={(one) => [
+-        {
+-          id: 'edit',
+-          kind: 'main',
+-          icon: 'pen-to-square',
+-          label: tc('edit'),
+-          ariaLabel: t('edit_action_named', { name: one.name }),
+-          onSelect: () => {
+-            open(one);
+-          },
+-        },
+-      ]}
+-      createAction={{
+-        label: t('add_ticket_status'),
+-        href: `${LIST_BASE}/new`,
+-      }}
+-      exportAction={{
+-        path: TICKETSTATUSES_EXPORT_PATH,
+-        columns: TICKETSTATUSES_EXPORT_COLUMNS,
+-        labels: {
+-          id: t('id'),
+-          name: t('ticket_status_name'),
+-        },
+-      }}
+-      empty={{
+-        nothingYetHeading: t('empty_heading'),
+-        nothingYetBody: t('empty_body'),
+-        noResultsHeading: (query) => t('no_match_heading', { query }),
+-        noResultsBody: t('no_match_body'),
+-      }}
+-      recordsNoun={t('noun_ticket_statuses')}
+-      featureErrors={TICKETSTATUSES_ERRORS}
+-    />
+-  );
+-}
+-
+-export const GuardedTicketStatusesList = withAuth(
+-  withPermission(TicketStatusList, { skeleton: 'list' }),
+-  { skeleton: 'list' },
+-);
+diff --git a/src/features/ticket/components/__tests__/TicketStatusForm.test.tsx b/src/features/ticket/components/__tests__/TicketStatusForm.test.tsx
+deleted file mode 100644
+index 113ddad..0000000
+--- a/src/features/ticket/components/__tests__/TicketStatusForm.test.tsx
++++ /dev/null
+@@ -1,104 +0,0 @@
+-// @vitest-environment happy-dom
+-import { cleanup, within } from '@testing-library/react';
+-import { SWRConfig } from 'swr';
+-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+-import { resetApiStatus } from '@/lib/api/api-status';
+-import { http } from '@/lib/api/http';
+-import { clearSession, setSession } from '@/lib/auth/session';
+-import { fakeAdapter } from '@/test/axios-fakes';
+-import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
+-import { TicketStatusesForm } from '../TicketStatusForm';
+-
+-const navigation = vi.hoisted(() => ({ push: vi.fn() }));
+-
+-vi.mock('next/navigation', () => ({
+-  useRouter: () => navigation,
+-  usePathname: () => '/setup/ticket-statuses/new',
+-}));
+-
+-const VALUES = { name: 'Waiting', statuscolor: '#777777', statusorder: 0 };
+-const STATUS = { ticketstatusid: '13', ...VALUES, isdefault: 0 };
+-
+-function show() {
+-  return renderWithProviders(
+-    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+-      <TicketStatusesForm id={null} />
+-    </SWRConfig>,
+-  );
+-}
+-
+-function showEdit() {
+-  return renderWithProviders(
+-    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+-      <TicketStatusesForm id="13" />
+-    </SWRConfig>,
+-  );
+-}
+-
+-beforeEach(() => {
+-  setSession({ accessToken: 'test', csrfToken: 'test' });
+-  resetApiStatus();
+-  navigation.push.mockReset();
+-});
+-
+-afterEach(() => {
+-  cleanup();
+-  clearSession();
+-  delete http.defaults.adapter;
+-});
+-
+-describe('TicketStatusesForm', () => {
+-  it('validates the name before opening confirmation or sending a mutation', async () => {
+-    const writes = fakeAdapter(201, STATUS);
+-    http.defaults.adapter = writes.adapter;
+-    show();
+-    const name = screen.getByRole('textbox', { name: 'Ticket Status Name' });
+-    await userEvent.type(name, 'x'.repeat(51));
+-    await userEvent.click(screen.getByRole('button', { name: 'Create ticket status' }));
+-    expect(await screen.findByTestId('error-summary')).toBeTruthy();
+-    expect(screen.queryByTestId('confirm-dialog')).toBeNull();
+-    expect(writes.calls).toEqual([]);
+-  });
+-
+-  it('confirms a valid create, sends only form fields, and navigates back on success', async () => {
+-    const writes = fakeAdapter(201, STATUS);
+-    http.defaults.adapter = writes.adapter;
+-    show();
+-    await userEvent.type(screen.getByRole('textbox', { name: 'Ticket Status Name' }), 'Waiting');
+-    await userEvent.click(screen.getByRole('button', { name: 'Create ticket status' }));
+-
+-    const dialog = await screen.findByTestId('confirm-dialog');
+-    await userEvent.click(within(dialog).getByRole('button', { name: 'Create ticket status' }));
+-
+-    await waitFor(() => {
+-      expect(navigation.push).toHaveBeenCalledWith('/setup/ticket-statuses', { scroll: false });
+-    });
+-    expect(writes.calls.map(({ method, url, data }) => [method, url, data])).toEqual([
+-      ['POST', '/api/v1/ticket-statuses', VALUES],
+-    ]);
+-  });
+-
+-  it('loads an existing status and confirms updates through its detail endpoint', async () => {
+-    const writes = fakeAdapter(200, STATUS);
+-    http.defaults.adapter = writes.adapter;
+-    showEdit();
+-    const name = await screen.findByRole('textbox', { name: 'Ticket Status Name' });
+-    await waitFor(() => {
+-      expect((name as HTMLInputElement).value).toBe('Waiting');
+-    });
+-    await userEvent.clear(name);
+-    await userEvent.type(name, 'In progress');
+-    await userEvent.click(screen.getByRole('button', { name: 'Save ticket status' }));
+-
+-    const dialog = await screen.findByTestId('confirm-dialog');
+-    await userEvent.click(within(dialog).getByRole('button', { name: 'Save ticket status' }));
+-
+-    await waitFor(() => {
+-      expect(navigation.push).toHaveBeenCalledWith('/setup/ticket-statuses', { scroll: false });
+-    });
+-    expect(writes.calls.map(({ method, url, data }) => [method, url, data])).toEqual([
+-      ['GET', '/api/v1/ticket-statuses/13', undefined],
+-      ['PATCH', '/api/v1/ticket-statuses/13', { ...VALUES, name: 'In progress' }],
+-    ]);
+-  });
+-});
+diff --git a/src/features/ticket/components/__tests__/TicketStatusList.test.tsx b/src/features/ticket/components/__tests__/TicketStatusList.test.tsx
+deleted file mode 100644
+index 544af44..0000000
+--- a/src/features/ticket/components/__tests__/TicketStatusList.test.tsx
++++ /dev/null
+@@ -1,147 +0,0 @@
+-// @vitest-environment happy-dom
+-import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
+-import { AxiosHeaders } from 'axios';
+-import { SWRConfig } from 'swr';
+-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+-import { renderWithProviders, screen, userEvent, waitFor, within } from '@/test/render';
+-import { resetApiStatus } from '@/lib/api/api-status';
+-import { clearSession, setSession } from '@/lib/auth/session';
+-import { http } from '@/lib/api/http';
+-import { TicketStatusList } from '@/features/ticket/components/TicketStatusList';
+-
+-vi.mock('next/navigation', () => ({
+-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
+-}));
+-
+-const ticketStatuses = [
+-  {
+-    ticketstatusid: '11',
+-    name: 'Open',
+-    isdefault: 1,
+-    statuscolor: '#03a9f4',
+-    statusorder: 1,
+-  },
+-  {
+-    ticketstatusid: '12',
+-    name: 'Waiting',
+-    isdefault: 0,
+-    statuscolor: null,
+-    statusorder: null,
+-  },
+-  ...Array.from({ length: 28 }, (_, index) => {
+-    const id = String(index + 13);
+-    return {
+-      ticketstatusid: id,
+-      name: `Status ${id}`,
+-      isdefault: 0,
+-      statuscolor: null,
+-      statusorder: index + 3,
+-    };
+-  }),
+-];
+-
+-const requests: { readonly method: string; readonly url: URL }[] = [];
+-
+-function listAdapter(): AxiosAdapter {
+-  return (config: InternalAxiosRequestConfig) => {
+-    const url = new URL(http.getUri(config), 'http://erp.invalid');
+-    const method = (config.method ?? 'get').toUpperCase();
+-    requests.push({ method, url });
+-    const isMe = url.pathname === '/api/v1/auth/me';
+-    const isExport = url.pathname === '/api/v1/ticket-statuses/export';
+-    const body = isMe
+-      ? {
+-          staffId: 1,
+-          email: 'admin@example.invalid',
+-          firstName: 'Admin',
+-          lastName: 'User',
+-          isAdmin: true,
+-          roleId: null,
+-          permissions: [],
+-          locale: 'en',
+-        }
+-      : isExport
+-        ? new Blob(['id,name\r\n11,Open\r\n'], { type: 'text/csv' })
+-        : { data: ticketStatuses };
+-    return Promise.resolve({
+-      data: body,
+-      status: 200,
+-      statusText: '200',
+-      headers: new AxiosHeaders(),
+-      config,
+-    });
+-  };
+-}
+-
+-describe('Ticket Statuses list integration', () => {
+-  beforeEach(() => {
+-    setSession({ accessToken: 'test-only', csrfToken: 'test-only' });
+-    resetApiStatus();
+-    requests.length = 0;
+-    localStorage.setItem('erp.list.pageSize.1', '25');
+-    http.defaults.adapter = listAdapter();
+-  });
+-
+-  afterEach(() => {
+-    delete http.defaults.adapter;
+-    clearSession();
+-    localStorage.clear();
+-    vi.restoreAllMocks();
+-  });
+-
+-  it('paginates locally and exports the visible list columns without rendering Delete', async () => {
+-    const user = userEvent.setup();
+-    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:ticket-statuses/test');
+-    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+-    renderWithProviders(
+-      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+-        <TicketStatusList />
+-      </SWRConfig>,
+-      { hasMemory: true },
+-    );
+-
+-    const table = await screen.findByTestId('list-table');
+-    expect(screen.getByRole('link', { name: 'Waiting' })).toBeTruthy();
+-    expect(screen.getByRole('link', { name: 'Open' })).toBeTruthy();
+-    expect(within(table).getAllByRole('row')).toHaveLength(26);
+-    expect(screen.queryByRole('button', { name: /delete/i })).toBeNull();
+-    expect(screen.getByRole('button', { name: 'Edit Open' })).toBeTruthy();
+-    expect(screen.getByRole('button', { name: 'Edit Waiting' })).toBeTruthy();
+-    expect(screen.getByTestId('list-pager')).toBeTruthy();
+-    expect(screen.getByRole('button', { name: 'Export' })).toBeTruthy();
+-    await user.click(screen.getByRole('button', { name: 'Actions for Open' }));
+-    expect(screen.queryByRole('menuitem', { name: /delete/i })).toBeNull();
+-    expect(screen.getByRole('menuitem', { name: 'Edit Open' })).toBeTruthy();
+-    await waitFor(() => {
+-      expect(requests.some(({ url }) => url.pathname === '/api/v1/ticket-statuses')).toBe(true);
+-    });
+-
+-    await user.keyboard('{Escape}');
+-    await user.click(screen.getByRole('button', { name: 'Next' }));
+-    await waitFor(() => {
+-      expect(within(table).getAllByRole('row')).toHaveLength(6);
+-    });
+-    expect(screen.getByRole('link', { name: 'Status 40' })).toBeTruthy();
+-    expect(screen.getByRole('button', { name: 'Previous' }).hasAttribute('disabled')).toBe(false);
+-    expect(screen.getByRole('button', { name: 'Next' }).hasAttribute('disabled')).toBe(true);
+-
+-    await user.click(screen.getByRole('button', { name: 'Export' }));
+-    await user.click(await screen.findByRole('menuitem', { name: 'CSV' }));
+-    await waitFor(() => {
+-      expect(requests.some(({ url }) => url.pathname === '/api/v1/ticket-statuses/export')).toBe(
+-        true,
+-      );
+-    });
+-    const exported = requests.find(({ url }) => url.pathname === '/api/v1/ticket-statuses/export');
+-    expect(exported?.url.searchParams.get('format')).toBe('csv');
+-    expect(exported?.url.searchParams.getAll('column')).toEqual(['id', 'name']);
+-    expect(exported?.url.searchParams.getAll('header')).toEqual(['ID', 'Ticket Status Name']);
+-    expect(
+-      requests.filter(
+-        ({ url }) =>
+-          url.pathname.startsWith('/api/v1/ticket-statuses') &&
+-          url.pathname !== '/api/v1/ticket-statuses/export',
+-      ),
+-    ).toHaveLength(1);
+-  });
+-});
+diff --git a/src/features/ticket/hooks/__tests__/use-save-ticket-status.test.tsx b/src/features/ticket/hooks/__tests__/use-save-ticket-status.test.tsx
+deleted file mode 100644
+index 66cbf3d..0000000
+--- a/src/features/ticket/hooks/__tests__/use-save-ticket-status.test.tsx
++++ /dev/null
+@@ -1,76 +0,0 @@
+-// @vitest-environment happy-dom
+-import { cleanup } from '@testing-library/react';
+-import { SWRConfig } from 'swr';
+-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+-import { resetApiStatus } from '@/lib/api/api-status';
+-import { http } from '@/lib/api/http';
+-import { clearSession, setSession } from '@/lib/auth/session';
+-import { fakeAdapter } from '@/test/axios-fakes';
+-import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
+-import { useSaveTicketStatuses } from '../use-save-ticket-status';
+-
+-const VALUES = { name: 'Waiting', statuscolor: '#a1b2c3', statusorder: 2 };
+-const STATUS = {
+-  ticketstatusid: '7',
+-  ...VALUES,
+-  isdefault: 0,
+-};
+-
+-function SaveProbe({ id }: { readonly id: string | null }) {
+-  const { create, update } = useSaveTicketStatuses(id);
+-  const mutation = id === null ? create : update;
+-  return (
+-    <div>
+-      <button type="button" onClick={() => void mutation.trigger(VALUES)}>
+-        save
+-      </button>
+-      <output
+-        data-testid="save"
+-        data-ok={mutation.result === undefined ? '' : String(mutation.result.ok)}
+-      >
+-        {mutation.result?.ok ? mutation.result.data.name : ''}
+-      </output>
+-    </div>
+-  );
+-}
+-
+-const show = (id: string | null) =>
+-  renderWithProviders(
+-    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+-      <SaveProbe id={id} />
+-    </SWRConfig>,
+-  );
+-
+-beforeEach(() => {
+-  setSession({ accessToken: 'test', csrfToken: 'test' });
+-  resetApiStatus();
+-});
+-
+-afterEach(() => {
+-  cleanup();
+-  clearSession();
+-  delete http.defaults.adapter;
+-});
+-
+-describe('useSaveTicketStatuses', () => {
+-  it.each([
+-    [null, 'POST', '/api/v1/ticket-statuses'],
+-    ['7', 'PATCH', '/api/v1/ticket-statuses/7'],
+-  ] as const)('sends %s to %s %s and parses the saved status', async (id, method, url) => {
+-    const writes = fakeAdapter(200, STATUS);
+-    http.defaults.adapter = writes.adapter;
+-    show(id);
+-    await userEvent.click(screen.getByRole('button', { name: 'save' }));
+-    await waitFor(() => {
+-      expect(screen.getByTestId('save').getAttribute('data-ok')).toBe('true');
+-    });
+-    expect(screen.getByTestId('save').textContent).toContain('Waiting');
+-    expect(
+-      writes.calls.map(({ method: actualMethod, url: actualUrl, data }) => [
+-        actualMethod,
+-        actualUrl,
+-        data,
+-      ]),
+-    ).toEqual([[method, url, VALUES]]);
+-  });
+-});
+diff --git a/src/features/ticket/hooks/__tests__/use-ticket-status.test.tsx b/src/features/ticket/hooks/__tests__/use-ticket-status.test.tsx
+deleted file mode 100644
+index 51f886c..0000000
+--- a/src/features/ticket/hooks/__tests__/use-ticket-status.test.tsx
++++ /dev/null
+@@ -1,112 +0,0 @@
+-// @vitest-environment happy-dom
+-import { cleanup } from '@testing-library/react';
+-import { SWRConfig } from 'swr';
+-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+-import { resetApiStatus } from '@/lib/api/api-status';
+-import { http } from '@/lib/api/http';
+-import { clearSession, setSession } from '@/lib/auth/session';
+-import { fakeAdapter, problem } from '@/test/axios-fakes';
+-import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
+-import { useDeleteTicketStatus, useTicketStatuses } from '../use-ticket-status';
+-
+-const STATUS = {
+-  ticketstatusid: 'a 1',
+-  name: 'Waiting',
+-  isdefault: 0,
+-  statuscolor: '#a1b2c3',
+-  statusorder: 2,
+-};
+-
+-function ReadProbe({ id }: { readonly id: string | null }) {
+-  const { data, error } = useTicketStatuses(id);
+-  return (
+-    <output data-testid="status" data-code={error?.code ?? ''}>
+-      {data?.name ?? ''}
+-    </output>
+-  );
+-}
+-
+-function DeleteProbe({ id }: { readonly id: string }) {
+-  const { trigger, result } = useDeleteTicketStatus(id);
+-  return (
+-    <div>
+-      <button type="button" onClick={() => void trigger(undefined)}>
+-        delete
+-      </button>
+-      <output
+-        data-testid="delete"
+-        data-ok={result === undefined ? '' : String(result.ok)}
+-        data-code={result?.ok === false ? result.code : ''}
+-      />
+-    </div>
+-  );
+-}
+-
+-const show = (child: React.ReactNode) =>
+-  renderWithProviders(
+-    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>{child}</SWRConfig>,
+-  );
+-
+-beforeEach(() => {
+-  setSession({ accessToken: 'test', csrfToken: 'test' });
+-  resetApiStatus();
+-});
+-
+-afterEach(() => {
+-  cleanup();
+-  clearSession();
+-  delete http.defaults.adapter;
+-});
+-
+-describe('useTicketStatuses', () => {
+-  it('reads and parses GET /api/v1/ticket-statuses/:id with the id encoded', async () => {
+-    const reads = fakeAdapter(200, STATUS);
+-    http.defaults.adapter = reads.adapter;
+-    show(<ReadProbe id="a 1" />);
+-    expect(await screen.findByText('Waiting')).toBeTruthy();
+-    expect(reads.calls.map(({ method, url }) => [method, url])).toEqual([
+-      ['GET', '/api/v1/ticket-statuses/a%201'],
+-    ]);
+-  });
+-
+-  it('does not make a request for the create screen and exposes read failures', async () => {
+-    const reads = fakeAdapter(404, problem(404, 'ERP-CORE-0004'));
+-    http.defaults.adapter = reads.adapter;
+-    show(<ReadProbe id={null} />);
+-    await new Promise((resolve) => setTimeout(resolve, 50));
+-    expect(reads.calls).toEqual([]);
+-
+-    cleanup();
+-    show(<ReadProbe id="7" />);
+-    expect((await screen.findByTestId('status')).getAttribute('data-code')).toBe('ERP-CORE-0004');
+-  });
+-});
+-
+-describe('useDeleteTicketStatus', () => {
+-  it('sends a bodyless DELETE and reports a successful 204', async () => {
+-    const writes = fakeAdapter(204);
+-    http.defaults.adapter = writes.adapter;
+-    show(<DeleteProbe id="7" />);
+-    await userEvent.click(screen.getByRole('button', { name: 'delete' }));
+-    await waitFor(() => {
+-      expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('true');
+-    });
+-    expect(writes.calls.map(({ method, url, data }) => [method, url, data])).toEqual([
+-      ['DELETE', '/api/v1/ticket-statuses/7', undefined],
+-    ]);
+-  });
+-
+-  it('keeps backend deletion refusals as failures', async () => {
+-    const writes = fakeAdapter(409, problem(409, 'ERP-TICKETSTATUSES-0002'));
+-    http.defaults.adapter = writes.adapter;
+-    show(<DeleteProbe id="7" />);
+-    await userEvent.click(screen.getByRole('button', { name: 'delete' }));
+-    await waitFor(() => {
+-      expect(screen.getByTestId('delete').getAttribute('data-code')).toBe(
+-        'ERP-TICKETSTATUSES-0002',
+-      );
+-    });
+-    expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('false');
+-    expect(writes.calls).toHaveLength(1);
+-  });
+-});
+diff --git a/src/features/ticket/hooks/use-save-ticket-status.ts b/src/features/ticket/hooks/use-save-ticket-status.ts
+deleted file mode 100644
+index 0f6ceb3..0000000
+--- a/src/features/ticket/hooks/use-save-ticket-status.ts
++++ /dev/null
+@@ -1,29 +0,0 @@
+-import {
+-  TICKETSTATUSES_ENDPOINTS,
+-  TICKETSTATUSES_PATH,
+-  ticketStatusesPath,
+-} from '@/features/ticket/api/ticket-status.endpoints';
+-import { useCommonMutation, type CommonMutation } from '@/lib/api/use-common-mutation';
+-import {
+-  ticketStatusSchema,
+-  type TicketStatus,
+-  type TicketStatusFormValues,
+-} from '@/features/ticket/schemas/ticket-status.schema';
+-export interface TicketStatusSave {
+-  readonly create: CommonMutation<TicketStatusFormValues, TicketStatus>;
+-  readonly update: CommonMutation<TicketStatusFormValues, TicketStatus>;
+-}
+-
+-/** The two writes of the form. NEVER retried automatically; they invalidate nothing (the screen does it). */
+-export function useSaveTicketStatuses(id: string | null): TicketStatusSave {
+-  const create = useCommonMutation<TicketStatusFormValues, TicketStatus>(TICKETSTATUSES_PATH, {
+-    method: TICKETSTATUSES_ENDPOINTS.create.method,
+-    schema: ticketStatusSchema,
+-    invalidate: [],
+-  });
+-  const update = useCommonMutation<TicketStatusFormValues, TicketStatus>(
+-    id === null ? TICKETSTATUSES_PATH : ticketStatusesPath(id),
+-    { method: TICKETSTATUSES_ENDPOINTS.update.method, schema: ticketStatusSchema, invalidate: [] },
+-  );
+-  return { create, update };
+-}
+diff --git a/src/features/ticket/hooks/use-ticket-status.ts b/src/features/ticket/hooks/use-ticket-status.ts
+deleted file mode 100644
+index b74e8da..0000000
+--- a/src/features/ticket/hooks/use-ticket-status.ts
++++ /dev/null
+@@ -1,14 +0,0 @@
+-import { ticketStatusesHooks } from '@/features/ticket/api/ticket-status.endpoints';
+-import type { CommonApiResult } from '@/lib/api/use-common-api';
+-import type { CommonMutation } from '@/lib/api/use-common-mutation';
+-import type { TicketStatus } from '@/features/ticket/schemas/ticket-status.schema';
+-
+-/** `GET /api/v1/ticket-statuses/:id`. A `null` id (the create screen) is no request. */
+-export function useTicketStatuses(id: string | null): CommonApiResult<TicketStatus> {
+-  return ticketStatusesHooks.useOne(id);
+-}
+-
+-/** `DELETE /api/v1/ticket-statuses/:id`: 204 revalidates the list; a 409 or 404 is a resolved failure the dialog shows. */
+-export function useDeleteTicketStatus(id: string): CommonMutation<undefined, null> {
+-  return ticketStatusesHooks.useRemove(id);
+-}
+diff --git a/src/features/ticket/messages/ar.json b/src/features/ticket/messages/ar.json
+deleted file mode 100644
+index 7966436..0000000
+--- a/src/features/ticket/messages/ar.json
++++ /dev/null
+@@ -1,30 +0,0 @@
+-{
+-  "ticket": {
+-    "ticket_statuses": "╪¡╪º┘ä╪º╪¬ ╪º┘ä╪¬╪░╪º┘â╪▒",
+-    "add_ticket_status": "╪Ñ╪╢╪º┘ü╪⌐ ╪¡╪º┘ä╪⌐ ╪¬╪░┘â╪▒╪⌐",
+-    "id": "╪º┘ä┘à╪╣╪▒┘æ┘ü",
+-    "ticket_status_name": "╪º╪│┘à ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐",
+-    "status_color": "┘ä┘ê┘å ╪º┘ä╪¡╪º┘ä╪⌐",
+-    "status_order": "╪¬╪▒╪¬┘è╪¿ ╪º┘ä╪¡╪º┘ä╪⌐",
+-    "noun_ticket_status": "╪¡╪º┘ä╪⌐ ╪¬╪░┘â╪▒╪⌐",
+-    "noun_ticket_statuses": "╪¡╪º┘ä╪º╪¬ ╪º┘ä╪¬╪░╪º┘â╪▒",
+-    "section_details": "╪º┘ä╪¬┘ü╪º╪╡┘è┘ä",
+-    "empty_heading": "┘ä╪º ╪¬┘ê╪¼╪» ╪¡╪º┘ä╪º╪¬ ╪¬╪░╪º┘â╪▒ ╪¡╪¬┘ë ╪º┘ä╪ó┘å",
+-    "empty_body": "╪ú╪╢┘ü ╪¡╪º┘ä╪⌐ ╪¬╪░┘â╪▒╪⌐ ┘ä╪¬╪¡╪»┘è╪» ╪º┘ä╪¡╪º┘ä╪⌐ ╪º┘ä╪¡╪º┘ä┘è╪⌐ ┘ä┘ä╪¬╪░╪º┘â╪▒.",
+-    "no_match_heading": "┘ä╪º ╪¬┘ê╪¼╪» ╪¡╪º┘ä╪º╪¬ ╪¬╪░╪º┘â╪▒ ╪¬╪╖╪º╪¿┘é ΓÇ£{query}ΓÇ¥",
+-    "no_match_body": "╪¬╪¡┘é┘é ┘à┘å ╪º┘ä╪Ñ┘à┘ä╪º╪í ╪ú┘ê ╪º┘à╪│╪¡ ╪º┘ä╪¿╪¡╪½ ┘ä╪╣╪▒╪╢ ╪¼┘à┘è╪╣ ╪¡╪º┘ä╪º╪¬ ╪º┘ä╪¬╪░╪º┘â╪▒.",
+-    "enter_name": "╪ú╪»╪«┘ä ╪º╪│┘à ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐.",
+-    "name_too_long": "┘è╪¼╪¿ ╪ú┘ä╪º ┘è╪¬╪¼╪º┘ê╪▓ ╪º╪│┘à ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐ {max} ╪¡╪▒┘ü┘ï╪º.",
+-    "enter_colour": "╪º╪«╪¬╪▒ ┘ä┘ê┘å┘ï╪º ┘ä┘ä╪¡╪º┘ä╪⌐ ╪¿╪╡┘è╪║╪⌐ ╪│╪¬╪⌐ ╪ú╪▒┘é╪º┘à ╪│╪»╪º╪│┘è╪⌐ ╪╣╪┤╪▒┘è╪⌐.",
+-    "enter_order": "╪ú╪»╪«┘ä ╪¬╪▒╪¬┘è╪¿┘ï╪º ╪║┘è╪▒ ╪│╪º┘ä╪¿ ┘ä┘ä╪¡╪º┘ä╪⌐.",
+-    "saved_toast": "╪¬┘à ╪¡┘ü╪╕ ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐",
+-
+-    "edit_action_named": "╪¬╪╣╪»┘è┘ä {name}",
+-
+-    "errors": {
+-      "ERP-CORE-0004": "┘ä┘à ╪¬╪╣╪» ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐ ┘ç╪░┘ç ┘à┘ê╪¼┘ê╪»╪⌐. ╪▒╪¿┘à╪º ╪¬┘à╪¬ ╪Ñ╪▓╪º┘ä╪¬┘ç╪º.",
+-      "ERP-TICKETSTATUSES-0001": "┘ä╪º ┘è╪▓╪º┘ä ╪º╪│╪¬╪«╪»╪º┘à ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐ ┘ç╪░┘ç ┘é╪º╪ª┘à┘ï╪º╪î ┘ä╪░╪º ┘ä╪º ┘è┘à┘â┘å ╪¡╪░┘ü┘ç╪º. ╪ú╪▓┘ä┘ç╪º ┘à┘å ╪¼┘à┘è╪╣ ╪º┘ä╪¬╪░╪º┘â╪▒ ┘ê╪º┘ä╪Ñ╪╣╪»╪º╪»╪º╪¬ ╪º┘ä╪º┘ü╪¬╪▒╪º╪╢┘è╪⌐ ╪º┘ä╪¬┘è ╪¬╪│╪¬╪«╪»┘à┘ç╪º ╪ú┘ê┘ä┘ï╪º╪î ╪½┘à ╪º╪¡╪░┘ü┘ç╪º.",
+-      "ERP-TICKETSTATUSES-0002": "┘ä╪º ┘è┘à┘â┘å ╪¡╪░┘ü ╪¡╪º┘ä╪⌐ ╪º┘ä╪¬╪░┘â╪▒╪⌐ ╪º┘ä╪º┘ü╪¬╪▒╪º╪╢┘è╪⌐."
+-    }
+-  }
+-}
+diff --git a/src/features/ticket/messages/en.json b/src/features/ticket/messages/en.json
+deleted file mode 100644
+index 2870ad0..0000000
+--- a/src/features/ticket/messages/en.json
++++ /dev/null
+@@ -1,30 +0,0 @@
+-{
+-  "ticket": {
+-    "ticket_statuses": "Ticket Statuses",
+-    "add_ticket_status": "Add Ticket Status",
+-    "id": "ID",
+-    "ticket_status_name": "Ticket Status Name",
+-    "status_color": "Status Color",
+-    "status_order": "Status Order",
+-    "noun_ticket_status": "ticket status",
+-    "noun_ticket_statuses": "ticket statuses",
+-    "section_details": "Details",
+-    "empty_heading": "No ticket statuses yet",
+-    "empty_body": "Add a ticket status so tickets can use it to indicate their current state.",
+-    "no_match_heading": "No ticket statuses match ΓÇ£{query}ΓÇ¥",
+-    "no_match_body": "Check the spelling or clear the search to see every ticket status.",
+-    "enter_name": "Enter a ticket status name.",
+-    "name_too_long": "Keep the ticket status name to {max} characters or fewer.",
+-    "enter_colour": "Choose a six-digit hexadecimal status color.",
+-    "enter_order": "Enter a non-negative status order.",
+-    "saved_toast": "Ticket status saved",
+-
+-    "edit_action_named": "Edit {name}",
+-
+-    "errors": {
+-      "ERP-CORE-0004": "This ticket status no longer exists. It may have been removed.",
+-      "ERP-TICKETSTATUSES-0001": "This ticket status is still in use, so it can't be deleted. Remove it from all tickets and default settings that use it first, then delete it.",
+-      "ERP-TICKETSTATUSES-0002": "The default ticket status cannot be deleted."
+-    }
+-  }
+-}
+diff --git a/src/features/ticket/pages/TicketStatusListPage.tsx b/src/features/ticket/pages/TicketStatusListPage.tsx
+deleted file mode 100644
+index ad62ec3..0000000
+--- a/src/features/ticket/pages/TicketStatusListPage.tsx
++++ /dev/null
+@@ -1,15 +0,0 @@
+-import { NextIntlClientProvider } from 'next-intl';
+-import { getMessages } from 'next-intl/server';
+-import type { ReactElement } from 'react';
+-import { GuardedTicketStatusesList } from '@/features/ticket/components/TicketStatusList';
+-import { SHELL_MESSAGE_NAMESPACES } from '@/features/shell';
+-import { pick } from '@/lib/i18n/pick';
+-
+-export async function TicketStatusListPage(): Promise<ReactElement> {
+-  const messages = await getMessages();
+-  return (
+-    <NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'ticket'])}>
+-      <GuardedTicketStatusesList />
+-    </NextIntlClientProvider>
+-  );
+-}
+diff --git a/src/features/ticket/pages/TicketStatusPage.tsx b/src/features/ticket/pages/TicketStatusPage.tsx
+deleted file mode 100644
+index f15e38f..0000000
+--- a/src/features/ticket/pages/TicketStatusPage.tsx
++++ /dev/null
+@@ -1,19 +0,0 @@
+-import { NextIntlClientProvider } from 'next-intl';
+-import { getMessages } from 'next-intl/server';
+-import type { ReactElement } from 'react';
+-import { GuardedTicketStatusesForm } from '@/features/ticket/components/TicketStatusForm';
+-import { SHELL_MESSAGE_NAMESPACES } from '@/features/shell';
+-import { pick } from '@/lib/i18n/pick';
+-
+-interface TicketStatusPageProps {
+-  readonly id: string | null;
+-}
+-
+-export async function TicketStatusPage({ id }: TicketStatusPageProps): Promise<ReactElement> {
+-  const messages = await getMessages();
+-  return (
+-    <NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'ticket'])}>
+-      <GuardedTicketStatusesForm id={id} />
+-    </NextIntlClientProvider>
+-  );
+-}
+diff --git a/src/features/ticket/schemas/__tests__/ticket-status.schema.test.ts b/src/features/ticket/schemas/__tests__/ticket-status.schema.test.ts
+deleted file mode 100644
+index 3fd1314..0000000
+--- a/src/features/ticket/schemas/__tests__/ticket-status.schema.test.ts
++++ /dev/null
+@@ -1,45 +0,0 @@
+-import { describe, expect, it } from 'vitest';
+-import {
+-  ticketStatusFormSchema,
+-  ticketStatusesListResponseSchema,
+-} from '@/features/ticket/schemas/ticket-status.schema';
+-
+-const ticketStatus = {
+-  ticketstatusid: '1',
+-  name: 'Open',
+-  isdefault: 1,
+-  statuscolor: '#03a9f4',
+-  statusorder: 1,
+-};
+-
+-describe('Ticket Statuses API contract', () => {
+-  it('parses the backend list shape without pagination metadata and rejects unexpected fields', () => {
+-    expect(ticketStatusesListResponseSchema.parse({ data: [ticketStatus] })).toEqual({
+-      data: [
+-        {
+-          id: '1',
+-          name: 'Open',
+-          isdefault: 1,
+-          statuscolor: '#03a9f4',
+-          statusorder: 1,
+-        },
+-      ],
+-    });
+-    expect(
+-      ticketStatusesListResponseSchema.safeParse({
+-        data: [ticketStatus],
+-        meta: { nextCursor: null },
+-      }).success,
+-    ).toBe(false);
+-  });
+-
+-  it('validates form names, colors and status order before sending', () => {
+-    const valid = { name: 'Waiting', statuscolor: '#a1B2c3', statusorder: 2 };
+-    expect(ticketStatusFormSchema.safeParse(valid).success).toBe(true);
+-    expect(ticketStatusFormSchema.safeParse({ ...valid, name: 'x'.repeat(51) }).success).toBe(
+-      false,
+-    );
+-    expect(ticketStatusFormSchema.safeParse({ ...valid, statuscolor: 'red' }).success).toBe(false);
+-    expect(ticketStatusFormSchema.safeParse({ ...valid, statusorder: -1 }).success).toBe(false);
+-  });
+-});
+diff --git a/src/features/ticket/schemas/ticket-status.schema.ts b/src/features/ticket/schemas/ticket-status.schema.ts
+deleted file mode 100644
+index 36d1a6c..0000000
+--- a/src/features/ticket/schemas/ticket-status.schema.ts
++++ /dev/null
+@@ -1,83 +0,0 @@
+-import { z } from 'zod';
+-
+-export const TICKET_STATUS_MESSAGE_KEYS = {
+-  name: 'enter_name',
+-  nameTooLong: 'name_too_long',
+-  statuscolor: 'enter_colour',
+-  statusorder: 'enter_order',
+-} as const;
+-
+-export const TICKET_STATUS_NAME_MAX = 50;
+-const TICKET_STATUS_COLOR = /^#[\da-f]{6}$/i;
+-
+-export const ticketStatusSchema = z
+-  .strictObject({
+-    ticketstatusid: z.string(),
+-    name: z.string().max(TICKET_STATUS_NAME_MAX),
+-    isdefault: z.number().int(),
+-    statuscolor: z.string().nullable(),
+-    statusorder: z.number().int().nullable(),
+-  })
+-  .transform(({ ticketstatusid, statuscolor, statusorder, ...status }) => ({
+-    ...status,
+-    id: ticketstatusid,
+-    statuscolor: statuscolor ?? '',
+-    statusorder: statusorder ?? 0,
+-  }));
+-
+-/** The backend list response has no pagination metadata: `GET /ticket-statuses` returns `{ data }`. */
+-export const ticketStatusesListResponseSchema = z
+-  .strictObject({ data: z.array(ticketStatusSchema).readonly() })
+-  .readonly();
+-
+-export type TicketStatus = z.infer<typeof ticketStatusSchema>;
+-
+-export const ticketStatusRowSchema = ticketStatusSchema;
+-export type TicketStatusRow = z.infer<typeof ticketStatusRowSchema>;
+-
+-export const ticketStatusFormSchema = z.object({
+-  name: z
+-    .string()
+-    .trim()
+-    .min(1, TICKET_STATUS_MESSAGE_KEYS.name)
+-    .max(TICKET_STATUS_NAME_MAX, TICKET_STATUS_MESSAGE_KEYS.nameTooLong),
+-  statuscolor: z.union([
+-    z.literal(''),
+-    z.string().regex(TICKET_STATUS_COLOR, TICKET_STATUS_MESSAGE_KEYS.statuscolor),
+-  ]),
+-  statusorder: z.coerce.number().int().min(0, TICKET_STATUS_MESSAGE_KEYS.statusorder),
+-});
+-
+-export type TicketStatusFormValues = z.infer<typeof ticketStatusFormSchema>;
+-
+-export const EMPTY_TICKET_STATUS_FORM: TicketStatusFormValues = {
+-  name: '',
+-  // eslint-disable-next-line no-restricted-syntax -- Perfex's color input requires a concrete initial color value.
+-  statuscolor: '#777777',
+-  statusorder: 0,
+-};
+-
+-export function toTicketStatusForm(item: TicketStatus): TicketStatusFormValues {
+-  return {
+-    name: item.name,
+-    statuscolor: item.statuscolor,
+-    statusorder: item.statusorder,
+-  };
+-}
+-
+-export const TICKET_STATUS_FIELDS = ['name', 'statuscolor', 'statusorder'] as const;
+-
+-export type TicketStatusField = (typeof TICKET_STATUS_FIELDS)[number];
+-
+-export function isTicketStatusField(value: unknown): value is TicketStatusField {
+-  return (TICKET_STATUS_FIELDS as readonly unknown[]).includes(value);
+-}
+-
+-export const validationIssuesSchema = z.array(
+-  z.object({
+-    path: z.array(z.union([z.string(), z.number()])),
+-    message: z.string(),
+-  }),
+-);
+-
+-export type ValidationIssue = z.infer<typeof validationIssuesSchema>[number];
+diff --git a/src/messages/index.ts b/src/messages/index.ts
+index a306e25..b2aa431 100644
+--- a/src/messages/index.ts
++++ b/src/messages/index.ts
+@@ -19,8 +19,8 @@ import staffEn from '@/features/staff/messages/en.json';
+ import statusEn from '@/features/status/messages/en.json';
+ import taxesAr from '@/features/taxes/messages/ar.json';
+ import taxesEn from '@/features/taxes/messages/en.json';
+-import TicketStatusAr from '@/features/ticket/messages/ar.json';
+-import TicketStatusEn from '@/features/ticket/messages/en.json';
++import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
++import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
+ 
+ // registry end: imports
+ import type { Locale } from '@/i18n/locales';
+@@ -46,7 +46,7 @@ export const NAMESPACES = [
+   'mail',
+   'payment-modes',
+   'currencies',
+-  'ticket',
++  'ticket-statuses',
+   // registry end: namespaces
+ ] as const;
+ export type Namespace = (typeof NAMESPACES)[number];
+@@ -66,7 +66,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
+     mailEn,
+     paymentModesEn,
+     currenciesEn,
+-    TicketStatusEn,
++    ticketStatusesEn,
+     // registry end: en
+   ],
+   ar: [
+@@ -81,7 +81,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
+     mailAr,
+     paymentModesAr,
+     currenciesAr,
+-    TicketStatusAr,
++    ticketStatusesAr,
+     // registry end: ar
+   ],
+ };
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\index.ts ===
+export { TicketStatusListPage } from './pages/TicketStatusListPage';
+export { TicketStatusPage } from './pages/TicketStatusPage';
+export { TicketStatusList, GuardedTicketStatusesList } from './components/TicketStatusList';
+export { TicketStatusesForm, GuardedTicketStatusesForm } from './components/TicketStatusForm';
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\README.md ===
+# ticket
+
+## Purpose
+
+Ticket Statuses provides the administrator-only list, create form, and edit form at
+`/setup/ticket-statuses`. The web feature uses the existing `tbltickets_status` records through
+`erp-api/src/v1/ticket-statuses`; it does not add pagination or a separate export API.
+
+## Legacy screen
+
+None: Ticket Statuses is served by the migration API and the existing Node-owned status table.
+
+## Legacy parity
+
+The list shows status ID and name, supports search and sorting, and offers create, edit, and delete
+actions. Built-in statuses remain visible and editable but do not offer Delete. Create and edit
+submissions are confirmed before the API request; a successful save returns to the originating list.
+Search and sorting are local because the backend list contract is an unpaginated `{ data }` response.
+
+## Dropped on purpose
+
+- Pagination query parameters and cursor handling: the API strictly accepts an empty list query.
+- Export: the API has no Ticket Statuses export endpoint.
+- Delete for built-in statuses: the backend also refuses that operation.
+
+## Routes
+
+- `GET /api/v1/ticket-statuses`
+- `GET /api/v1/ticket-statuses/:id`
+- `POST /api/v1/ticket-statuses`
+- `PATCH /api/v1/ticket-statuses/:id`
+- `DELETE /api/v1/ticket-statuses/:id`
+
+The three `/setup/ticket-statuses` pages are gated by `ADMIN_GATE`; the API independently requires
+an administrator for every actor-facing operation.
+
+## Data
+
+The list returns `{ data: TicketStatus[] }`, with no `meta`, `limit`, or `cursor`. The UI validates
+the backend wire fields and maps `ticketstatusid` to its existing row `id`; nullable color and order
+values are adapted to the form's empty color and zero order defaults. Names are limited to 50
+characters. Backend deletion checks protect built-in, ticket-referenced, and configured default
+reply statuses.
+
+## Messages
+
+English and Arabic strings are in `messages/en.json` and `messages/ar.json`. Backend refusal codes
+`ERP-TICKETSTATUSES-0001` and `ERP-TICKETSTATUSES-0002` have feature-specific messages in both
+locales.
+
+## How to run its tests
+
+From `erp-web`, run `corepack yarn vitest run src/features/ticket`.
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\api\ticket-status.endpoints.ts ===
+import type { ApiPath } from '@/lib/api/call-api';
+import { createResourceHooks } from '@/lib/api/create-resource-hooks';
+import type { FeatureErrorCodes } from '@/lib/errors/error-messages';
+import {
+  ticketStatusSchema,
+  type TicketStatus,
+  type TicketStatusFormValues,
+} from '@/features/ticket-statuses/schemas/ticket-status.schema';
+
+/**
+ * The resource's wire contract: every call this feature makes, method and path. The api half is
+ * erp-api `src/v1/ticket-statuses`. A row uses `ticketstatusid`, `name`, `isdefault`,
+ * `statuscolor`, and `statusorder`. A delete is `DELETE …/:id` (204, 404, or 409 when deletion is
+ * refused by the backend).
+ */
+export const TICKETSTATUSES_ENDPOINTS = {
+  list: { method: 'GET', path: '/api/v1/ticket-statuses' },
+  export: { method: 'GET', path: '/api/v1/ticket-statuses/export' },
+  detail: { method: 'GET', path: '/api/v1/ticket-statuses/:id' },
+  create: { method: 'POST', path: '/api/v1/ticket-statuses' },
+  update: { method: 'PATCH', path: '/api/v1/ticket-statuses/:id' },
+  remove: { method: 'DELETE', path: '/api/v1/ticket-statuses/:id' },
+} as const;
+
+export const TICKETSTATUSES_PATH = TICKETSTATUSES_ENDPOINTS.list.path satisfies ApiPath;
+export const TICKETSTATUSES_EXPORT_PATH = TICKETSTATUSES_ENDPOINTS.export.path satisfies ApiPath;
+export const TICKETSTATUSES_EXPORT_COLUMNS = ['id', 'name'] as const;
+export type TicketStatusesExportColumn = (typeof TICKETSTATUSES_EXPORT_COLUMNS)[number];
+
+/** One record's path, the id encoded. */
+export function ticketStatusesPath(id: string): ApiPath {
+  return TICKETSTATUSES_ENDPOINTS.detail.path.replace(':id', encodeURIComponent(id)) as ApiPath;
+}
+
+export const ticketStatusesHooks = createResourceHooks<
+  TicketStatus,
+  TicketStatusFormValues,
+  TicketStatusFormValues
+>(TICKETSTATUSES_PATH, ticketStatusSchema);
+
+/** The 400 whose problem body carries `issues` the form maps onto its fields. */
+export const VALIDATION_CODE = 'ERP-VALIDATION-0001';
+
+/** The api's one not-found answer. */
+export const NOT_FOUND_CODE = 'ERP-CORE-0004';
+
+/** The delete refused while a ticket uses the ticket status (409). MUST equal the code the api module throws. */
+export const IN_USE_CODE = 'ERP-TICKETSTATUSES-0001';
+/** The api refuses deletion of statuses marked `isdefault = 1`. */
+export const BUILT_IN_CODE = 'ERP-TICKETSTATUSES-0002';
+
+export const TICKETSTATUSES_ERRORS: FeatureErrorCodes = {
+  namespace: 'ticket-statuses', codes: [NOT_FOUND_CODE, IN_USE_CODE, BUILT_IN_CODE],
+};
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\api\__tests__\ticket-status.endpoints.test.ts ===
+import { describe, expect, it } from 'vitest';
+import ar from '@/features/ticket-statuses/messages/ar.json';
+import en from '@/features/ticket-statuses/messages/en.json';
+import {
+  BUILT_IN_CODE,
+  IN_USE_CODE,
+  TICKETSTATUSES_ENDPOINTS,
+  TICKETSTATUSES_ERRORS,
+  TICKETSTATUSES_EXPORT_COLUMNS,
+  TICKETSTATUSES_EXPORT_PATH,
+  TICKETSTATUSES_PATH,
+  ticketStatusesHooks,
+  ticketStatusesPath,
+} from '../ticket-status.endpoints';
+
+describe('Ticket Statuses API definitions', () => {
+  it('declares only the routes implemented by erp-api', () => {
+    expect(TICKETSTATUSES_ENDPOINTS).toEqual({
+      list: { method: 'GET', path: '/api/v1/ticket-statuses' },
+      export: { method: 'GET', path: '/api/v1/ticket-statuses/export' },
+      detail: { method: 'GET', path: '/api/v1/ticket-statuses/:id' },
+      create: { method: 'POST', path: '/api/v1/ticket-statuses' },
+      update: { method: 'PATCH', path: '/api/v1/ticket-statuses/:id' },
+      remove: { method: 'DELETE', path: '/api/v1/ticket-statuses/:id' },
+    });
+    expect(TICKETSTATUSES_PATH).toBe('/api/v1/ticket-statuses');
+    expect(TICKETSTATUSES_EXPORT_PATH).toBe('/api/v1/ticket-statuses/export');
+    expect(TICKETSTATUSES_EXPORT_COLUMNS).toEqual(['id', 'name']);
+    expect(ticketStatusesPath('a/1')).toBe('/api/v1/ticket-statuses/a%2F1');
+  });
+
+  it('exposes the exact deletion-refusal codes and localized messages', () => {
+    expect(TICKETSTATUSES_ERRORS).toEqual({
+      namespace: 'ticket-statuses',
+      codes: ['ERP-CORE-0004', IN_USE_CODE, BUILT_IN_CODE],
+    });
+
+    for (const code of [IN_USE_CODE, BUILT_IN_CODE] as const) {
+      expect(en['ticket-statuses'].errors[code]).toBeTruthy();
+      expect(ar['ticket-statuses'].errors[code]).toBeTruthy();
+    }
+  });
+
+  it('provides the shared resource hooks', () => {
+    expect(Object.keys(ticketStatusesHooks).sort()).toEqual([
+      'useCreate',
+      'useList',
+      'useOne',
+      'useRemove',
+      'useUpdate',
+    ]);
+  });
+});
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\components\TicketStatusForm.stories.tsx ===
+
+import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { SWRConfig } from 'swr';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
+import type { ApiAdapter } from '@/lib/api/call-api';
+import { http } from '@/lib/api/http';
+import { setSession } from '@/lib/auth/session';
+import { TicketStatusesForm } from './TicketStatusForm';
+
+const HTTP_OK = 200;
+const HTTP_BAD_REQUEST = 400;
+const HTTP_SERVICE_UNAVAILABLE = 503;
+
+const RECORD = {
+  ticketstatusid: '7',
+  name: 'Waiting',
+  statuscolor: '',
+  statusorder: 0,
+  isdefault: 0,
+};
+
+type Answer = { readonly status: number; readonly body?: unknown } | 'pending';
+
+const problem = (status: number, code: string, issues?: unknown): Answer => ({
+  status,
+  body: {
+    type: 'about:blank',
+    status,
+    title: code,
+    code,
+    ...(issues ? { issues } : {}),
+  },
+});
+
+function respond(config: InternalAxiosRequestConfig, answer: Answer) {
+  if (answer === 'pending') return new Promise<never>(() => undefined);
+
+  const response = {
+    data: answer.body,
+    status: answer.status,
+    statusText: String(answer.status),
+    headers: new AxiosHeaders(),
+    config,
+  };
+
+  if (answer.status < 300) return Promise.resolve(response);
+
+  return Promise.reject(new AxiosError('failed', 'ERR_BAD_RESPONSE', config, null, response));
+}
+
+function withApi(save: Answer = { status: HTTP_OK, body: RECORD }): Decorator {
+  return function ApiDecorator(Story) {
+    setSession({ accessToken: 'story', csrfToken: 'story' });
+
+    const adapter: ApiAdapter = (config) =>
+      respond(
+        config,
+        (config.method ?? 'get').toUpperCase() === 'GET'
+          ? { status: HTTP_OK, body: RECORD }
+          : save,
+      );
+
+    http.defaults.adapter = adapter;
+
+    return (
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <Story />
+      </SWRConfig>
+    );
+  };
+}
+
+const meta = {
+  title: 'Features/TicketStatuses/TicketStatusesForm',
+  component: TicketStatusesForm,
+  args: { id: null },
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+      navigation: { pathname: '/setup/ticket-statuses/new' },
+    },
+  },
+  decorators: [
+    (Story) => (
+      <div className="p-4 md:p-6">
+        <Story />
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof TicketStatusesForm>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+async function typeAndSubmit(root: HTMLElement): Promise<void> {
+  const canvas = within(root);
+  await userEvent.type(
+    await canvas.findByRole('textbox', { name: /^Ticket Status Name/ }),
+    'Waiting',
+  );
+  await userEvent.click(canvas.getByRole('button', { name: /Create ticket status/i }));
+}
+
+async function confirmSummary(): Promise<void> {
+  const dialog = await within(document.body).findByTestId('confirm-dialog');
+  const confirm = within(dialog).getByTestId('confirm-dialog-confirm');
+
+  await waitFor(async () => {
+    await expect(getComputedStyle(confirm).pointerEvents).not.toBe('none');
+  });
+
+  await userEvent.click(confirm);
+}
+
+export const Pending: Story = {
+  decorators: [withApi('pending')],
+  play: async ({ canvasElement }) => {
+    await typeAndSubmit(canvasElement);
+    await confirmSummary();
+
+    const buttons = await within(document.body).findAllByRole('button', {
+      name: /Creating ticket status/i,
+    });
+
+    for (const button of buttons) {
+      await expect(button).toBeDisabled();
+    }
+  },
+};
+
+export const FieldErrors: Story = {
+  decorators: [
+    withApi(
+      problem(HTTP_BAD_REQUEST, 'ERP-VALIDATION-0001', [
+        { path: ['name'], message: 'server text, never rendered' },
+      ]),
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    await typeAndSubmit(canvasElement);
+    await confirmSummary();
+
+    const summary = await within(canvasElement).findByTestId('error-summary');
+
+    await waitFor(async () => {
+      await expect(summary).toHaveFocus();
+    });
+  },
+};
+
+export const ServerError: Story = {
+  decorators: [withApi(problem(HTTP_SERVICE_UNAVAILABLE, 'ERP-UPSTREAM-0001'))],
+  play: async ({ canvasElement }) => {
+    await typeAndSubmit(canvasElement);
+    await confirmSummary();
+
+    await waitFor(async () => {
+      await expect(document.querySelector('[data-testid="confirm-dialog"]')).toBeNull();
+    });
+
+    const alert = await within(canvasElement).findByTestId('form-server-error');
+
+    await expect(within(alert).getByRole('button', { name: 'Retry' })).toBeVisible();
+  },
+};
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\components\TicketStatusForm.tsx ===
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useRef, useState, type ReactElement } from 'react';
+import { flushSync } from 'react-dom';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import type { z } from 'zod';
+import { InlineError } from '@/components/molecules/InlineError';
+import {
+  ConfirmDialog,
+  useConfirmCopy,
+  type ConfirmOutcome,
+  type SummaryChange,
+} from '@/components/organisms/ConfirmDialog';
+import { PageSkeleton } from '@/components/organisms/PageSkeleton';
+import { SchemaForm } from '@/components/organisms/SchemaForm';
+import {
+  TICKETSTATUSES_ERRORS,
+  TICKETSTATUSES_PATH,
+  ticketStatusesPath,
+  VALIDATION_CODE,
+} from '@/features/ticket-statuses/api/ticket-status.endpoints';
+import { useTicketStatuses } from '@/features/ticket-statuses/hooks/use-ticket-status';
+import { useSaveTicketStatuses } from '@/features/ticket-statuses/hooks/use-save-ticket-status';
+import {
+  EMPTY_TICKET_STATUS_FORM,
+  isTicketStatusField,
+  TICKET_STATUS_MESSAGE_KEYS,
+  TICKET_STATUS_NAME_MAX,
+  ticketStatusFormSchema,
+  ticketStatusRowSchema,
+  toTicketStatusForm,
+  validationIssuesSchema,
+  type TicketStatus,
+  type TicketStatusFormValues,
+  type TicketStatusRow,
+} from '@/features/ticket-statuses/schemas/ticket-status.schema';
+import { withAuth } from '@/hocs/withAuth';
+import { withPermission } from '@/hocs/withPermission';
+import type { ApiResult } from '@/lib/api/call-api';
+import { CLIENT_TIMINGS } from '@/lib/api/client-timings';
+import { replaceRowInLists, revalidateLists, useRowSeed } from '@/lib/api/row-seed';
+import type { CommonApiResult } from '@/lib/api/use-common-api';
+import { isRetryableCode } from '@/lib/errors/error-messages';
+import { useErrorText } from '@/lib/errors/use-error-text';
+import { useBreadcrumbLabel } from '@/lib/hooks/use-breadcrumb-label';
+import { readListReturn } from '@/lib/hooks/use-return-to-list';
+import { useUnsavedChanges } from '@/lib/hooks/use-unsaved-changes';
+import { useFormat } from '@/lib/i18n/format';
+
+const LIST_BASE = '/setup/ticket-statuses';
+const FORM_ID = 'ticket-statuses';
+
+interface TicketStatusFormProps {
+  /** The record's id from `[id]/page.tsx`; `null` on `/setup/ticket-statuses/new`. */
+  readonly id: string | null;
+}
+
+type RecordRead = CommonApiResult<TicketStatus>;
+type SaveFailure = Extract<ApiResult<TicketStatus>, { ok: false }>;
+
+function recordPath(id: string | null): ReturnType<typeof ticketStatusesPath> | null {
+  return id === null ? null : ticketStatusesPath(id);
+}
+
+function knownValues(record: TicketStatus | undefined): { values?: TicketStatusFormValues } {
+  return record === undefined ? {} : { values: toTicketStatusForm(record) };
+}
+
+/** True while there is no record to edit: a permalink before its record answers, or a 4xx read. */
+function waitsForRecord(
+  id: string | null,
+  item: RecordRead,
+  seed: TicketStatusRow | undefined,
+): boolean {
+  return (
+    id !== null &&
+    item.data === undefined &&
+    (seed === undefined || (item.error !== undefined && !item.error.retryable))
+  );
+}
+
+function breadcrumbLabel(
+  id: string | null,
+  record: TicketStatus | undefined,
+  item: RecordRead,
+): string | null | undefined {
+  if (id === null) return undefined;
+  const failureShown =
+    item.data === undefined &&
+    item.error !== undefined &&
+    (record === undefined || !item.error.retryable);
+  return failureShown ? null : record?.name;
+}
+
+function retryableFailure(result: ApiResult<TicketStatus> | undefined): SaveFailure | null {
+  return result !== undefined && !result.ok && isRetryableCode(result.code) ? result : null;
+}
+
+function nameChanges(
+  pending: TicketStatusFormValues | null,
+  record: TicketStatus | undefined,
+  label: string,
+): readonly SummaryChange[] {
+  return pending === null || record === undefined || pending.name === record.name
+    ? []
+    : [{ type: 'changed', label, from: record.name, to: pending.name }];
+}
+
+function discardTarget(
+  record: TicketStatus | undefined,
+  noun: string,
+): { readonly recordName: string } | { readonly noun: string } {
+  return record === undefined ? { noun } : { recordName: record.name };
+}
+
+function RecordState({
+  item,
+  errorText,
+  backLabel,
+}: {
+  readonly item: RecordRead;
+  readonly errorText: ReturnType<typeof useErrorText>;
+  readonly backLabel: string;
+}): ReactElement {
+  if (item.error === undefined) return <PageSkeleton variant="form" />;
+  return (
+    <InlineError
+      message={errorText(item.error)}
+      busy={item.isValidating}
+      {...(item.error.retryable
+        ? {
+          onRetry: () => {
+            void item.mutate();
+          },
+        }
+        : {})}
+      back={{ href: readListReturn(LIST_BASE), label: backLabel }}
+    />
+  );
+}
+
+/**
+ * The Ticket Statuses create and edit pages of Perfex's `ticket_status.php` (a modal there, a page here) on the
+ * kit's `SchemaForm`: one "Details" section with Perfex's editable name, colour and order fields.
+ * Every save is confirmed by a summary; names render as React text only.
+ */
+export function TicketStatusesForm({ id }: TicketStatusFormProps): ReactElement {
+  const t = useTranslations('ticket-statuses');
+  const tc = useTranslations('common');
+  const router = useRouter();
+  const f = useFormat();
+  const errorText = useErrorText(TICKETSTATUSES_ERRORS);
+  const copy = useConfirmCopy();
+  const seed = useRowSeed(recordPath(id), ticketStatusRowSchema);
+  const item = useTicketStatuses(id);
+  const record = item.data ?? seed;
+  const form = useForm<z.input<typeof ticketStatusFormSchema>, unknown, TicketStatusFormValues>({
+    resolver: zodResolver(ticketStatusFormSchema),
+    defaultValues: EMPTY_TICKET_STATUS_FORM,
+    ...knownValues(record),
+    resetOptions: { keepDirtyValues: true },
+  });
+  const { create, update } = useSaveTicketStatuses(id);
+  const mutation = id === null ? create : update;
+  const guard = useUnsavedChanges(form.formState.isDirty && !mutation.isMutating);
+  const lastSent = useRef<TicketStatusFormValues | null>(null);
+  const [pending, setPending] = useState<TicketStatusFormValues | null>(null);
+
+  async function afterSave(saved: TicketStatus): Promise<void> {
+    form.reset(toTicketStatusForm(saved));
+    if (id !== null) await item.mutate(saved, { revalidate: false });
+    if (id === null || seed === undefined) {
+      await revalidateLists(TICKETSTATUSES_PATH);
+    } else {
+      const row: TicketStatusRow = { ...seed, ...saved };
+      await replaceRowInLists(
+        TICKETSTATUSES_PATH,
+        row,
+        (one: TicketStatusRow) => one.id === row.id,
+      );
+    }
+    toast.success(t('saved_toast'), { duration: CLIENT_TIMINGS.toast.durationMs });
+    router.push(readListReturn(LIST_BASE), { scroll: false });
+  }
+
+  async function send(values: TicketStatusFormValues): Promise<ConfirmOutcome> {
+    lastSent.current = values;
+    const outcome = await mutation.trigger(values);
+    if (outcome.ok) {
+      await afterSave(outcome.data);
+      return { ok: true };
+    }
+    if (outcome.code === VALIDATION_CODE) {
+      const issues = validationIssuesSchema.safeParse(outcome.issues);
+      flushSync(() => {
+        setPending(null);
+        for (const issue of issues.success ? issues.data : []) {
+          const field = issue.path[0];
+          if (isTicketStatusField(field)) {
+            form.setError(field, { message: TICKET_STATUS_MESSAGE_KEYS[field] });
+          }
+        }
+      });
+      document
+        .getElementById(FORM_ID)
+        ?.querySelector<HTMLElement>('[data-testid="error-summary"]')
+        ?.focus();
+      return { ok: true };
+    }
+    if (isRetryableCode(outcome.code)) {
+      setPending(null);
+      return { ok: true };
+    }
+    return outcome;
+  }
+
+  useBreadcrumbLabel(breadcrumbLabel(id, record, item));
+
+  if (waitsForRecord(id, item, seed)) {
+    return <RecordState item={item} errorText={errorText} backLabel={tc('back_to_list')} />;
+  }
+
+  const failure = retryableFailure(mutation.result);
+  const noun = t('noun_ticket_status');
+  const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
+  const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
+  const changes = nameChanges(pending, record, t('ticket_status_name'));
+
+  function summaryTitle(): string {
+    return id === null
+      ? tc('create_summary_title', { noun, name: pending?.name ?? '' })
+      : tc('save_summary_title', { name: record?.name ?? '' });
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <h1 className="text-2xl font-semibold">{record?.name ?? t('add_ticket_status')}</h1>
+      <SchemaForm
+        id={FORM_ID}
+        form={form}
+        sections={[
+          {
+            id: 'details',
+            title: t('section_details'),
+
+            fields: [
+              {
+                name: 'name',
+                label: t('ticket_status_name'),
+                kind: 'text',
+                required: true,
+              },
+              {
+                name: 'statuscolor',
+                label: t('ticket_status_add_edit_color'),
+                kind: 'color',
+              },
+              {
+                name: 'statusorder',
+                label: t('ticket_status_add_edit_order'),
+                kind: 'number',
+
+              },
+            ],
+          },
+        ]}
+        onValid={(values) => {
+          setPending({ ...values, statusorder: Number(values.statusorder) });
+        }}
+        translateError={(key) => t(key, { max: f.number(TICKET_STATUS_NAME_MAX) })}
+        submitLabel={submitLabel}
+        pendingLabel={pendingLabel}
+        isPending={mutation.isMutating}
+        onBack={() => {
+          guard.requestLeave(readListReturn(LIST_BASE));
+        }}
+        serverError={
+          failure === null
+            ? null
+            : {
+              message: errorText(failure),
+              onRetry: () => {
+                if (lastSent.current !== null) {
+                  void send(lastSent.current);
+                }
+              },
+            }
+        }
+      />
+      <ConfirmDialog
+        kind="summary"
+        open={pending !== null}
+        onOpenChange={(open) => {
+          if (!open) setPending(null);
+        }}
+        title={summaryTitle()}
+        changes={changes}
+        dismissLabel={copy.backToForm}
+        confirmLabel={submitLabel}
+        pendingLabel={pendingLabel}
+        featureErrors={TICKETSTATUSES_ERRORS}
+        onConfirm={() => (pending === null ? { ok: true } : send(pending))}
+      />
+      <ConfirmDialog
+        kind="discard"
+        open={guard.pendingHref !== null}
+        onOpenChange={(open) => {
+          if (!open) guard.cancelLeave();
+        }}
+        {...copy.discard(discardTarget(record, noun))}
+        onConfirm={() => {
+          guard.confirmLeave();
+          return { ok: true };
+        }}
+      />
+    </div>
+  );
+}
+
+export const GuardedTicketStatusesForm = withAuth(
+  withPermission(TicketStatusesForm, { skeleton: 'form' }),
+  { skeleton: 'form' },
+);
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\components\TicketStatusList.stories.tsx ===
+
+import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
+import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import { SWRConfig } from 'swr';
+import type { ApiAdapter } from '@/lib/api/call-api';
+import { http } from '@/lib/api/http';
+import { setSession } from '@/lib/auth/session';
+import { TicketStatusList } from './TicketStatusList';
+
+const ADMIN = {
+  staffId: 1,
+  email: 'admin@example.invalid',
+  firstName: 'Admin',
+  lastName: 'User',
+  isAdmin: true,
+  roleId: null,
+  permissions: [],
+  locale: 'en',
+};
+
+const ticketStatuses = [
+  {
+    ticketstatusid: '11',
+    name: 'Open',
+    isdefault: 1,
+    statuscolor: '#03a9f4',
+    statusorder: 1,
+  },
+  {
+    ticketstatusid: '12',
+    name: 'Waiting',
+    isdefault: 0,
+    statuscolor: null,
+    statusorder: null,
+  },
+];
+
+type Answer = { readonly status: number; readonly body?: unknown } | 'pending';
+
+function respond(config: InternalAxiosRequestConfig, answer: Answer) {
+  if (answer === 'pending') return new Promise<never>(() => undefined);
+
+  const response = {
+    data: answer.body,
+    status: answer.status,
+    statusText: String(answer.status),
+    headers: new AxiosHeaders(),
+    config,
+  };
+
+  if (answer.status < 300) return Promise.resolve(response);
+
+  return Promise.reject(
+    new AxiosError('Request failed', 'ERR_BAD_RESPONSE', config, null, response),
+  );
+}
+
+function api(list: Answer): ApiAdapter {
+  return (config) => {
+    const path = (config.url ?? '').split('?')[0] ?? '';
+
+    if (path === '/api/v1/auth/me') {
+      return respond(config, { status: 200, body: ADMIN });
+    }
+
+    return respond(config, list);
+  };
+}
+
+function withApi(adapter: ApiAdapter): Decorator {
+  return function ApiDecorator(Story) {
+    setSession({ accessToken: 'story', csrfToken: 'story' });
+    http.defaults.adapter = adapter;
+
+    return (
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <Story />
+      </SWRConfig>
+    );
+  };
+}
+
+const LOADED: Answer = {
+  status: 200,
+  body: { data: ticketStatuses },
+};
+
+const meta = {
+  title: 'Features/TicketStatuses/TicketStatusList',
+  component: TicketStatusList,
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+      navigation: { pathname: '/setup/ticket-statuses' },
+    },
+  },
+  decorators: [withApi(api(LOADED))],
+} satisfies Meta<typeof TicketStatusList>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Loading: Story = {
+  decorators: [withApi(api('pending'))],
+};
+
+export const Empty: Story = {
+  decorators: [withApi(api({ status: 200, body: { data: [] } }))],
+};
+
+export const Error: Story = {
+  decorators: [
+    withApi(
+      api({
+        status: 503,
+        body: {
+          type: 'about:blank',
+          status: 503,
+          title: 'Service unavailable',
+          code: 'ERP-UPSTREAM-0001',
+        },
+      }),
+    ),
+  ],
+};
+
+export const Loaded: Story = {};
+export const BuiltInStatusHasNoDelete: Story = {
+  play: async ({ canvasElement }) => {
+    const { expect, within } = await import('storybook/test');
+    const canvas = within(canvasElement);
+
+    await expect(await canvas.findByRole('link', { name: 'Open' })).toBeVisible();
+    await expect(canvas.queryByRole('button', { name: 'Delete Open' })).toBeNull();
+  },
+};
+export const Mobile: Story = {
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};
+export const ArabicRTL: Story = {
+  parameters: {
+    locale: 'ar',
+    direction: 'rtl',
+  },
+};
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\components\TicketStatusList.tsx ===
+
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
+import { useState, type ReactElement } from 'react';
+import { toast } from 'sonner';
+import { ConfirmDialog, type ConfirmOutcome } from '@/components/organisms/ConfirmDialog';
+import { ListPageTemplate, type ListColumn } from '@/components/templates/ListPageTemplate';
+import {
+  TICKETSTATUSES_EXPORT_COLUMNS,
+  TICKETSTATUSES_EXPORT_PATH,
+  TICKETSTATUSES_ERRORS,
+  TICKETSTATUSES_PATH,
+  ticketStatusesPath,
+} from '@/features/ticket-statuses/api/ticket-status.endpoints';
+import { useDeleteTicketStatus } from '@/features/ticket-statuses/hooks/use-ticket-status';
+import {
+  ticketStatusRowSchema,
+  ticketStatusesListResponseSchema,
+  type TicketStatusRow,
+} from '@/features/ticket-statuses/schemas/ticket-status.schema';
+import { withAuth } from '@/hocs/withAuth';
+import { withPermission } from '@/hocs/withPermission';
+import { CLIENT_TIMINGS } from '@/lib/api/client-timings';
+import { revalidateLists, seedRow } from '@/lib/api/row-seed';
+import { recordListReturn } from '@/lib/hooks/use-return-to-list';
+
+const LIST_BASE = '/setup/ticket-statuses';
+
+const itemRoute = (row: TicketStatusRow): string =>
+  `${LIST_BASE}/${encodeURIComponent(row.id)}`;
+
+export function TicketStatusList(): ReactElement {
+  const t = useTranslations('ticket-statuses');
+  const tc = useTranslations('common');
+  const router = useRouter();
+
+  const [deleting, setDeleting] = useState<{
+    readonly row: TicketStatusRow;
+    readonly open: boolean;
+  } | null>(null);
+
+  const remove = useDeleteTicketStatus(deleting?.row.id ?? '0');
+
+  const open = (row: TicketStatusRow): void => {
+    recordListReturn(LIST_BASE);
+    seedRow(ticketStatusesPath(row.id), row);
+    router.push(itemRoute(row));
+  };
+
+  async function confirmDelete(): Promise<ConfirmOutcome> {
+    const outcome = await remove.trigger(undefined);
+
+    if (outcome.ok) {
+      toast.success(t('deleted_toast'), {
+        duration: CLIENT_TIMINGS.toast.durationMs,
+      });
+      setDeleting(null);
+    } else if (
+      outcome.code === 'ERP-CORE-0004' ||
+      outcome.code === 'ERP-TICKETSTATUSES-0001'
+    ) {
+      await revalidateLists(TICKETSTATUSES_PATH);
+    }
+
+    return outcome;
+  }
+
+  const columns: readonly ListColumn<TicketStatusRow>[] = [
+    {
+      id: 'id',
+      header: t('id'),
+      sortField: 'id',
+      sortValue: (one) => Number(one.id),
+      cell: (one) => <bdi className="tabular-nums">{one.id}</bdi>,
+    },
+    {
+      id: 'name',
+      header: t('ticket_status_name'),
+      sortField: 'name',
+      sortValue: (one) => one.name,
+      primary: true,
+      cell: (one) => one.name,
+    },
+  ];
+
+  const row = deleting?.row;
+
+  return (
+    <>
+      <ListPageTemplate
+        title={t('ticket_statuses')}
+        path={TICKETSTATUSES_PATH}
+        rowSchema={ticketStatusRowSchema}
+        unpaginated={{
+          responseSchema: ticketStatusesListResponseSchema,
+          clientPagination: true,
+          matchesSearch: (one, query) =>
+            one.id.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+            one.name.toLocaleLowerCase().includes(query.toLocaleLowerCase()),
+        }}
+        listBase={LIST_BASE}
+        rowKey={(one) => one.id}
+        rowHref={itemRoute}
+        recordName={(one) => one.name}
+        onRowOpen={(one) => {
+          seedRow(ticketStatusesPath(one.id), one);
+        }}
+        columns={columns}
+        rowActions={(one) => [
+          {
+            id: 'edit',
+            kind: 'main',
+            icon: 'pen-to-square',
+            label: tc('edit'),
+            ariaLabel: t('edit_action_named', { name: one.name }),
+            onSelect: () => open(one),
+          },
+          ...(one.isdefault === 1
+            ? []
+            : [
+                {
+                  id: 'delete',
+                  kind: 'destructive' as const,
+                  icon: 'trash-can' as const,
+                  label: tc('delete'),
+                  ariaLabel: t('delete_action_named', { name: one.name }),
+                  onSelect: () => setDeleting({ row: one, open: true }),
+                },
+              ]),
+        ]}
+        createAction={{
+          label: t('add_ticket_status'),
+          href: `${LIST_BASE}/new`,
+        }}
+        exportAction={{
+          path: TICKETSTATUSES_EXPORT_PATH,
+          columns: TICKETSTATUSES_EXPORT_COLUMNS,
+          labels: {
+            id: t('id'),
+            name: t('ticket_status_name'),
+          },
+        }}
+        empty={{
+          nothingYetHeading: t('empty_heading'),
+          nothingYetBody: t('empty_body'),
+          noResultsHeading: (query) => t('no_match_heading', { query }),
+          noResultsBody: t('no_match_body'),
+        }}
+        recordsNoun={t('noun_ticket_statuses')}
+        featureErrors={TICKETSTATUSES_ERRORS}
+      />
+
+      <ConfirmDialog
+        kind="destructive"
+        open={deleting?.open === true}
+        onOpenChange={(next) => {
+          setDeleting((current) =>
+            current === null ? null : { ...current, open: next },
+          );
+        }}
+        title={t('delete_title', { name: row?.name ?? '' })}
+        body={t('delete_body')}
+        dismissLabel={tc('keep_noun', {
+          noun: t('noun_ticket_status'),
+        })}
+        confirmLabel={tc('delete_noun', {
+          noun: t('noun_ticket_status'),
+        })}
+        pendingLabel={tc('deleting_noun', {
+          noun: t('noun_ticket_status'),
+        })}
+        featureErrors={TICKETSTATUSES_ERRORS}
+        onConfirm={confirmDelete}
+      />
+    </>
+  );
+}
+
+export const GuardedTicketStatusesList = withAuth(
+  withPermission(TicketStatusList, { skeleton: 'list' }),
+  { skeleton: 'list' },
+);
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\components\__tests__\TicketStatusForm.test.tsx ===
+// @vitest-environment happy-dom
+import { cleanup, within } from '@testing-library/react';
+import { SWRConfig } from 'swr';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { resetApiStatus } from '@/lib/api/api-status';
+import { http } from '@/lib/api/http';
+import { clearSession, setSession } from '@/lib/auth/session';
+import { fakeAdapter } from '@/test/axios-fakes';
+import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
+import { TicketStatusesForm } from '../TicketStatusForm';
+
+const navigation = vi.hoisted(() => ({ push: vi.fn() }));
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => navigation,
+  usePathname: () => '/setup/ticket-statuses/new',
+}));
+
+const VALUES = { name: 'Waiting', statuscolor: '', statusorder: 0 };
+const STATUS = { ticketstatusid: '13', ...VALUES, isdefault: 0 };
+
+function show() {
+  return renderWithProviders(
+    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+      <TicketStatusesForm id={null} />
+    </SWRConfig>,
+  );
+}
+
+function showEdit() {
+  return renderWithProviders(
+    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+      <TicketStatusesForm id="13" />
+    </SWRConfig>,
+  );
+}
+
+beforeEach(() => {
+  setSession({ accessToken: 'test', csrfToken: 'test' });
+  resetApiStatus();
+  navigation.push.mockReset();
+});
+
+afterEach(() => {
+  cleanup();
+  clearSession();
+  delete http.defaults.adapter;
+});
+
+describe('TicketStatusesForm', () => {
+  it('validates the name before opening confirmation or sending a mutation', async () => {
+    const writes = fakeAdapter(201, STATUS);
+    http.defaults.adapter = writes.adapter;
+    show();
+    const name = screen.getByRole('textbox', { name: 'Ticket Status Name' });
+    await userEvent.type(name, 'x'.repeat(51));
+    await userEvent.click(screen.getByRole('button', { name: 'Create ticket status' }));
+    expect(await screen.findByTestId('error-summary')).toBeTruthy();
+    expect(screen.queryByTestId('confirm-dialog')).toBeNull();
+    expect(writes.calls).toEqual([]);
+  });
+
+  it('confirms a valid create, sends only form fields, and navigates back on success', async () => {
+    const writes = fakeAdapter(201, STATUS);
+    http.defaults.adapter = writes.adapter;
+    show();
+    await userEvent.type(screen.getByRole('textbox', { name: 'Ticket Status Name' }), 'Waiting');
+    await userEvent.click(screen.getByRole('button', { name: 'Create ticket status' }));
+
+    const dialog = await screen.findByTestId('confirm-dialog');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Create ticket status' }));
+
+    await waitFor(() => {
+      expect(navigation.push).toHaveBeenCalledWith('/setup/ticket-statuses', { scroll: false });
+    });
+    expect(writes.calls.map(({ method, url, data }) => [method, url, data])).toEqual([
+      ['POST', '/api/v1/ticket-statuses', VALUES],
+    ]);
+  });
+
+  it('loads an existing status and confirms updates through its detail endpoint', async () => {
+    const writes = fakeAdapter(200, STATUS);
+    http.defaults.adapter = writes.adapter;
+    showEdit();
+    const name = await screen.findByRole('textbox', { name: 'Ticket Status Name' });
+    await waitFor(() => {
+      expect((name as HTMLInputElement).value).toBe('Waiting');
+    });
+    await userEvent.clear(name);
+    await userEvent.type(name, 'In progress');
+    await userEvent.click(screen.getByRole('button', { name: 'Save ticket status' }));
+
+    const dialog = await screen.findByTestId('confirm-dialog');
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Save ticket status' }));
+
+    await waitFor(() => {
+      expect(navigation.push).toHaveBeenCalledWith('/setup/ticket-statuses', { scroll: false });
+    });
+    expect(writes.calls.map(({ method, url, data }) => [method, url, data])).toEqual([
+      ['GET', '/api/v1/ticket-statuses/13', undefined],
+      ['PATCH', '/api/v1/ticket-statuses/13', { ...VALUES, name: 'In progress' }],
+    ]);
+  });
+});
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\components\__tests__\TicketStatusList.test.tsx ===
+// @vitest-environment happy-dom
+import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
+import { AxiosHeaders } from 'axios';
+import { SWRConfig } from 'swr';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { renderWithProviders, screen, userEvent, waitFor, within } from '@/test/render';
+import { resetApiStatus } from '@/lib/api/api-status';
+import { clearSession, setSession } from '@/lib/auth/session';
+import { http } from '@/lib/api/http';
+import { TicketStatusList } from '@/features/ticket-statuses/components/TicketStatusList';
+
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
+}));
+
+const ticketStatuses = [
+  {
+    ticketstatusid: '11',
+    name: 'Open',
+    isdefault: 1,
+    statuscolor: '#03a9f4',
+    statusorder: 1,
+  },
+  {
+    ticketstatusid: '12',
+    name: 'Waiting',
+    isdefault: 0,
+    statuscolor: null,
+    statusorder: null,
+  },
+  ...Array.from({ length: 28 }, (_, index) => {
+    const id = String(index + 13);
+    return {
+      ticketstatusid: id,
+      name: `Status ${id}`,
+      isdefault: 0,
+      statuscolor: null,
+      statusorder: index + 3,
+    };
+  }),
+];
+
+const requests: { readonly method: string; readonly url: URL }[] = [];
+
+function listAdapter(): AxiosAdapter {
+  return (config: InternalAxiosRequestConfig) => {
+    const url = new URL(http.getUri(config), 'http://erp.invalid');
+    const method = (config.method ?? 'get').toUpperCase();
+    requests.push({ method, url });
+    const isMe = url.pathname === '/api/v1/auth/me';
+    const isExport = url.pathname === '/api/v1/ticket-statuses/export';
+    const body = isMe
+      ? {
+        staffId: 1,
+        email: 'admin@example.invalid',
+        firstName: 'Admin',
+        lastName: 'User',
+        isAdmin: true,
+        roleId: null,
+        permissions: [],
+        locale: 'en',
+      }
+      : isExport
+        ? new Blob(['id,name\r\n11,Open\r\n'], { type: 'text/csv' })
+        : { data: ticketStatuses };
+    return Promise.resolve({
+      data: body,
+      status: 200,
+      statusText: '200',
+      headers: new AxiosHeaders(),
+      config,
+    });
+  };
+}
+
+describe('Ticket Statuses list integration', () => {
+  beforeEach(() => {
+    setSession({ accessToken: 'test-only', csrfToken: 'test-only' });
+    resetApiStatus();
+    requests.length = 0;
+    localStorage.setItem('erp.list.pageSize.1', '25');
+    http.defaults.adapter = listAdapter();
+  });
+
+  afterEach(() => {
+    delete http.defaults.adapter;
+    clearSession();
+    localStorage.clear();
+    vi.restoreAllMocks();
+  });
+
+it('paginates locally, hides Delete for built-in statuses, and exports the visible list columns', async () => {    const user = userEvent.setup();
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:ticket-statuses/test');
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => undefined);
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <TicketStatusList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+
+    const table = await screen.findByTestId('list-table');
+    expect(screen.getByRole('link', { name: 'Waiting' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Open' })).toBeTruthy();
+    expect(within(table).getAllByRole('row')).toHaveLength(26);
+    expect(screen.queryByRole('button', { name: 'Delete Open' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Delete Waiting' })).toBeTruthy(); expect(screen.getByRole('button', { name: 'Edit Open' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Edit Waiting' })).toBeTruthy();
+    expect(screen.getByTestId('list-pager')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Export' })).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Actions for Open' }));
+    expect(screen.queryByRole('menuitem', { name: /delete/i })).toBeNull();
+    expect(screen.getByRole('menuitem', { name: 'Edit Open' })).toBeTruthy();
+    await waitFor(() => {
+      expect(requests.some(({ url }) => url.pathname === '/api/v1/ticket-statuses')).toBe(true);
+    });
+
+    await user.keyboard('{Escape}');
+    await user.click(screen.getByRole('button', { name: 'Next' }));
+    await waitFor(() => {
+      expect(within(table).getAllByRole('row')).toHaveLength(6);
+    });
+    expect(screen.getByRole('link', { name: 'Status 40' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Previous' }).hasAttribute('disabled')).toBe(false);
+    expect(screen.getByRole('button', { name: 'Next' }).hasAttribute('disabled')).toBe(true);
+
+    await user.click(screen.getByRole('button', { name: 'Export' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'CSV' }));
+    await waitFor(() => {
+      expect(requests.some(({ url }) => url.pathname === '/api/v1/ticket-statuses/export')).toBe(
+        true,
+      );
+    });
+    const exported = requests.find(({ url }) => url.pathname === '/api/v1/ticket-statuses/export');
+    expect(exported?.url.searchParams.get('format')).toBe('csv');
+    expect(exported?.url.searchParams.getAll('column')).toEqual(['id', 'name']);
+    expect(exported?.url.searchParams.getAll('header')).toEqual(['ID', 'Ticket Status Name']);
+    expect(
+      requests.filter(
+        ({ url }) =>
+          url.pathname.startsWith('/api/v1/ticket-statuses') &&
+          url.pathname !== '/api/v1/ticket-statuses/export',
+      ),
+    ).toHaveLength(1);
+  });
+});
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\hooks\use-save-ticket-status.ts ===
+import {
+  TICKETSTATUSES_ENDPOINTS,
+  TICKETSTATUSES_PATH,
+  ticketStatusesPath,
+} from '@/features/ticket-statuses/api/ticket-status.endpoints';
+import { useCommonMutation, type CommonMutation } from '@/lib/api/use-common-mutation';
+import {
+  ticketStatusSchema,
+  type TicketStatus,
+  type TicketStatusFormValues,
+} from '@/features/ticket-statuses/schemas/ticket-status.schema';
+export interface TicketStatusSave {
+  readonly create: CommonMutation<TicketStatusFormValues, TicketStatus>;
+  readonly update: CommonMutation<TicketStatusFormValues, TicketStatus>;
+}
+
+/** The two writes of the form. NEVER retried automatically; they invalidate nothing (the screen does it). */
+export function useSaveTicketStatuses(id: string | null): TicketStatusSave {
+  const create = useCommonMutation<TicketStatusFormValues, TicketStatus>(TICKETSTATUSES_PATH, {
+    method: TICKETSTATUSES_ENDPOINTS.create.method,
+    schema: ticketStatusSchema,
+    invalidate: [],
+  });
+  const update = useCommonMutation<TicketStatusFormValues, TicketStatus>(
+    id === null ? TICKETSTATUSES_PATH : ticketStatusesPath(id),
+    { method: TICKETSTATUSES_ENDPOINTS.update.method, schema: ticketStatusSchema, invalidate: [] },
+  );
+  return { create, update };
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\hooks\use-ticket-status.ts ===
+import { ticketStatusesHooks } from '@/features/ticket-statuses/api/ticket-status.endpoints';
+import type { CommonApiResult } from '@/lib/api/use-common-api';
+import type { CommonMutation } from '@/lib/api/use-common-mutation';
+import type { TicketStatus } from '@/features/ticket-statuses/schemas/ticket-status.schema';
+
+/** `GET /api/v1/ticket-statuses/:id`. A `null` id (the create screen) is no request. */
+export function useTicketStatuses(id: string | null): CommonApiResult<TicketStatus> {
+  return ticketStatusesHooks.useOne(id);
+}
+
+/** `DELETE /api/v1/ticket-statuses/:id`: 204 revalidates the list; a 409 or 404 is a resolved failure the dialog shows. */
+export function useDeleteTicketStatus(id: string): CommonMutation<undefined, null> {
+  return ticketStatusesHooks.useRemove(id);
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\hooks\__tests__\use-save-ticket-status.test.tsx ===
+// @vitest-environment happy-dom
+import { cleanup } from '@testing-library/react';
+import { SWRConfig } from 'swr';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { resetApiStatus } from '@/lib/api/api-status';
+import { http } from '@/lib/api/http';
+import { clearSession, setSession } from '@/lib/auth/session';
+import { fakeAdapter } from '@/test/axios-fakes';
+import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
+import { useSaveTicketStatuses } from '../use-save-ticket-status';
+
+const VALUES = { name: 'Waiting', statuscolor: '#a1b2c3', statusorder: 2 };
+const STATUS = {
+  ticketstatusid: '7',
+  ...VALUES,
+  isdefault: 0,
+};
+
+function SaveProbe({ id }: { readonly id: string | null }) {
+  const { create, update } = useSaveTicketStatuses(id);
+  const mutation = id === null ? create : update;
+  return (
+    <div>
+      <button type="button" onClick={() => void mutation.trigger(VALUES)}>
+        save
+      </button>
+      <output
+        data-testid="save"
+        data-ok={mutation.result === undefined ? '' : String(mutation.result.ok)}
+      >
+        {mutation.result?.ok ? mutation.result.data.name : ''}
+      </output>
+    </div>
+  );
+}
+
+const show = (id: string | null) =>
+  renderWithProviders(
+    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+      <SaveProbe id={id} />
+    </SWRConfig>,
+  );
+
+beforeEach(() => {
+  setSession({ accessToken: 'test', csrfToken: 'test' });
+  resetApiStatus();
+});
+
+afterEach(() => {
+  cleanup();
+  clearSession();
+  delete http.defaults.adapter;
+});
+
+describe('useSaveTicketStatuses', () => {
+  it.each([
+    [null, 'POST', '/api/v1/ticket-statuses'],
+    ['7', 'PATCH', '/api/v1/ticket-statuses/7'],
+  ] as const)('sends %s to %s %s and parses the saved status', async (id, method, url) => {
+    const writes = fakeAdapter(200, STATUS);
+    http.defaults.adapter = writes.adapter;
+    show(id);
+    await userEvent.click(screen.getByRole('button', { name: 'save' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('save').getAttribute('data-ok')).toBe('true');
+    });
+    expect(screen.getByTestId('save').textContent).toContain('Waiting');
+    expect(
+      writes.calls.map(({ method: actualMethod, url: actualUrl, data }) => [
+        actualMethod,
+        actualUrl,
+        data,
+      ]),
+    ).toEqual([[method, url, VALUES]]);
+  });
+});
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\hooks\__tests__\use-ticket-status.test.tsx ===
+// @vitest-environment happy-dom
+import { cleanup } from '@testing-library/react';
+import { SWRConfig } from 'swr';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { resetApiStatus } from '@/lib/api/api-status';
+import { http } from '@/lib/api/http';
+import { clearSession, setSession } from '@/lib/auth/session';
+import { fakeAdapter, problem } from '@/test/axios-fakes';
+import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
+import { useDeleteTicketStatus, useTicketStatuses } from '../use-ticket-status';
+
+const STATUS = {
+  ticketstatusid: 'a 1',
+  name: 'Waiting',
+  isdefault: 0,
+  statuscolor: '#a1b2c3',
+  statusorder: 2,
+};
+
+function ReadProbe({ id }: { readonly id: string | null }) {
+  const { data, error } = useTicketStatuses(id);
+  return (
+    <output data-testid="status" data-code={error?.code ?? ''}>
+      {data?.name ?? ''}
+    </output>
+  );
+}
+
+function DeleteProbe({ id }: { readonly id: string }) {
+  const { trigger, result } = useDeleteTicketStatus(id);
+  return (
+    <div>
+      <button type="button" onClick={() => void trigger(undefined)}>
+        delete
+      </button>
+      <output
+        data-testid="delete"
+        data-ok={result === undefined ? '' : String(result.ok)}
+        data-code={result?.ok === false ? result.code : ''}
+      />
+    </div>
+  );
+}
+
+const show = (child: React.ReactNode) =>
+  renderWithProviders(
+    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>{child}</SWRConfig>,
+  );
+
+beforeEach(() => {
+  setSession({ accessToken: 'test', csrfToken: 'test' });
+  resetApiStatus();
+});
+
+afterEach(() => {
+  cleanup();
+  clearSession();
+  delete http.defaults.adapter;
+});
+
+describe('useTicketStatuses', () => {
+  it('reads and parses GET /api/v1/ticket-statuses/:id with the id encoded', async () => {
+    const reads = fakeAdapter(200, STATUS);
+    http.defaults.adapter = reads.adapter;
+    show(<ReadProbe id="a 1" />);
+    expect(await screen.findByText('Waiting')).toBeTruthy();
+    expect(reads.calls.map(({ method, url }) => [method, url])).toEqual([
+      ['GET', '/api/v1/ticket-statuses/a%201'],
+    ]);
+  });
+
+  it('does not make a request for the create screen and exposes read failures', async () => {
+    const reads = fakeAdapter(404, problem(404, 'ERP-CORE-0004'));
+    http.defaults.adapter = reads.adapter;
+    show(<ReadProbe id={null} />);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(reads.calls).toEqual([]);
+
+    cleanup();
+    show(<ReadProbe id="7" />);
+    expect((await screen.findByTestId('status')).getAttribute('data-code')).toBe('ERP-CORE-0004');
+  });
+});
+
+describe('useDeleteTicketStatus', () => {
+  it('sends a bodyless DELETE and reports a successful 204', async () => {
+    const writes = fakeAdapter(204);
+    http.defaults.adapter = writes.adapter;
+    show(<DeleteProbe id="7" />);
+    await userEvent.click(screen.getByRole('button', { name: 'delete' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('true');
+    });
+    expect(writes.calls.map(({ method, url, data }) => [method, url, data])).toEqual([
+      ['DELETE', '/api/v1/ticket-statuses/7', undefined],
+    ]);
+  });
+
+  it('keeps backend deletion refusals as failures', async () => {
+    const writes = fakeAdapter(409, problem(409, 'ERP-TICKETSTATUSES-0002'));
+    http.defaults.adapter = writes.adapter;
+    show(<DeleteProbe id="7" />);
+    await userEvent.click(screen.getByRole('button', { name: 'delete' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('delete').getAttribute('data-code')).toBe(
+        'ERP-TICKETSTATUSES-0002',
+      );
+    });
+    expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('false');
+    expect(writes.calls).toHaveLength(1);
+  });
+});
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\messages\ar.json ===
+{
+  "ticket-statuses": {
+    "ticket_statuses": "حالات التذاكر",
+    "add_ticket_status": "إضافة حالة تذكرة",
+    "id": "المعرّف",
+    "ticket_status_name": "اسم حالة التذكرة",
+    "status_color": "لون الحالة",
+    "status_order": "ترتيب الحالة",
+    "noun_ticket_status": "حالة تذكرة",
+    "noun_ticket_statuses": "حالات التذاكر",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد حالات تذاكر حتى الآن",
+    "empty_body": "أضف حالة تذكرة لتحديد الحالة الحالية للتذاكر.",
+    "no_match_heading": "لا توجد حالات تذاكر تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض جميع حالات التذاكر.",
+    "enter_name": "أدخل اسم حالة التذكرة.",
+    "name_too_long": "يجب ألا يتجاوز اسم حالة التذكرة {max} حرفًا.",
+    "enter_colour": "أدخل لون الحالة باستخدام 7 أحرف كحد أقصى.",
+    "enter_order": "أدخل عددًا صحيحًا لترتيب الحالة.",
+    "saved_toast": "تم حفظ حالة التذكرة",
+    "acs_ticket_statuses_submenu": "حالات التذاكر",
+    "new_ticket_status": "حالة تذكرة جديدة",
+    "ticket_statuses_dt_name": "حالة التذكرة",
+    "edit_action_named": "تعديل {name}",
+    "ticket_status_add_edit_color": "لون حالة التذكرة",
+    "ticket_status_add_edit_order": "ترتيب حالة التذكرة",
+    "is_referenced": "حالة التذكرة مستخدمة حاليًا ولا يمكن حذفها.",
+    "cant_delete_default": "لا يمكن حذف حالة التذكرة الافتراضية.",
+    "errors": {
+      "ERP-CORE-0004": "لم تعد حالة التذكرة هذه موجودة. ربما تمت إزالتها.",
+      "ERP-TICKETSTATUSES-0001": "لا يزال استخدام حالة التذكرة هذه قائمًا، لذا لا يمكن حذفها. أزلها من جميع التذاكر والإعدادات الافتراضية التي تستخدمها أولًا، ثم احذفها.",
+      "ERP-TICKETSTATUSES-0002": "لا يمكن حذف حالة التذكرة الافتراضية."
+    }
+  }
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\messages\en.json ===
+{
+  "ticket-statuses": {
+    "ticket_statuses": "Ticket Statuses",
+    "add_ticket_status": "Add Ticket Status",
+    "id": "ID",
+    "ticket_status_name": "Ticket Status Name",
+    "status_color": "Status Color",
+    "status_order": "Status Order",
+    "noun_ticket_status": "ticket status",
+    "noun_ticket_statuses": "ticket statuses",
+    "section_details": "Details",
+    "empty_heading": "No ticket statuses yet",
+    "empty_body": "Add a ticket status so tickets can use it to indicate their current state.",
+    "no_match_heading": "No ticket statuses match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every ticket status.",
+    "enter_name": "Enter a ticket status name.",
+    "name_too_long": "Keep the ticket status name to {max} characters or fewer.",
+    "enter_colour": "Enter a status color using up to 7 characters.",
+    "enter_order": "Enter a whole number for the status order.",
+    "saved_toast": "Ticket status saved",
+    "acs_ticket_statuses_submenu": "Ticket Statuses",
+    "new_ticket_status": "New Ticket Status",
+    "ticket_statuses_dt_name": "Ticket Status",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete {name}",
+    "delete_title": "Delete ticket status: {name}?",
+    "delete_body": "This action cannot be undone.",
+    "deleted_toast": "Ticket status deleted successfully",
+    "ticket_status_add_edit_color": "Status Color",
+    "ticket_status_add_edit_order": "Status Order",
+    "is_referenced": "This ticket status is currently in use and cannot be deleted.",
+    "cant_delete_default": "The default ticket status cannot be deleted.",
+    "errors": {
+      "ERP-CORE-0004": "This ticket status no longer exists. It may have been removed.",
+      "ERP-TICKETSTATUSES-0001": "This ticket status is still in use, so it can't be deleted. Remove it from all tickets and default settings that use it first, then delete it.",
+      "ERP-TICKETSTATUSES-0002": "The default ticket status cannot be deleted."
+    }
+  }
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\pages\TicketStatusListPage.tsx ===
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import type { ReactElement } from 'react';
+import { GuardedTicketStatusesList } from '@/features/ticket-statuses/components/TicketStatusList';
+import { SHELL_MESSAGE_NAMESPACES } from '@/features/shell';
+import { pick } from '@/lib/i18n/pick';
+
+export async function TicketStatusListPage(): Promise<ReactElement> {
+  const messages = await getMessages();
+  return (
+<NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'ticket-statuses'])}>      <GuardedTicketStatusesList />
+    </NextIntlClientProvider>
+  );
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\pages\TicketStatusPage.tsx ===
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import type { ReactElement } from 'react';
+import { GuardedTicketStatusesForm } from '@/features/ticket-statuses/components/TicketStatusForm';
+import { SHELL_MESSAGE_NAMESPACES } from '@/features/shell';
+import { pick } from '@/lib/i18n/pick';
+
+interface TicketStatusPageProps {
+  readonly id: string | null;
+}
+
+export async function TicketStatusPage({ id }: TicketStatusPageProps): Promise<ReactElement> {
+  const messages = await getMessages();
+  return (
+<NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'ticket-statuses'])}>      <GuardedTicketStatusesForm id={id} />
+    </NextIntlClientProvider>
+  );
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\schemas\ticket-status.schema.ts ===
+import { z } from 'zod';
+
+export const TICKET_STATUS_MESSAGE_KEYS = {
+  name: 'enter_name',
+  nameTooLong: 'name_too_long',
+  statuscolor: 'enter_colour',
+  statusorder: 'enter_order',
+} as const;
+
+export const TICKET_STATUS_NAME_MAX = 50;
+
+export const ticketStatusSchema = z
+  .strictObject({
+    ticketstatusid: z.string(),
+    name: z.string().max(TICKET_STATUS_NAME_MAX),
+    isdefault: z.number().int(),
+    statuscolor: z.string().nullable(),
+    statusorder: z.number().int().nullable(),
+  })
+  .transform(({ ticketstatusid, statuscolor, statusorder, ...status }) => ({
+    ...status,
+    id: ticketstatusid,
+    statuscolor: statuscolor ?? '',
+    statusorder: statusorder ?? 0,
+  }));
+
+/** The backend list response has no pagination metadata: `GET /ticket-statuses` returns `{ data }`. */
+export const ticketStatusesListResponseSchema = z
+  .strictObject({ data: z.array(ticketStatusSchema).readonly() })
+  .readonly();
+
+export type TicketStatus = z.infer<typeof ticketStatusSchema>;
+
+export const ticketStatusRowSchema = ticketStatusSchema;
+export type TicketStatusRow = z.infer<typeof ticketStatusRowSchema>;
+
+export const ticketStatusFormSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(1, TICKET_STATUS_MESSAGE_KEYS.name)
+    .max(TICKET_STATUS_NAME_MAX, TICKET_STATUS_MESSAGE_KEYS.nameTooLong),
+  statuscolor: z.string().max(7, TICKET_STATUS_MESSAGE_KEYS.statuscolor),
+  statusorder: z.union([
+    z.literal('').transform(() => 0),
+    z.coerce.number().int(),
+  ]),
+});
+
+export type TicketStatusFormValues = z.infer<typeof ticketStatusFormSchema>;
+
+export const EMPTY_TICKET_STATUS_FORM: TicketStatusFormValues = {
+  name: '',
+  statuscolor: '',
+  statusorder: 0,
+};
+
+export function toTicketStatusForm(item: TicketStatus): TicketStatusFormValues {
+  return {
+    name: item.name,
+    statuscolor: item.statuscolor,
+    statusorder: item.statusorder,
+  };
+}
+
+export const TICKET_STATUS_FIELDS = ['name', 'statuscolor', 'statusorder'] as const;
+
+export type TicketStatusField = (typeof TICKET_STATUS_FIELDS)[number];
+
+export function isTicketStatusField(value: unknown): value is TicketStatusField {
+  return (TICKET_STATUS_FIELDS as readonly unknown[]).includes(value);
+}
+
+export const validationIssuesSchema = z.array(
+  z.object({
+    path: z.array(z.union([z.string(), z.number()])),
+    message: z.string(),
+  }),
+);
+
+export type ValidationIssue = z.infer<typeof validationIssuesSchema>[number];
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\src\features\ticket-statuses\schemas\__tests__\ticket-status.schema.test.ts ===
+import { describe, expect, it } from 'vitest';
+import {
+  ticketStatusFormSchema,
+  ticketStatusesListResponseSchema,
+} from '@/features/ticket-statuses/schemas/ticket-status.schema';
+
+const ticketStatus = {
+  ticketstatusid: '1',
+  name: 'Open',
+  isdefault: 1,
+  statuscolor: '#03a9f4',
+  statusorder: 1,
+};
+
+describe('Ticket Statuses API contract', () => {
+  it('parses the backend list shape without pagination metadata and rejects unexpected fields', () => {
+    expect(ticketStatusesListResponseSchema.parse({ data: [ticketStatus] })).toEqual({
+      data: [
+        {
+          id: '1',
+          name: 'Open',
+          isdefault: 1,
+          statuscolor: '#03a9f4',
+          statusorder: 1,
+        },
+      ],
+    });
+    expect(
+      ticketStatusesListResponseSchema.safeParse({
+        data: [ticketStatus],
+        meta: { nextCursor: null },
+      }).success,
+    ).toBe(false);
+  });
+
+  it('validates form names, colors and status order before sending', () => {
+    const valid = { name: 'Waiting', statuscolor: '#a1B2c3', statusorder: 2 };
+
+    expect(ticketStatusFormSchema.safeParse(valid).success).toBe(true);
+    expect(ticketStatusFormSchema.safeParse({ ...valid, name: 'x'.repeat(51) }).success).toBe(
+      false,
+    );
+
+    expect(ticketStatusFormSchema.safeParse({ ...valid, statuscolor: 'red' }).success).toBe(true);
+    expect(ticketStatusFormSchema.safeParse({ ...valid, statuscolor: '12345678' }).success).toBe(
+      false,
+    );
+
+    expect(ticketStatusFormSchema.safeParse({ ...valid, statusorder: '' }).success).toBe(true);
+    expect(ticketStatusFormSchema.safeParse({ ...valid, statusorder: -1 }).success).toBe(true);
+    expect(ticketStatusFormSchema.safeParse({ ...valid, statusorder: 1.5 }).success).toBe(false);
+  });
+});
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\app\(shell)\setup\ticket-statuses\error.tsx ===
+'use client';
+
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
+
+interface RouteErrorProps {
+  readonly error: Error & { digest?: string };
+  readonly reset: () => void;
+}
+
+/**
+ * The route-segment error boundary for /setup/ticket-statuses/** (FE-05). It sits inside the feature's
+ * route folder so it moves with the screens, inside the shell's one `<main>` (so it renders none).
+ * The shell's layout (and with it the `common` slice) is still mounted, so both strings are
+ * message keys; `error.message` and `digest` are NEVER rendered (T-3-12), and the prop is received
+ * only so the signature is Next's.
+ */
+export default function RouteError({ reset }: RouteErrorProps) {
+  const t = useTranslations('common');
+  return (
+    <div
+      role="alert"
+     data-testid="ticket-statuses-route-error"
+      className="flex flex-col items-start gap-4"
+    >
+      <p>{t('something_went_wrong')}</p>
+      <Button type="button" onClick={reset}>
+        {t('try_again')}
+      </Button>
+    </div>
+  );
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\app\(shell)\setup\ticket-statuses\page.tsx ===
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { TicketStatusListPage } from '@/features/ticket-statuses/pages/TicketStatusListPage';
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('ticket-statuses');
+  return { title: t('acs_ticket_statuses_submenu') };
+}
+
+// Request-time render: the list is the signed-in member's own view of the api, never baked in at
+// build time. Its search, sort and page live in the URL and are read in the browser (FE-15).
+export const dynamic = 'force-dynamic';
+
+export default function Page() {
+  return <TicketStatusListPage />;
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\app\(shell)\setup\ticket-statuses\new\page.tsx ===
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { TicketStatusPage } from '@/features/ticket-statuses/pages/TicketStatusPage';
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('ticket-statuses');
+  return { title: t('new_ticket_status') };
+}
+
+// Request-time render: the form is behind a session, so it must never be prerendered at build time.
+export const dynamic = 'force-dynamic';
+
+export default function Page() {
+  return <TicketStatusPage id={null} />;
+}
+
+=== FILE: C:\Users\Revanth\Documents\ERP\erp-web\app\(shell)\setup\ticket-statuses\[id]\page.tsx ===
+
+=== FILE: src/messages/index.ts ===
+import type { AbstractIntlMessages } from 'next-intl';
+// registry start: imports
+import authAr from '@/features/auth/messages/ar.json';
+import authEn from '@/features/auth/messages/en.json';
+import costCentersAr from '@/features/cost-centers/messages/ar.json';
+import costCentersEn from '@/features/cost-centers/messages/en.json';
+import currenciesAr from '@/features/currencies/messages/ar.json';
+import currenciesEn from '@/features/currencies/messages/en.json';
+import expenseCategoriesAr from '@/features/expense-categories/messages/ar.json';
+import expenseCategoriesEn from '@/features/expense-categories/messages/en.json';
+import mailAr from '@/features/mail/messages/ar.json';
+import mailEn from '@/features/mail/messages/en.json';
+import paymentModesAr from '@/features/payment-modes/messages/ar.json';
+import paymentModesEn from '@/features/payment-modes/messages/en.json';
+import shellAr from '@/features/shell/messages/ar.json';
+import shellEn from '@/features/shell/messages/en.json';
+import staffAr from '@/features/staff/messages/ar.json';
+import staffEn from '@/features/staff/messages/en.json';
+import statusEn from '@/features/status/messages/en.json';
+import taxesAr from '@/features/taxes/messages/ar.json';
+import taxesEn from '@/features/taxes/messages/en.json';
+import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
+import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
+
+// registry end: imports
+import type { Locale } from '@/i18n/locales';
+import commonAr from './common/ar.json';
+import commonEn from './common/en.json';
+
+/**
+ * The static registry of message packs (FE-08). Turbopack has no `import.meta.glob`, so every
+ * feature's `messages/<locale>.json` is imported here by hand — a new feature adds its import
+ * lines and entries between the `registry` markers (imports, namespaces, en, ar). One top-level
+ * namespace per file = the feature's folder name.
+ */
+export const NAMESPACES = [
+  'common',
+  // registry start: namespaces
+  'auth',
+  'shell',
+  'status',
+  'staff',
+  'expense-categories',
+  'taxes',
+  'cost-centers',
+  'mail',
+  'payment-modes',
+  'currencies',
+  'ticket-statuses',
+  // registry end: namespaces
+] as const;
+export type Namespace = (typeof NAMESPACES)[number];
+
+// `status` has no Arabic file yet: its keys render the English text under `ar` (the fallback).
+const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
+  en: [
+    commonEn,
+    // registry start: en
+    authEn,
+    shellEn,
+    statusEn,
+    staffEn,
+    expenseCategoriesEn,
+    taxesEn,
+    costCentersEn,
+    mailEn,
+    paymentModesEn,
+    currenciesEn,
+    ticketStatusesEn,
+    // registry end: en
+  ],
+  ar: [
+    commonAr,
+    // registry start: ar
+    authAr,
+    shellAr,
+    staffAr,
+    expenseCategoriesAr,
+    taxesAr,
+    costCentersAr,
+    mailAr,
+    paymentModesAr,
+    currenciesAr,
+    ticketStatusesAr,
+    // registry end: ar
+  ],
+};
+
+function isMessages(value: unknown): value is AbstractIntlMessages {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/** Deep-merges plain objects (message files hold no arrays); never mutates its inputs. */
+function deepMerge(base: AbstractIntlMessages, over: AbstractIntlMessages): AbstractIntlMessages {
+  const out: AbstractIntlMessages = { ...base };
+  for (const [key, value] of Object.entries(over)) {
+    const existing = out[key];
+    out[key] = isMessages(existing) && isMessages(value) ? deepMerge(existing, value) : value;
+  }
+  return out;
+}
+
+/**
+ * The merged pack of a locale: English first, the locale's files over it, so an untranslated key
+ * renders the English text rather than the key name (T-3-01).
+ */
+export function messagesFor(locale: Locale): AbstractIntlMessages {
+  const layers = locale === 'en' ? PACKS.en : [...PACKS.en, ...PACKS[locale]];
+  return layers.reduce<AbstractIntlMessages>((acc, pack) => deepMerge(acc, pack), {});
+}
+
+=== FILE: src/__tests__/hydration.test.tsx ===
+// @vitest-environment happy-dom
+import { act } from '@testing-library/react';
+import type { AxiosAdapter } from 'axios';
+import { NextIntlClientProvider } from 'next-intl';
+import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
+import type { ReactElement } from 'react';
+import { hydrateRoot, type Root } from 'react-dom/client';
+import { renderToString } from 'react-dom/server';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { PageShell } from '@/components/templates/PageShell';
+import { BrandLogo, FALLBACK_BRANDING, type Branding } from '@/features/branding';
+import { SwrProvider } from '@/lib/api/SwrProvider';
+import { http } from '@/lib/api/http';
+import { clearSession, setSession } from '@/lib/auth/session';
+import { DirectionProvider } from '@/lib/i18n/DirectionProvider';
+import { messagesFor } from '@/messages';
+import { fakeAdapter } from '@/test/axios-fakes';
+
+/**
+ * UAT 4.2 gap 1 (plan 04.2-26): React #418 ("the server rendered HTML didn't match the client")
+ * on every shell page whose breadcrumb has a parent crumb. The shell's client part is rendered on
+ * the "server" with `renderToString`, the HTML is parsed into a container exactly as a browser
+ * parses it, and the same tree is hydrated there: React must report no recoverable error.
+ */
+
+const pathname = vi.hoisted(() => ({ current: '/setup/taxes' }));
+vi.mock('next/navigation', () => ({
+  usePathname: () => pathname.current,
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
+}));
+
+/** Made-up brand with an uploaded logo: the warm path (the branding request answered). */
+const WARM_BRANDING: Branding = {
+  ...FALLBACK_BRANDING,
+  companyName: 'Example Trading',
+  logoUrl: '/example/brand-logo.png',
+};
+
+/** An api that has not started answering yet: every request stays pending. */
+const silentApi: AxiosAdapter = () => new Promise(() => undefined);
+
+const ADMIN_ME = {
+  staffId: 1,
+  email: 'a@b.co',
+  firstName: 'Example',
+  lastName: 'Person',
+  isAdmin: true,
+  roleId: null,
+  permissions: [],
+  locale: null,
+};
+
+const shell = (branding: Branding): ReactElement => (
+  <NextIntlClientProvider locale="en" messages={messagesFor('en')}>
+    <DirectionProvider dir="ltr">
+      <NuqsTestingAdapter>
+        <SwrProvider>
+          <PageShell brand={<BrandLogo branding={branding} />} defaultOpen>
+            <p data-testid="page-content">Example content</p>
+          </PageShell>
+        </SwrProvider>
+      </NuqsTestingAdapter>
+    </DirectionProvider>
+  </NextIntlClientProvider>
+);
+
+let root: Root | null = null;
+let container: HTMLElement | null = null;
+const imageDescriptors = {
+  complete: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'complete'),
+  naturalWidth: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'naturalWidth'),
+};
+
+/** Server render, browser parse, client hydration; returns the server HTML and React's recoverable errors. */
+async function hydrate(tree: ReactElement): Promise<{ html: string; errors: unknown[] }> {
+  const html = renderToString(tree);
+  container = document.createElement('div');
+  document.body.append(container);
+  container.innerHTML = html;
+  const errors: unknown[] = [];
+  const target = container;
+  await act(async () => {
+    root = hydrateRoot(target, tree, {
+      onRecoverableError: (error) => {
+        errors.push(error);
+      },
+    });
+    await Promise.resolve();
+  });
+  return { html, errors };
+}
+
+beforeEach(() => {
+  clearSession();
+  Object.defineProperty(HTMLImageElement.prototype, 'complete', {
+    configurable: true,
+    get: () => true,
+  });
+  Object.defineProperty(HTMLImageElement.prototype, 'naturalWidth', {
+    configurable: true,
+    get: () => 100,
+  });
+  // The shell's bootstrap takes the no-Web-Locks path here; the lock itself is use-session's test.
+  Object.defineProperty(window.navigator, 'locks', { value: undefined, configurable: true });
+  // React DOM warns about invalid nesting through console.error; the assertion is the hydration itself.
+  vi.spyOn(console, 'error').mockImplementation(() => undefined);
+});
+
+afterEach(() => {
+  act(() => {
+    root?.unmount();
+  });
+  root = null;
+  container?.remove();
+  container = null;
+  delete http.defaults.adapter;
+  clearSession();
+  Reflect.deleteProperty(window.navigator, 'locks');
+  for (const [key, descriptor] of Object.entries(imageDescriptors)) {
+    if (descriptor === undefined) Reflect.deleteProperty(HTMLImageElement.prototype, key);
+    else Object.defineProperty(HTMLImageElement.prototype, key, descriptor);
+  }
+  vi.restoreAllMocks();
+});
+
+describe('server render equals the first client render (UAT 4.2 gap 1, React #418)', () => {
+  it('cold start: the api not answering yet, the fallback brand, a two-crumb route: no mismatch, the DOM is the server HTML', async () => {
+    pathname.current = '/setup/taxes';
+    http.defaults.adapter = silentApi;
+    const { html, errors } = await hydrate(shell(FALLBACK_BRANDING));
+    expect(errors).toEqual([]);
+    // Both sides through the same parser, so only the tree is compared, not React's escaping.
+    const parsed = document.createElement('div');
+    parsed.innerHTML = html;
+    expect(container?.innerHTML).toBe(parsed.innerHTML);
+    expect(container?.querySelector('[data-testid="breadcrumbs"] li li')).toBeNull();
+  });
+
+  it('warm: the brand logo and a known session, a three-crumb record route: no mismatch', async () => {
+    pathname.current = '/setup/taxes/12';
+    http.defaults.adapter = fakeAdapter(200, ADMIN_ME).adapter;
+    setSession({ accessToken: 't', csrfToken: 'c' });
+    const { errors } = await hydrate(shell(WARM_BRANDING));
+    expect(errors).toEqual([]);
+    expect(container?.querySelector('[data-testid="brand-logo"]')).not.toBeNull();
+  });
+});
+
+=== FILE: app/(shell)/setup/ticket-statuses/[id]/page.tsx ===
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { getTranslations } from 'next-intl/server';
+import { TicketStatusPage } from '@/features/ticket-statuses/pages/TicketStatusPage';
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('ticket-statuses');
+  return { title: t('ticket_statuses_dt_name') };
+}
+
+// Request-time render: one record behind a session; nothing here may be prerendered.
+export const dynamic = 'force-dynamic';
+
+export default async function Page(props: PageProps<'/setup/ticket-statuses/[id]'>) {
+  const { id } = await props.params;
+  const ticketStatusId = Number(id);
+  // The api takes a positive integer; anything else is not a ticket status page (it would 400 there).
+  if (!Number.isInteger(ticketStatusId) || ticketStatusId <= 0) notFound();
+  return <TicketStatusPage id={String(ticketStatusId)} />;
+}

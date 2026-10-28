@@ -83,7 +83,17 @@ function withApi(adapter: ApiAdapter): Decorator {
 
 const LOADED: Answer = {
   status: 200,
-  body: { data: ticketStatuses },
+  body: {
+    data: ticketStatuses,
+    meta: {
+      nextCursor: null,
+      prevCursor: null,
+      total: ticketStatuses.length,
+      rangeStart: 1,
+      exportLimit: 500,
+      printLimit: 250,
+    },
+  },
 };
 
 const meta = {

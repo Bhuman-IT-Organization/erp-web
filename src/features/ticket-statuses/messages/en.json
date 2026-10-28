@@ -18,6 +18,7 @@
     "enter_colour": "Enter a status color using up to 7 characters.",
     "enter_order": "Enter a whole number for the status order.",
     "total_ticket_count": "Total {count}",
+    "ticket_statuses_table_total": "Total",
     "saved_toast": "Ticket status saved",
     "edit_action_named": "Edit {name}",
     "delete_action_named": "Delete {name}",
@@ -26,10 +27,12 @@
     "deleted_toast": "Ticket status deleted successfully",
     "is_referenced": "The ID of the ticket status is already using.",
     "cant_delete_default": "Cant delete default ticket status",
+    "change_setting_first": "This ticket status is the default reply status. Change the setting first.",
     "errors": {
       "ERP-CORE-0004": "This ticket status no longer exists. It may have been removed.",
       "ERP-TICKETSTATUSES-0001": "The ID of the ticket status is already using.",
-      "ERP-TICKETSTATUSES-0002": "Cant delete default ticket status"
+      "ERP-TICKETSTATUSES-0002": "Cant delete default ticket status",
+      "ERP-TICKETSTATUSES-0003": "This ticket status is the default reply status. Change the setting first."
     }
   }
 }

@@ -3,6 +3,7 @@ import ar from '@/features/ticket-statuses/messages/ar.json';
 import en from '@/features/ticket-statuses/messages/en.json';
 import {
   BUILT_IN_CODE,
+  DEFAULT_REPLY_STATUS_CODE,
   IN_USE_CODE,
   TICKET_STATUSES_ENDPOINTS,
   TICKET_STATUSES_ERRORS,
@@ -25,17 +26,17 @@ describe('Ticket Statuses API definitions', () => {
     });
     expect(TICKET_STATUSES_PATH).toBe('/api/v1/ticket-statuses');
     expect(TICKET_STATUSES_EXPORT_PATH).toBe('/api/v1/ticket-statuses/export');
-    expect(TICKET_STATUSES_EXPORT_COLUMNS).toEqual(['id', 'name']);
+    expect(TICKET_STATUSES_EXPORT_COLUMNS).toEqual(['id', 'name', 'ticket_count']);
     expect(ticketStatusesPath('a/1')).toBe('/api/v1/ticket-statuses/a%2F1');
   });
 
   it('exposes the exact deletion-refusal codes and localized messages', () => {
     expect(TICKET_STATUSES_ERRORS).toEqual({
       namespace: 'ticket-statuses',
-      codes: ['ERP-CORE-0004', IN_USE_CODE, BUILT_IN_CODE],
+      codes: ['ERP-CORE-0004', IN_USE_CODE, BUILT_IN_CODE, DEFAULT_REPLY_STATUS_CODE],
     });
 
-    for (const code of [IN_USE_CODE, BUILT_IN_CODE] as const) {
+    for (const code of [IN_USE_CODE, BUILT_IN_CODE, DEFAULT_REPLY_STATUS_CODE] as const) {
       expect(en['ticket-statuses'].errors[code]).toBeTruthy();
       expect(ar['ticket-statuses'].errors[code]).toBeTruthy();
     }

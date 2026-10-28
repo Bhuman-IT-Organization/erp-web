@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   toTicketStatusWriteValues,
   ticketStatusFormSchema,
+  ticketStatusSchema,
   ticketStatusesListResponseSchema,
 } from '@/features/ticket-statuses/schemas/ticket-status.schema';
 
@@ -15,25 +16,29 @@ const ticketStatus = {
 };
 
 describe('Ticket Statuses API contract', () => {
-  it('parses the backend list shape without pagination metadata and rejects unexpected fields', () => {
-    expect(ticketStatusesListResponseSchema.parse({ data: [ticketStatus] })).toEqual({
-      data: [
-        {
-          id: '1',
-          name: 'Open',
-          ticket_count: 4,
-          isdefault: 1,
-          statuscolor: '#03a9f4',
-          statusorder: 1,
-        },
-      ],
+  it('parses the wire record and transforms ticketstatusid to id', () => {
+    expect(ticketStatusSchema.parse(ticketStatus)).toEqual({
+      id: '1',
+      name: 'Open',
+      ticket_count: 4,
+      isdefault: 1,
+      statuscolor: '#03a9f4',
+      statusorder: 1,
     });
     expect(
-      ticketStatusesListResponseSchema.safeParse({
+      ticketStatusesListResponseSchema.parse({
         data: [ticketStatus],
-        meta: { nextCursor: null },
-      }).success,
-    ).toBe(false);
+        meta: {
+          nextCursor: null,
+          prevCursor: null,
+          total: 1,
+          rangeStart: 1,
+        },
+      }),
+    ).toMatchObject({
+      data: [{ id: '1', name: 'Open' }],
+      meta: { total: 1, rangeStart: 1 },
+    });
   });
 
   it('validates form names, colors and status order before sending', () => {
