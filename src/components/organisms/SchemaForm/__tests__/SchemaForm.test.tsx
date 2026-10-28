@@ -154,6 +154,42 @@ function Harness({ defaults, strict = false, ...props }: HarnessProps): ReactEle
   );
 }
 
+interface NumberValues {
+  quantity?: number;
+}
+
+const NUMBER_SECTION: FormSectionSpec<NumberValues> = {
+  id: 'number-test',
+  title: 'Number Test',
+  fields: [{ name: 'quantity', label: 'Quantity', kind: 'number' }],
+};
+
+function NumberHarness({
+  onValid,
+  defaultQuantity,
+}: {
+  readonly onValid: (values: NumberValues) => void;
+  readonly defaultQuantity?: number;
+}): ReactElement {
+  const form = useForm<NumberValues>({
+    defaultValues: defaultQuantity === undefined ? {} : { quantity: defaultQuantity },
+  });
+
+  return (
+    <SchemaForm
+      id="number-test"
+      form={form}
+      sections={[NUMBER_SECTION]}
+      onValid={onValid}
+      translateError={translate}
+      submitLabel="Save"
+      pendingLabel="Saving"
+      isPending={false}
+      onBack={vi.fn()}
+    />
+  );
+}
+
 /** A single choice whose options arrive later, as a feature's SWR read does. */
 function ArrivingChoice(): ReactElement {
   const [options, setOptions] = useState<{ value: string; label: string }[] | undefined>(undefined);
@@ -829,5 +865,45 @@ describe('SchemaForm color kind (D-15: a text value with a picker swatch, blank 
       'Keep the color short.',
     );
     expect(onValid).not.toHaveBeenCalled();
+  });
+});
+
+describe('SchemaForm number kind', () => {
+  it('converts a numeric input into a number on submit', async () => {
+    const user = userEvent.setup();
+    const onValid = vi.fn();
+
+    renderWithProviders(<NumberHarness onValid={onValid} />);
+
+    const input = screen.getByRole('spinbutton', {
+      name: 'Quantity',
+    });
+
+    fireEvent.change(input, { target: { value: '12' } });
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(onValid).toHaveBeenCalledWith({ quantity: 12 }, { submitter: null });
+    });
+  });
+
+  it('converts an empty numeric input to undefined on submit', async () => {
+    const user = userEvent.setup();
+    const onValid = vi.fn();
+
+    renderWithProviders(<NumberHarness onValid={onValid} defaultQuantity={12} />);
+
+    const input = screen.getByRole('spinbutton', {
+      name: 'Quantity',
+    });
+
+    fireEvent.change(input, { target: { value: '' } });
+
+    await user.click(screen.getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(onValid).toHaveBeenCalledWith({ quantity: undefined }, { submitter: null });
+    });
   });
 });

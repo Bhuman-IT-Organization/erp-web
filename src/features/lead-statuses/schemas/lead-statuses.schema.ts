@@ -7,6 +7,7 @@ export const LEAD_STATUSES_MESSAGE_KEYS = {
   invalidOrder: 'invalid_order',
 } as const;
 
+const MAX_COLOR_LENGTH = 10;
 export const LEAD_STATUSES_NAME_MAX = 50;
 
 // eslint-disable-next-line no-restricted-syntax -- Perfex Lead Statuses uses this legacy database default color, not a UI theme token.
@@ -14,7 +15,9 @@ export const DEFAULT_LEAD_STATUS_COLOR = '#28B8DA';
 
 export const leadStatusesUsageSchema = z.object({
   leads: z.number().int().nonnegative(),
+  lastLeadStatus: z.number().int().nonnegative(),
   emailIntegration: z.number().int().nonnegative(),
+  webToLead: z.number().int().nonnegative(),
 });
 
 export type LeadStatusesUsage = z.infer<typeof leadStatusesUsageSchema>;
@@ -42,8 +45,7 @@ export const leadStatusesFormSchema = z.object({
     .min(1, LEAD_STATUSES_MESSAGE_KEYS.name)
     .max(LEAD_STATUSES_NAME_MAX, LEAD_STATUSES_MESSAGE_KEYS.nameTooLong),
 
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, LEAD_STATUSES_MESSAGE_KEYS.invalidColor),
-
+  color: z.string().max(MAX_COLOR_LENGTH, LEAD_STATUSES_MESSAGE_KEYS.invalidColor),
   statusorder: z
     .number()
     .int(LEAD_STATUSES_MESSAGE_KEYS.invalidOrder)
@@ -61,7 +63,7 @@ export const EMPTY_LEAD_STATUSES_FORM: LeadStatusesFormValues = {
 export function toLeadStatusesForm(item: LeadStatuses): LeadStatusesFormValues {
   return {
     name: item.name,
-    color: item.color ?? DEFAULT_LEAD_STATUS_COLOR,
+    color: item.color ?? '',
     ...(item.statusorder !== null ? { statusorder: item.statusorder } : {}),
   };
 }
@@ -71,7 +73,9 @@ export function isLeadStatusProtected(item: LeadStatuses): boolean {
     item.isdefault === 1 ||
     item.isConfiguredDefault ||
     item.usage.leads > 0 ||
-    item.usage.emailIntegration > 0
+    item.usage.lastLeadStatus > 0 ||
+    item.usage.emailIntegration > 0 ||
+    item.usage.webToLead > 0
   );
 }
 

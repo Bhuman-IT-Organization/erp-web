@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations } from 'next-intl/server';
-import { LeadStatusesPage } from '@/features/lead-statuses/pages/LeadStatusesPage';
+import { LeadStatusesPage } from '@/features/lead-statuses';
 
 interface Props {
   params: Promise<{ id: string }>;

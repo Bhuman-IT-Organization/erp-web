@@ -12,14 +12,13 @@ import {
   ConfirmDialog,
   useConfirmCopy,
   type ConfirmOutcome,
+  type SummaryChange,
 } from '@/components/organisms/ConfirmDialog';
 import { PageSkeleton } from '@/components/organisms/PageSkeleton';
 import { SchemaForm, type FormSectionSpec } from '@/components/organisms/SchemaForm';
-import { Field, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-
-import { LEAD_STATUSES_PATH } from '../api/lead-statuses.endpoints';
+import { LEAD_STATUSES_ERRORS, LEAD_STATUSES_PATH } from '../api/lead-statuses.endpoints';
 import { useLeadStatuses } from '../hooks/use-lead-statuses';
+import { useErrorText } from '@/lib/errors/use-error-text';
 import { useSaveLeadStatuses } from '../hooks/use-save-lead-statuses';
 import {
   EMPTY_LEAD_STATUSES_FORM,
@@ -82,10 +81,6 @@ function knownValues(record: LeadStatuses | undefined) {
   return record === undefined ? {} : { values: toLeadStatusesForm(record) };
 }
 
-function parseOrder(value: string): number | undefined {
-  return value === '' ? undefined : Number(value);
-}
-
 interface FieldLabels {
   readonly heading: string;
   readonly name: string;
@@ -109,33 +104,11 @@ function buildSections(labels: FieldLabels): readonly FormSectionSpec<LeadStatus
           name: 'color',
           label: labels.color,
           kind: 'color',
-          required: true,
         },
         {
           name: 'statusorder',
           label: labels.order,
-          kind: 'custom',
-          render: (field, state) => (
-            <Field data-invalid={state.invalid}>
-              <FieldLabel htmlFor={state.id}>{labels.order}</FieldLabel>
-
-              <Input
-                id={state.id}
-                name={field.name}
-                type="number"
-                min={1}
-                step={1}
-                value={field.value ?? ''}
-                onChange={(event) => {
-                  field.onChange(parseOrder(event.target.value));
-                }}
-                onBlur={field.onBlur}
-                disabled={state.disabled}
-                aria-invalid={state.invalid}
-                aria-describedby={state.describedBy}
-              />
-            </Field>
-          ),
+          kind: 'number',
         },
       ],
     },
@@ -144,6 +117,7 @@ function buildSections(labels: FieldLabels): readonly FormSectionSpec<LeadStatus
 
 function RecordReadState({ item }: { readonly item: CommonApiResult<LeadStatuses> }): ReactElement {
   const tc = useTranslations('common');
+  const errorText = useErrorText(LEAD_STATUSES_ERRORS);
 
   if (item.error === undefined) {
     return <PageSkeleton variant="form" />;
@@ -151,7 +125,7 @@ function RecordReadState({ item }: { readonly item: CommonApiResult<LeadStatuses
 
   return (
     <InlineError
-      message={tc('save_failed')}
+      message={errorText(item.error)}
       busy={item.isValidating}
       back={{
         href: LIST_BASE,
@@ -170,6 +144,7 @@ function RecordReadState({ item }: { readonly item: CommonApiResult<LeadStatuses
 
 interface DialogsProps {
   readonly id: string | null;
+  readonly initialValues: LeadStatusesFormValues | null;
   readonly pending: LeadStatusesFormValues | null;
   readonly name: string | undefined;
   readonly noun: string;
@@ -179,9 +154,48 @@ interface DialogsProps {
   readonly onSave: (values: LeadStatusesFormValues) => Promise<ConfirmOutcome>;
   readonly guard: ReturnType<typeof useUnsavedChanges>;
 }
+function buildSummaryChanges(
+  initialValues: LeadStatusesFormValues | null,
+  pending: LeadStatusesFormValues | null,
+  labels: { name: string; color: string; order: string },
+): SummaryChange[] {
+  if (pending === null) return [];
 
+  const baseline = initialValues ?? EMPTY_LEAD_STATUSES_FORM;
+  const changes: SummaryChange[] = [];
+
+  if (baseline.name !== pending.name) {
+    changes.push({
+      type: 'changed',
+      label: labels.name,
+      from: baseline.name,
+      to: pending.name,
+    });
+  }
+
+  if (baseline.color !== pending.color) {
+    changes.push({
+      type: 'changed',
+      label: labels.color,
+      from: baseline.color,
+      to: pending.color,
+    });
+  }
+
+  if (baseline.statusorder !== pending.statusorder) {
+    changes.push({
+      type: 'changed',
+      label: labels.order,
+      from: String(baseline.statusorder ?? ''),
+      to: String(pending.statusorder ?? ''),
+    });
+  }
+
+  return changes;
+}
 function EditorDialogs({
   id,
+  initialValues,
   pending,
   name,
   noun,
@@ -193,6 +207,12 @@ function EditorDialogs({
 }: DialogsProps): ReactElement {
   const tc = useTranslations('common');
   const copy = useConfirmCopy();
+  const t = useTranslations('lead-statuses');
+  const changes = buildSummaryChanges(initialValues, pending, {
+    name: t('status_name'),
+    color: t('color'),
+    order: t('leads_status_add_edit_order'),
+  });
 
   const summaryTitle =
     id === null
@@ -215,7 +235,7 @@ function EditorDialogs({
           if (!open) setPending(null);
         }}
         title={summaryTitle}
-        changes={[]}
+        changes={changes}
         dismissLabel={copy.backToForm}
         confirmLabel={submitLabel}
         pendingLabel={pendingLabel}
@@ -239,6 +259,13 @@ function EditorDialogs({
 }
 
 export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
+  function getInitialFormValues(data: LeadStatuses | undefined): LeadStatusesFormValues | null {
+    if (data === undefined) {
+      return null;
+    }
+
+    return toLeadStatusesForm(data);
+  }
   const t = useTranslations('lead-statuses');
   const tc = useTranslations('common');
   const router = useRouter();
@@ -268,7 +295,7 @@ export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
     heading: t('lead_statuses'),
     name: t('status_name'),
     color: t('color'),
-    order: t('order'),
+    order: t('leads_status_add_edit_order'),
   });
 
   async function afterSave(saved: LeadStatuses): Promise<void> {
@@ -327,6 +354,7 @@ export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
       <EditorDialogs
         id={id}
         pending={pending}
+        initialValues={getInitialFormValues(item.data)}
         name={item.data?.name}
         noun={noun}
         submitLabel={submitLabel}

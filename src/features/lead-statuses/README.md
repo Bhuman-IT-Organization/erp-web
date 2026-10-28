@@ -105,3 +105,9 @@ corepack yarn check
 Verify the list, create, edit, delete, validation, permissions, and refusal cases in the browser.
 
 The frontend migration is still being verified. Missing tests, Storybook states, and Nginx routing must be completed before final sign-off.
+
+The frontend migration is implemented and is undergoing final verification.
+
+- Lead Statuses feature tests and TypeScript typecheck have passed locally.
+- Storybook includes loading, empty, error, loaded, mobile, and Arabic RTL list states, plus form states for create, edit, loading, pending, validation errors, server errors, mobile, and Arabic RTL.
+- Before final sign-off, verify the stories visually, confirm frontend and API routing, and run the required project checks.

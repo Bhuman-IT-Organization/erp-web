@@ -17,7 +17,9 @@ const ROW = {
   isConfiguredDefault: false,
   usage: {
     leads: 0,
+    lastLeadStatus: 0,
     emailIntegration: 0,
+    webToLead: 0,
   },
 };
 
@@ -41,7 +43,9 @@ const ROWS = [
     name: 'Contacted',
     usage: {
       leads: 2,
+      lastLeadStatus: 0,
       emailIntegration: 1,
+      webToLead: 0,
     },
   },
 ];
@@ -130,6 +134,20 @@ function withApi(list: Reply): Decorator {
   };
 }
 
+const MOBILE = {
+  parameters: {
+    viewport: {
+      options: {
+        mobile375: {
+          name: 'Mobile 375',
+          styles: { width: '375px', height: '740px' },
+        },
+      },
+    },
+  },
+  globals: { viewport: { value: 'mobile375', isRotated: false } },
+} as const;
+
 const meta = {
   title: 'Features/LeadStatuses/LeadStatusesList',
   component: LeadStatusesList,
@@ -182,3 +200,9 @@ export const Loaded: Story = {
     }),
   ],
 };
+
+/** Lead Statuses list at mobile width (375px). */
+export const Mobile: Story = { ...MOBILE };
+
+/** Arabic locale for checking right-to-left layout. */
+export const Rtl: Story = { globals: { locale: 'ar' } };

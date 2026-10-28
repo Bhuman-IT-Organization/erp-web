@@ -20,7 +20,9 @@ const RECORD = {
   isConfiguredDefault: false,
   usage: {
     leads: 0,
+    lastLeadStatus: 0,
     emailIntegration: 0,
+    webToLead: 0,
   },
 };
 
@@ -212,4 +214,32 @@ export const ServerError: Story = {
 
     await within(dialog).findByTestId('confirm-dialog-error');
   },
+};
+
+/** Form displayed at a mobile viewport of 375px. */
+export const Mobile: Story = {
+  args: { id: '7' },
+  decorators: [withApi()],
+  parameters: {
+    nextjs: {
+      navigation: {
+        pathname: '/setup/lead-statuses/7',
+      },
+    },
+    viewport: {
+      options: {
+        mobile375: {
+          name: 'Mobile 375',
+          styles: { width: '375px', height: '740px' },
+        },
+      },
+    },
+  },
+  globals: { viewport: { value: 'mobile375', isRotated: false } },
+};
+
+/** Arabic locale for checking right-to-left form layout. */
+export const Rtl: Story = {
+  decorators: [withApi()],
+  globals: { locale: 'ar' },
 };

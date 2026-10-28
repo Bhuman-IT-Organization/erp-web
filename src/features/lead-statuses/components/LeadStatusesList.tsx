@@ -53,7 +53,13 @@ function isBuiltInOrDefault(row: LeadStatusesRow): boolean {
 }
 
 function inUse(row: LeadStatusesRow | undefined): boolean {
-  return row !== undefined && (row.usage.leads > 0 || row.usage.emailIntegration > 0);
+  return (
+    row !== undefined &&
+    (row.usage.leads > 0 ||
+      row.usage.lastLeadStatus > 0 ||
+      row.usage.emailIntegration > 0 ||
+      row.usage.webToLead > 0)
+  );
 }
 
 export function LeadStatusesList(): ReactElement {
@@ -90,33 +96,58 @@ export function LeadStatusesList(): ReactElement {
 
     return outcome;
   }
-
   function deleteBody(row: LeadStatusesRow | undefined): ReactNode {
-    if (row === undefined || !inUse(row)) {
+    if (row === undefined) {
       return t('delete_body');
     }
 
-    return (
-      <>
-        {row.usage.leads > 0 && (
-          <span className="block">
-            {t('in_use_leads', {
-              count: row.usage.leads,
-              countN: f.number(row.usage.leads),
-            })}
-          </span>
-        )}
+    if (isBuiltInOrDefault(row)) {
+      return t('cant_delete_default', {
+        item: t('noun_lead_status'),
+      });
+    }
 
-        {row.usage.emailIntegration > 0 && (
-          <span className="block">
-            {t('in_use_email_integration', {
-              count: row.usage.emailIntegration,
-              countN: f.number(row.usage.emailIntegration),
+    if (inUse(row)) {
+      return (
+        <>
+          <span>
+            {t('is_referenced', {
+              item: t('noun_lead_status'),
             })}
-          </span>
-        )}
-      </>
-    );
+          </span>{' '}
+          {row.usage.leads > 0 && (
+            <span>
+              {t('in_use_leads', {
+                countN: row.usage.leads,
+              })}
+            </span>
+          )}{' '}
+          {row.usage.lastLeadStatus > 0 && (
+            <span>
+              {t('in_use_last_lead_status', {
+                countN: row.usage.lastLeadStatus,
+              })}
+            </span>
+          )}{' '}
+          {row.usage.emailIntegration > 0 && (
+            <span>
+              {t('in_use_email_integration', {
+                countN: row.usage.emailIntegration,
+              })}
+            </span>
+          )}{' '}
+          {row.usage.webToLead > 0 && (
+            <span>
+              {t('in_use_web_to_lead', {
+                countN: row.usage.webToLead,
+              })}
+            </span>
+          )}
+        </>
+      );
+    }
+
+    return t('delete_body');
   }
 
   const columns: readonly ListColumn<LeadStatusesRow>[] = [
@@ -128,27 +159,23 @@ export function LeadStatusesList(): ReactElement {
     },
     {
       id: 'name',
-      header: t('status_name'),
+      header: t('leads_status_table_name'),
       sortField: 'name',
       primary: true,
       cell: (one) => one.name,
     },
     {
-      id: 'color',
-      header: t('color'),
-      cell: (one) => (
-        <span className="inline-flex items-center gap-2">
-          <span
-            aria-hidden="true"
-            className="size-3 rounded-full border"
-            style={{
-              backgroundColor: one.color ?? 'transparent',
-            }}
-          />
-          <bdi>{one.color ?? ''}</bdi>
-        </span>
-      ),
+      id: 'leads',
+      header: t('leads_count'),
+      cell: (one) => <bdi className="tabular-nums">{f.number(one.usage.leads)}</bdi>,
     },
+
+    {
+      id: 'color',
+      header: t('leads_status_color'),
+      cell: (one) => <bdi>{one.color ?? ''}</bdi>,
+    },
+
     {
       id: 'statusorder',
       header: t('order'),
@@ -165,7 +192,7 @@ export function LeadStatusesList(): ReactElement {
   return (
     <>
       <ListPageTemplate
-        title={t('lead_statuses')}
+        title={t('acs_leads_statuses_submenu')}
         path={LEAD_STATUSES_PATH}
         rowSchema={leadStatusesRowSchema}
         listBase={LIST_BASE}
@@ -214,7 +241,7 @@ export function LeadStatusesList(): ReactElement {
           ];
         }}
         createAction={{
-          label: t('add_lead_status'),
+          label: t('lead_new_status'),
           href: `${LIST_BASE}/new`,
         }}
         exportAction={{

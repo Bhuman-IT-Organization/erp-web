@@ -37,7 +37,9 @@ function status(id: string, name: string, extra = {}) {
     isConfiguredDefault: false,
     usage: {
       leads: 0,
+      lastLeadStatus: 0,
       emailIntegration: 0,
+      webToLead: 0,
     },
     ...extra,
   };
@@ -49,7 +51,7 @@ const DEFAULT = status('9', 'Default', {
   isConfiguredDefault: true,
 });
 const USED = status('10', 'Working', {
-  usage: { leads: 2, emailIntegration: 1 },
+  usage: { leads: 2, lastLeadStatus: 0, emailIntegration: 1, webToLead: 0 },
 });
 
 function page(rows: unknown[]) {
@@ -164,7 +166,7 @@ describe('LeadStatusesList', () => {
     expect(empty.textContent).toContain(EN.empty_heading);
 
     const add = within(empty).getByRole('link', {
-      name: EN.add_lead_status,
+      name: EN.lead_new_status,
     });
 
     expect(add.getAttribute('href')).toBe('/setup/lead-statuses/new');

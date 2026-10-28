@@ -18,7 +18,9 @@ const status = {
   isConfiguredDefault: false,
   usage: {
     leads: 0,
+    lastLeadStatus: 0,
     emailIntegration: 0,
+    webToLead: 0,
   },
 };
 
@@ -45,11 +47,11 @@ describe('Lead Statuses Schema', () => {
     ).toBe(false);
   });
 
-  it('rejects invalid colors', () => {
+  it('rejects colors longer than 10 characters', () => {
     expect(
       leadStatusesFormSchema.safeParse({
         name: 'Interested',
-        color: 'red',
+        color: '12345678901',
       }).success,
     ).toBe(false);
   });
@@ -72,7 +74,7 @@ describe('Lead Statuses Schema', () => {
     expect(
       isLeadStatusProtected({
         ...status,
-        usage: { leads: 2, emailIntegration: 0 },
+        usage: { leads: 2, lastLeadStatus: 0, emailIntegration: 0, webToLead: 0 },
       }),
     ).toBe(true);
   });

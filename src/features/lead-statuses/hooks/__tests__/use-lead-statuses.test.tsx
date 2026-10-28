@@ -22,7 +22,9 @@ const ITEM = {
   isConfiguredDefault: false,
   usage: {
     leads: 0,
+    lastLeadStatus: 0,
     emailIntegration: 0,
+    webToLead: 0,
   },
 };
 
