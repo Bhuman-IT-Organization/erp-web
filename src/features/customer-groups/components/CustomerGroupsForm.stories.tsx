@@ -31,7 +31,6 @@ const HTTP_SERVICE_UNAVAILABLE = 503;
 const RECORD = {
   id: 'a1',
   name: 'Alpha',
-  dateCreated: '2026-10-02T20:30:15.000Z',
 };
 
 type Answer = { readonly status: number; readonly body?: unknown } | 'pending';

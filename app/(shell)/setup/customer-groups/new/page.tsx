@@ -4,7 +4,7 @@ import { CustomerGroupsPage } from '@/features/customer-groups/pages/CustomerGro
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('customer-groups');
-  return { title: t('add_customer_group') };
+  return { title: t('customer_group_add_heading') };
 }
 
 // Request-time render: the form is behind a session, so it must never be prerendered at build time.

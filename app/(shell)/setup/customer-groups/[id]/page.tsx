@@ -5,7 +5,7 @@ import { CustomerGroupsPage } from '@/features/customer-groups/pages/CustomerGro
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('customer-groups');
-  return { title: t('edit_customer_group') };
+  return { title: t('customer_group_edit_heading') };
 }
 
 // Request-time render: one record behind a session; nothing here may be prerendered.

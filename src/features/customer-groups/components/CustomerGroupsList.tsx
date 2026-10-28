@@ -8,8 +8,11 @@ import { ConfirmDialog, type ConfirmOutcome } from '@/components/organisms/Confi
 import { ListPageTemplate, type ListColumn } from '@/components/templates/ListPageTemplate';
 import {
   CUSTOMER_GROUPS_ERRORS,
+  CUSTOMER_GROUPS_EXPORT_COLUMNS,
+  CUSTOMER_GROUPS_EXPORT_PATH,
   CUSTOMER_GROUPS_PATH,
   customerGroupsPath,
+  IN_USE_CODE,
   NOT_FOUND_CODE,
 } from '@/features/customer-groups/api/customer-groups.endpoints';
 import { useDeleteCustomerGroup } from '@/features/customer-groups/hooks/use-customer-groups';
@@ -28,12 +31,12 @@ const LIST_BASE = '/setup/customer-groups';
 const itemRoute = (row: CustomerGroupsRow): string => `${LIST_BASE}/${encodeURIComponent(row.id)}`;
 
 /** A delete refused because the row is already gone (404): the list pages ask again. */
-const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE];
+const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE, IN_USE_CODE];
 
 /**
  * The Customer Groups list on the kit's `ListPageTemplate`: the template owns the URL state, the
  * search, the sort, the pager and every state (loading, empty, no results, error, loaded); this
- * screen owns the two columns (ID, Name), the labelled Edit and Delete and the delete dialog.
+ * screen owns the Name column, the labelled Edit and Delete and the delete dialog.
  * Every visible string is a key, and a name is rendered as React text only, never markup.
  */
 export function CustomerGroupsList(): ReactElement {
@@ -46,7 +49,7 @@ export function CustomerGroupsList(): ReactElement {
   } | null>(null);
   // One mutation for the list's one dialog, keyed on the row it names (never triggered while none).
   const remove = useDeleteCustomerGroup(deleting?.row.id ?? '0');
-  const noun = t('noun_customer_group');
+  const noun = t('customer_group_lowercase');
 
   /** Opening a group: record the list's URL and scroll, seed the form from the row. */
   const open = (row: CustomerGroupsRow): void => {
@@ -67,12 +70,6 @@ export function CustomerGroupsList(): ReactElement {
   }
 
   const columns: readonly ListColumn<CustomerGroupsRow>[] = [
-    {
-      id: 'id',
-      header: t('id'),
-      sortField: 'id',
-      cell: (one) => <bdi className="tabular-nums">{one.id}</bdi>,
-    },
     {
       id: 'name',
       header: t('customer_group_name'),
@@ -120,14 +117,19 @@ export function CustomerGroupsList(): ReactElement {
             },
           },
         ]}
-        createAction={{ label: t('add_customer_group'), href: `${LIST_BASE}/new` }}
+        createAction={{ label: t('new_customer_group'), href: `${LIST_BASE}/new` }}
+        exportAction={{
+          path: CUSTOMER_GROUPS_EXPORT_PATH,
+          columns: CUSTOMER_GROUPS_EXPORT_COLUMNS,
+          labels: { name: t('customer_group_name') },
+        }}
         empty={{
           nothingYetHeading: t('empty_heading'),
           nothingYetBody: t('empty_body'),
           noResultsHeading: (query) => t('no_match_heading', { query }),
           noResultsBody: t('no_match_body'),
         }}
-        recordsNoun={t('noun_customer_groups')}
+        recordsNoun={t('customer_group_lowercase')}
         featureErrors={CUSTOMER_GROUPS_ERRORS}
       />
       <ConfirmDialog

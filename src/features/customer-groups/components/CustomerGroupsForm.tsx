@@ -240,7 +240,7 @@ export function CustomerGroupsForm({ id }: CustomerGroupsFormProps): ReactElemen
   }
 
   const failure = retryableFailure(mutation.result);
-  const noun = t('noun_customer_group');
+  const noun = t('customer_group_lowercase');
   const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
   const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
   const changes = nameChanges(pending, record, t('customer_group_name'));
@@ -254,7 +254,7 @@ export function CustomerGroupsForm({ id }: CustomerGroupsFormProps): ReactElemen
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{record?.name ?? t('add_customer_group')}</h1>
+      <h1 className="text-2xl font-semibold">{record?.name ?? t('customer_group_add_heading')}</h1>
       <SchemaForm
         id={FORM_ID}
         form={form}
