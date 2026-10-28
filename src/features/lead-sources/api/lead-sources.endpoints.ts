@@ -12,7 +12,7 @@ import {
  * erp-api `src/v1/lead-sources` which serves exactly these six routes. The list,
  * `GET …?q&sort&limit&cursor`, answers `{ data: LeadSources[], meta: { nextCursor, prevCursor,
  * total, rangeStart, exportLimit, printLimit } }` (`ListPageTemplate` reads it), the id
- * descending by default (Perfex's order); each row includes lead usage so a delete can be refused
+ * ascending by default (Perfex's order); each row includes lead usage so a delete can be refused
  * up front (D-07, D-28). A record is `GET|PATCH …/:id`, a new one `POST` (the body
  * `{ name }`), the export `GET …/export` with the list's query and one `header` per column (D-26,
  * D-42, ADR-0043), and a delete `DELETE …/:id` (204, 404, or 409 while in use).

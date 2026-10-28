@@ -38,12 +38,12 @@ describe('lead-sources schemas', () => {
     expect(Object.keys(leadSourcesRowSchema.shape)).toEqual(Object.keys(leadSourcesSchema.shape));
   });
 
-  it('refuses an empty name, an all-space name, and names over 255 characters', () => {
-    expect(LEAD_SOURCES_NAME_MAX).toBe(255);
+  it('refuses an empty name, an all-space name, and names over 150 characters', () => {
+    expect(LEAD_SOURCES_NAME_MAX).toBe(150);
     expect(firstKey('')).toBe(LEAD_SOURCES_MESSAGE_KEYS.name);
     expect(firstKey('   ')).toBe(LEAD_SOURCES_MESSAGE_KEYS.name);
-    expect(firstKey('x'.repeat(256))).toBe(LEAD_SOURCES_MESSAGE_KEYS.nameTooLong);
-    expect(firstKey('x'.repeat(255))).toBeNull();
+    expect(firstKey('x'.repeat(151))).toBe(LEAD_SOURCES_MESSAGE_KEYS.nameTooLong);
+    expect(firstKey('x'.repeat(150))).toBeNull();
   });
 
   it('trims names and accepts all characters, including markup', () => {

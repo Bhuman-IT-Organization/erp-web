@@ -4,7 +4,7 @@ import { LeadSourcesPage } from '@/features/lead-sources/pages/LeadSourcesPage';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('lead-sources');
-  return { title: t('add_lead_source') };
+  return { title: t('lead_new_source') };
 }
 
 // Request-time render: the form is behind a session, so it must never be prerendered at build time.

@@ -1,12 +1,12 @@
 {
   "lead-sources": {
     "lead_sources": "مصادر العملاء المحتملين",
-    "add_lead_source": "إضافة مصدر عميل محتمل",
-    "edit_lead_source": "تعديل مصدر العميل المحتمل",
+    "lead_new_source": "إضافة مصدر عميل محتمل",
+    "edit_source": "تعديل مصدر العميل المحتمل",
     "id": "المعرف",
-    "lead_source_name": "اسم مصدر العميل المحتمل",
-    "total_leads": "إجمالي العملاء المحتملين: {countN}",
-    "total_leads_export": "إجمالي العملاء المحتملين",
+    "leads_sources_table_name": "اسم مصدر العميل المحتمل",
+    "leads_table_total": "إجمالي العملاء المحتملين: {countN}",
+    "leads_table_total_export": "إجمالي العملاء المحتملين",
     "noun_lead_source": "مصدر عميل محتمل",
     "noun_lead_sources": "مصادر العملاء المحتملين",
     "section_details": "التفاصيل",

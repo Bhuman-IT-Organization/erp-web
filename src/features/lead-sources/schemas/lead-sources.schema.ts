@@ -10,10 +10,9 @@ export const LEAD_SOURCES_MESSAGE_KEYS = {
 } as const;
 
 /**
- * The longest name the api's body takes: erp-api `LEAD_SOURCES_NAME_MAX`, Perfex's `VARCHAR(255)`
- * `tblleads_sources.name` column.
+ * The form's maximum accepted source name length.
  */
-export const LEAD_SOURCES_NAME_MAX = 255;
+export const LEAD_SOURCES_NAME_MAX = 150;
 
 /**
  * What uses a lead source, one count per group, in the api's order: leads assigned to this source.
@@ -54,7 +53,7 @@ export function inUseGroups(usage: LeadSourcesUsage | undefined): readonly LeadS
 
 /**
  * The form's values, for both create (`POST`) and edit (`PATCH`): the body the api takes. Perfex's
- * one field, Source Name: trimmed, 1 to 255 characters, every character accepted (markup
+ * one field, Source Name: trimmed, 1 to 150 characters, every character accepted (markup
  * included: it is shown as text), and a name another lead source holds is accepted, as in Perfex
  * (D-29).
  */

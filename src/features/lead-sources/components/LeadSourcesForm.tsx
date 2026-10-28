@@ -235,7 +235,7 @@ export function LeadSourcesForm({ id }: LeadSourcesFormProps): ReactElement {
   const noun = t('noun_lead_source');
   const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
   const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
-  const changes = nameChanges(pending, record, t('lead_source_name'));
+  const changes = nameChanges(pending, record, t('noun_lead_source'));
 
   function summaryTitle(): string {
     return id === null
@@ -245,7 +245,7 @@ export function LeadSourcesForm({ id }: LeadSourcesFormProps): ReactElement {
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{record?.name ?? t('add_lead_source')}</h1>
+      <h1 className="text-2xl font-semibold">{record?.name ?? t('lead_new_source')}</h1>
       <SchemaForm
         id={FORM_ID}
         form={form}
@@ -253,7 +253,9 @@ export function LeadSourcesForm({ id }: LeadSourcesFormProps): ReactElement {
           {
             id: 'details',
             title: t('section_details'),
-            fields: [{ name: 'name', label: t('lead_source_name'), kind: 'text', required: true }],
+            fields: [
+              { name: 'name', label: t('leads_sources_table_name'), kind: 'text', required: true },
+            ],
           },
         ]}
         onValid={setPending}

@@ -5,7 +5,7 @@ import { LeadSourcesPage } from '@/features/lead-sources/pages/LeadSourcesPage';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('lead-sources');
-  return { title: t('edit_lead_source') };
+  return { title: t('edit_source') };
 }
 
 // Request-time render: one record behind a session; nothing here may be prerendered.

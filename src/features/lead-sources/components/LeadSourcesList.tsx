@@ -95,14 +95,14 @@ export function LeadSourcesList(): ReactElement {
     },
     {
       id: 'name',
-      header: t('lead_source_name'),
+      header: t('leads_sources_table_name'),
       sortField: 'name',
       primary: true,
       cell: (one) => (
         <div className="flex flex-col">
           <span className="font-medium text-foreground">{one.name}</span>
           <span className="text-xs text-muted-foreground">
-            {t('total_leads', {
+            {t('leads_table_total', {
               count: one.usage.leads,
               countN: f.number(one.usage.leads),
             })}
@@ -150,14 +150,14 @@ export function LeadSourcesList(): ReactElement {
             },
           },
         ]}
-        createAction={{ label: t('add_lead_source'), href: `${LIST_BASE}/new` }}
+        createAction={{ label: t('lead_new_source'), href: `${LIST_BASE}/new` }}
         exportAction={{
           path: LEAD_SOURCES_EXPORT_PATH,
           columns: LEAD_SOURCES_EXPORT_COLUMNS,
           labels: {
             id: t('id'),
-            name: t('lead_source_name'),
-            totalLeads: t('total_leads_export'),
+            name: t('leads_sources_table_name'),
+            totalLeads: t('leads_table_total_export'),
           },
         }}
         empty={{

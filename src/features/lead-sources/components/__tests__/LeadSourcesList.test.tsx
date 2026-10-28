@@ -222,7 +222,7 @@ describe('LeadSourcesList: the states (FE-27, D-39)', () => {
     const empty = await screen.findByTestId('list-empty');
     expect(within(empty).getByRole('heading').textContent).toBe(EN.empty_heading);
     expect(empty.textContent).toContain(EN.empty_body);
-    const create = within(empty).getByRole('link', { name: EN.add_lead_source });
+    const create = within(empty).getByRole('link', { name: EN.lead_new_source });
     expect(create.getAttribute('href')).toBe('/setup/lead-sources/new');
   });
 
@@ -246,7 +246,7 @@ describe('LeadSourcesList: the states (FE-27, D-39)', () => {
     const headers = within(list).getAllByRole('columnheader');
     expect(headers.map((th) => th.textContent)).toEqual([
       EN.id,
-      EN.lead_source_name,
+      EN.leads_sources_table_name,
       COMMON.actions,
     ]);
     expect(recordLink('Office').getAttribute('href')).toBe('/setup/lead-sources/7');
@@ -322,7 +322,7 @@ describe('LeadSourcesList: the toolbar (D-19, D-26, D-42, ADR-0043)', () => {
   it('Add Lead Source links to /setup/lead-sources/new', async () => {
     show(<LeadSourcesList />);
     await table();
-    expect(screen.getByRole('link', { name: EN.add_lead_source }).getAttribute('href')).toBe(
+    expect(screen.getByRole('link', { name: EN.lead_new_source }).getAttribute('href')).toBe(
       '/setup/lead-sources/new',
     );
   });

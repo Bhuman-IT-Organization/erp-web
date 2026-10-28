@@ -20,7 +20,7 @@ export default function RouteError({ reset }: RouteErrorProps) {
   return (
     <div
       role="alert"
-      data-testid="cost-centers-route-error"
+      data-testid="lead-sources-route-error"
       className="flex flex-col items-start gap-4"
     >
       <p>{t('something_went_wrong')}</p>

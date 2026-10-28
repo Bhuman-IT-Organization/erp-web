@@ -25,20 +25,20 @@ describe('/setup/lead-sources', () => {
     expect(await page.generateMetadata()).toEqual({ title: 'lead-sources.lead_sources' });
   });
 
-  it('/new is the form with no id, titled add_lead_source', async () => {
+  it('/new is the form with no id, titled lead_new_source', async () => {
     const page = await import('../../../../../app/(shell)/setup/lead-sources/new/page');
     const element = page.default();
     expect(element.type).toBe(LeadSourcesPage);
     expect(element.props).toEqual({ id: null });
-    expect(await page.generateMetadata()).toEqual({ title: 'lead-sources.add_lead_source' });
+    expect(await page.generateMetadata()).toEqual({ title: 'lead-sources.lead_new_source' });
   });
 
-  it('[id]: a positive integer opens that lead source, titled edit_lead_source', async () => {
+  it('[id]: a positive integer opens that lead source, titled edit_source', async () => {
     const page = await import('../../../../../app/(shell)/setup/lead-sources/[id]/page');
     const element = await page.default(routeProps({ id: '007' }));
     expect(element.type).toBe(LeadSourcesPage);
     expect(element.props).toEqual({ id: '7' });
-    expect(await page.generateMetadata()).toEqual({ title: 'lead-sources.edit_lead_source' });
+    expect(await page.generateMetadata()).toEqual({ title: 'lead-sources.edit_source' });
   });
 
   it.each(NOT_IDS)('"%s" is not a lead source page', async (id) => {

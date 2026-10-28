@@ -129,7 +129,7 @@ function show(ui: ReactElement, locale?: 'ar', swr: typeof GLOBAL = ISOLATED) {
   });
 }
 
-const nameBox = () => screen.findByRole('textbox', { name: EN.lead_source_name });
+const nameBox = () => screen.findByRole('textbox', { name: EN.leads_sources_table_name });
 /** Types a name, as a member does, and asks to save. */
 async function typeAndSubmit(value: string, submit = CREATE) {
   const user = userEvent.setup();
@@ -174,7 +174,7 @@ describe('LeadSourcesForm: create (D-25.4, D-28)', () => {
     expect((await nameBox()).getAttribute('aria-required')).toBe('true');
     await typeAndSubmit('   ');
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.lead_source_name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.leads_sources_table_name}: ${EN.enter_name}`);
     await waitFor(() => {
       expect(document.activeElement).toBe(summary);
     });
@@ -240,7 +240,7 @@ describe('LeadSourcesForm: when a save fails (D-29)', () => {
     await confirmSave(user);
     await closed();
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.lead_source_name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.leads_sources_table_name}: ${EN.enter_name}`);
     await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
     expect(document.activeElement).toBe(summary);
     expect(document.body.textContent).not.toContain('raw server text');
@@ -290,7 +290,7 @@ describe('LeadSourcesForm: edit (D-25.4, D-36, D-25.3)', () => {
     const open = await screen.findByTestId('confirm-dialog');
     expect(within(open).getByTestId('confirm-dialog-changes').textContent).toBe(
       COMMON.change_from_to
-        .replace('{label}', EN.lead_source_name)
+        .replace('{label}', EN.noun_lead_source)
         .replace('{from}', 'Alpha')
         .replace('{to}', 'Beta'),
     );
@@ -337,10 +337,9 @@ describe('LeadSourcesForm: edit (D-25.4, D-36, D-25.3)', () => {
     expect(error.textContent).toBe(EN.errors['ERP-CORE-0004']);
     expect(screen.getByTestId('confirm-dialog-confirm').hasAttribute('disabled')).toBe(true);
     expect(push).not.toHaveBeenCalled();
-    expect(screen.getByRole('textbox', { name: EN.lead_source_name, hidden: true })).toHaveProperty(
-      'value',
-      'Beta',
-    );
+    expect(
+      screen.getByRole('textbox', { name: EN.leads_sources_table_name, hidden: true }),
+    ).toHaveProperty('value', 'Beta');
   });
 
   it('a dirty form asks "Discard changes?" before Back to list leaves', async () => {
@@ -424,7 +423,7 @@ describe('LeadSourcesForm: a record that is not there (D-32, D-39)', () => {
     await user.click(box);
     await user.paste('x'.repeat(256));
     await user.click(screen.getByRole('button', { name: CREATE }));
-    const expected = EN.name_too_long.replace('{max}', '255');
+    const expected = EN.name_too_long.replace('{max}', '150');
     expect((await screen.findAllByText(expected)).length).toBeGreaterThan(0);
     expect(screen.queryByTestId('confirm-dialog')).toBeNull();
     expect(saves()).toEqual([]);
@@ -509,7 +508,7 @@ describe('GuardedLeadSourcesForm: the generated gate is ADMIN_GATE (fail closed)
 describe('LeadSourcesForm: Arabic (FE-20)', () => {
   it('renders under ar with the legacy label and no physical-direction class', async () => {
     const { container } = show(<LeadSourcesForm id={null} />, 'ar');
-    expect(await screen.findByRole('textbox', { name: AR.lead_source_name })).toBeTruthy();
+    expect(await screen.findByRole('textbox', { name: AR.leads_sources_table_name })).toBeTruthy();
     expect(document.documentElement.dir).toBe('rtl');
     expect(physicalClassesIn(container)).toEqual([]);
   });
@@ -518,7 +517,7 @@ describe('LeadSourcesForm: Arabic (FE-20)', () => {
 describe("LeadSourcesForm: Perfex's one field (W2A-03, D-29)", () => {
   it('/new is titled "Add Lead Source" with Lead Source Name empty and required, in one Details section', async () => {
     show(<LeadSourcesForm id={null} />);
-    expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(EN.add_lead_source);
+    expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(EN.lead_new_source);
     const name = await nameBox();
     expect(name).toHaveProperty('value', '');
     expect(name.getAttribute('aria-required')).toBe('true');

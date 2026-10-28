@@ -1,4 +1,4 @@
-# lead-sources
+# Lead Sources Module (`tbllead_sources`)
 
 ## Purpose
 
@@ -19,7 +19,7 @@ non-administrator sees the kit's "no access" state once `/me` has answered, and 
 api for nothing. The page gate is presentation only: the api refuses every handler to anyone but an
 administrator with 403 `ERP-AUTH-0005` regardless.
 
-**Names are text.** Node accepts what Perfex accepts (D-29): a trimmed name of 1 to 255 characters,
+**Names are text.** Node accepts what Perfex accepts (D-29): a trimmed name of 1 to 150 characters,
 every character allowed, `<` and `>` included, and a name another lead source already holds. A
 name is rendered as React text only, never as raw HTML, in the list cell, the delete dialog, the
 form title and the breadcrumb (T-4.1-91).
@@ -35,15 +35,15 @@ packs.
 Flow parity (FE-18, D-29): someone who used the Perfex screen does the same job in the same order,
 with the same business outcome.
 
-| Perfex step                                                                                        | Node step (`LeadSourcesList.tsx`, `LeadSourcesForm.tsx`)                                                                                                                                                          |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Setup > Lead Sources, administrators only                                                          | the same setup item, administrators only (D-25); it opens `/setup/lead-sources` and stays marked on the list, `/new` and `/:id`                                                                                   |
-| the list: ID, Lead Source Name, Date Added, Options; search; paging                                | the same columns in the same order, the ID descending by default with no arrow (G6), the server search, the pager; Date Added is the date and time in the customer's format, empty when Perfex stored none (D-31) |
-| Add New Source opens the create page (Name required) > Save > the added alert > back to the list   | Add Lead Source opens the `/new` page with the same field > Create lead source > the save summary > "Lead source saved" > back to the list                                                                        |
-| the name link or edit link opens the edit page prefilled > Save > updated alert > back to the list | the row, the Lead Source Name link or Edit opens `/:id` prefilled > Save lead source > the save summary ("Lead Source Name: old > new") > the toast > back to the exact list URL                                  |
-| create writes the name and `dateadded`; edit saves name and order                                  | the same: the api writes the name and `dateadded` on create, and name/order on edit (D-31)                                                                                                                        |
-| Perfex's Export buttons over the table                                                             | the kit's Export menu: CSV, Excel, PDF or Print of ID, Lead Source Name and Date Added for every row matching search and sort; no PDF under Arabic, where Print covers it (D-09)                                  |
-| delete link > browser's confirm > GET delete > deleted alert                                       | Delete > a dialog naming the lead source; refused up front while anything uses it (one line per use, nothing sent); otherwise "Lead source deleted", or refusal inside dialog                                     |
+| Perfex step                                                                                        | Node step (`LeadSourcesList.tsx`, `LeadSourcesForm.tsx`)                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Setup > Lead Sources, administrators only                                                          | the same setup item, administrators only (D-25); it opens `/setup/lead-sources` and stays marked on the list, `/new` and `/:id`                                                                 |
+| the list: ID, Lead Source Name, Date Added, Options; search; paging                                | the same columns in the same order, **name ascending by default**, the server search, the pager; Date Added is the date and time in the customer's format, empty when Perfex stored none (D-31) |
+| Add New Source opens the create page (Name required) > Save > the added alert > back to the list   | Add Lead Source opens the `/new` page with the same field > Create lead source > the save summary > "Lead source saved" > back to the list                                                      |
+| the name link or edit link opens the edit page prefilled > Save > updated alert > back to the list | the row, the Lead Source Name link or Edit opens `/:id` prefilled > Save lead source > the save summary ("Lead Source Name: old > new") > the toast > back to the exact list URL                |
+| create writes the name and `dateadded`; edit saves name and order                                  | the same: the api writes the name and `dateadded` on create, and name/order on edit (D-31)                                                                                                      |
+| Perfex's Export buttons over the table                                                             | the kit's Export menu: CSV, Excel, PDF or Print of ID, Lead Source Name and Date Added for every row matching search and sort; no PDF under Arabic, where Print covers it (D-09)                |
+| delete link > browser's confirm > GET delete > deleted alert                                       | Delete > a dialog naming the lead source; refused up front while anything uses it (one line per use, nothing sent); otherwise "Lead source deleted", or refusal inside dialog                   |
 
 ## Dropped on purpose
 
@@ -69,7 +69,7 @@ goes back to the leads; the one that is a lead decision is marked).
   offers no PDF under a right-to-left locale; Print keeps every language.
 - The browser `confirm()`: the kit's `ConfirmDialog`, naming the lead source (3.2 D-25).
 - The heading on edit is the record name, not "Edit Lead Source" (the 3.2 page-title rule);
-  `edit_lead_source` is the document title.
+  `edit_source` is the document title.
 - The alert wording: the kit's toasts and the plain-language refusal replace the legacy alerts, and
   the verb + noun buttons replace `cancel` and `submit`.
 - Added on purpose: the save summary before every save (3.2 D-25.4).
@@ -84,9 +84,9 @@ All three live in the shell's route group, so they get the sidebar and the topba
   `pages/LeadSourcesListPage.tsx`; the search, sort and page live in the URL (FE-15);
   `generateMetadata` > `lead_sources`.
 - `/setup/lead-sources/new` (`new/page.tsx`): `pages/LeadSourcesPage.tsx` with no id;
-  `generateMetadata` > `add_lead_source`.
+  `generateMetadata` > `lead_new_source`.
 - `/setup/lead-sources/:id` (`[id]/page.tsx`): `notFound()` unless the id is a positive integer,
-  then the same page with `String(Number(id))`; `generateMetadata` > `edit_lead_source`.
+  then the same page with `String(Number(id))`; `generateMetadata` > `edit_source`.
 - `app/(shell)/setup/lead-sources/error.tsx`: the segment's error boundary (keys from `common`;
   never `error.message`).
 
@@ -95,14 +95,14 @@ All three live in the shell's route group, so they get the sidebar and the topba
 `api/lead-sources.endpoints.ts`, `LEAD_SOURCES_ENDPOINTS`: the six calls erp-api
 `src/v1/lead-sources` serves.
 
-| call                                                          | used by                              | note                                                                                                                                    |
-| ------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/v1/lead-sources?q&sort&limit&cursor`                | `ListPageTemplate`                   | BE-19 keyset grammar, the ID descending by default, `id` and `name` sort; a row is the whole record: `{ id, name, dateCreated, usage }` |
-| `GET /api/v1/lead-sources/export?format&q&sort&column&header` | `ListPageTemplate` (the Export menu) | CSV, Excel, PDF or the print rows; `id`, `name`, `dateCreated` (`LEAD_SOURCES_EXPORT_COLUMNS`), one translated header each              |
-| `GET /api/v1/lead-sources/:id`                                | `useLeadSources`                     | the record; a row opened from the list seeds it (D-35)                                                                                  |
-| `POST /api/v1/lead-sources`                                   | `useSaveLeadSources().create`        | `{ name }`; a name another lead source holds is accepted; never retried                                                                 |
-| `PATCH /api/v1/lead-sources/:id`                              | `useSaveLeadSources().update`        | `{ name, orderby }`; 404 `ERP-CORE-0004` when it was deleted meanwhile, shown inside save summary; never retried                        |
-| `DELETE /api/v1/lead-sources/:id`                             | `useDeleteLeadSource`                | 204; 409 `ERP-LEADSOURCES-0001` while in use; 404 `ERP-CORE-0004`; never retried                                                        |
+| call                                                          | used by                              | note                                                                                                                                     |
+| ------------------------------------------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/lead-sources?q&sort&limit&cursor`                | `ListPageTemplate`                   | BE-19 keyset grammar, **name ascending by default**, `id` and `name` sort; a row is the whole record: `{ id, name, dateCreated, usage }` |
+| `GET /api/v1/lead-sources/export?format&q&sort&column&header` | `ListPageTemplate` (the Export menu) | CSV, Excel, PDF or the print rows; `id`, `name`, `dateCreated` (`LEAD_SOURCES_EXPORT_COLUMNS`), one translated header each               |
+| `GET /api/v1/lead-sources/:id`                                | `useLeadSources`                     | the record; a row opened from the list seeds it (D-35)                                                                                   |
+| `POST /api/v1/lead-sources`                                   | `useSaveLeadSources().create`        | `{ name }`; a name another lead source holds is accepted; never retried                                                                  |
+| `PATCH /api/v1/lead-sources/:id`                              | `useSaveLeadSources().update`        | `{ name, orderby }`; 404 `ERP-CORE-0004` when it was deleted meanwhile, shown inside save summary; never retried                         |
+| `DELETE /api/v1/lead-sources/:id`                             | `useDeleteLeadSource`                | 204; 409 `ERP-LEADSOURCES-0001` while in use; 404 `ERP-CORE-0004`; never retried                                                         |
 
 - **The usage is never a column nor exported.** Its two groups (leads, customers) let the delete dialog refuse up front
   (`refusedCode`), one line per non-zero group, in that order. The api's live 409 covers the race.
@@ -119,17 +119,13 @@ All three live in the shell's route group, so they get the sidebar and the topba
 
 `messages/en.json`, namespace `lead-sources`, registered in `src/messages/index.ts`.
 
-- **Legacy keys** keep their `english_lang.php` names, and their English text was taken from the
-  legacy language packs, copied byte-identical (never retyped): `lead_sources`,
-  `add_lead_source`, `edit_lead_source`, `id`, `lead_source_name`, `date_created`.
+- **Perfex keys** use the native localization keys: `lead_sources`,
+  `lead_new_source`, `edit_source`, `leads_sources_table_name` (or `leads_source_add_edit_name`), and `leads_table_total`.
 - **Ours**, in snake_case: `noun_lead_source` (the noun of every verb + noun label),
   `noun_lead_sources` (the plural in the list's failure line), `section_details`,
   `empty_heading`, `empty_body`, `no_match_heading`, `no_match_body`, `enter_name`,
   `name_too_long`, `saved_toast`, `deleted_toast`, `edit_action_named`, `delete_action_named`,
   `delete_title`, `delete_body`, the two `in_use_*` lines (ICU plurals on `count`), `errors.ERP-CORE-0004` and `errors.ERP-LEADSOURCES-0001`.
-- **Legacy keys not used**: `lead_source` (title case; our lowercase noun is the label noun),
-  `options` (the actions column header is visually hidden), `cancel` and `submit` (verb + noun
-  buttons).
 
 `messages/ar.json` holds the same key set, **unreviewed**: the legacy keys carry the English pack
 text (no Arabic noun is claimed), ours a draft Arabic placeholder, until the customer's reviewer
