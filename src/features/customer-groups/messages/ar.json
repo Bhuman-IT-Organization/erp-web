@@ -1,12 +1,11 @@
 {
   "customer-groups": {
-    "customer_groups": "مجموعات العملاء",
-    "add_customer_group": "إضافة مجموعة عملاء",
-    "edit_customer_group": "تعديل مجموعة العملاء",
-    "id": "ID",
+    "customer_groups": "المجموعات",
+    "new_customer_group": "مجموعة عملاء جديدة",
+    "customer_group_add_heading": "إضافة مجموعة عملاء",
+    "customer_group_edit_heading": "تعديل مجموعة العملاء",
     "customer_group_name": "الاسم",
-    "noun_customer_group": "مجموعة عملاء",
-    "noun_customer_groups": "مجموعات العملاء",
+    "customer_group_lowercase": "مجموعة عملاء",
     "section_details": "التفاصيل",
     "empty_heading": "لا توجد مجموعات عملاء بعد",
     "empty_body": "أضف مجموعة عملاء لتنظيم عملائك.",
@@ -21,6 +20,7 @@
     "delete_title": "حذف مجموعة العملاء {name}؟",
     "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
     "errors": {
+      "ERP-CUSTOMERGROUPS-0001": "لا يمكن حذف مجموعة العملاء لأنها ما زالت تحتوي على عملاء.",
       "ERP-CORE-0004": "مجموعة العملاء هذه لم تعد موجودة. ربما تمت إزالتها."
     }
   }

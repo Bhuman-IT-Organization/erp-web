@@ -33,15 +33,12 @@ const NAMES = [
 ];
 
 /**
- * The ID descends, as the api orders it. Every third row has no Date Created (a Perfex row stored
- * without one); two rows share the name "Partners" (Perfex accepts it).
+ * The api returns groups in its default order; two rows share the name "Partners" (Perfex accepts it).
  */
 const rows = (count: number): CustomerGroupsRow[] =>
   Array.from({ length: count }, (_, i) => ({
     id: String(TOTAL - i),
     name: i < NAMES.length ? (NAMES[i] ?? 'Spare') : `Customer group ${String(TOTAL - i)}`,
-    dateCreated:
-      i % 3 === 2 ? null : `2026-0${String((i % 9) + 1)}-1${String(i % 9)}T08:00:00.000Z`,
   }));
 
 const listPage = (data: readonly CustomerGroupsRow[], total = data.length) => ({
@@ -195,8 +192,7 @@ export const Error: Story = {
 };
 
 /**
- * `Loaded`: 25 of 60, the ID descending: ID, Name (the link) and Date Created (empty for a row
- * Perfex stored without one); no checkbox; two rows named "Partners".
+ * `Loaded`: 25 of 60, Name (the link); no checkbox; two rows named "Partners".
  */
 export const Loaded: Story = {};
 
@@ -235,8 +231,8 @@ export const DeleteRetryable: Story = {
   },
 };
 
-/** At 375 px: ID, Name and the "Actions for …" kebab (Date Created hidden); the toolbar wraps. */
+/** At 375 px: Name and the "Actions for …" kebab; the toolbar wraps. */
 export const Mobile: Story = { ...MOBILE };
 
-/** Arabic: the page mirrors; the actions stay main first, destructive last; the ID keeps its digits. */
+/** Arabic: the page mirrors; the actions stay main first and destructive last. */
 export const Rtl: Story = { globals: { locale: 'ar' } };

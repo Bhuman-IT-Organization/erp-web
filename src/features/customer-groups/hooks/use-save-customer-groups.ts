@@ -3,12 +3,12 @@ import {
   CUSTOMER_GROUPS_PATH,
   customerGroupsPath,
 } from '@/features/customer-groups/api/customer-groups.endpoints';
-import { useCommonMutation, type CommonMutation } from '@/lib/api/use-common-mutation';
 import {
   customerGroupsSchema,
   type CustomerGroups,
   type CustomerGroupsFormValues,
 } from '@/features/customer-groups/schemas/customer-groups.schema';
+import { useCommonMutation, type CommonMutation } from '@/lib/api/use-common-mutation';
 
 /** The two writes of the form, one for each screen. */
 export interface CustomerGroupsSave {

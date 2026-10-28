@@ -2,11 +2,9 @@
 
 ## Purpose
 
-Customer Groups of the modernised ERP: the list at `/setup/customer-groups`, the create form at
-`/setup/customer-groups/new` and the record form at `/setup/customer-groups/:id`. It is the third list of
-Wave 2a (W2A-03); it started as a copy of erp-docs 05-templates/frontend-feature, on the recipe
-the Expense Categories pilot proved and Taxes repeated. Node owns `tblcost_centers` since the Wave
-2a register flip (plan 04.1-17), and every write goes through erp-api `src/v1/customer-groups`.
+Customer Groups provides the list at `/setup/customer-groups`, the create form at
+`/setup/customer-groups/new` and the edit form at `/setup/customer-groups/:id`. It owns the
+customer-group screen and uses the `src/v1/customer-groups` API; it does not own customer data.
 
 **Still a Main Menu item** (D-25): Perfex puts Customer Groups in the main sidebar at position 31,
 after the position-30 band and before Tasks, not under Setup. The Node item stays exactly there
@@ -30,9 +28,8 @@ form title and the breadcrumb (T-4.1-91).
 
 ## Legacy screen
 
-`application/views/admin/cost_centers/manage.php` (the list page: its Add Customer Group button at
-:11, the table's ID, Customer Group Name, Date Created and Options columns at :20-23, the edit and
-delete links at :33-34), with `application/views/admin/cost_centers/form.php` (the create and edit
+`application/views/admin/customer_groups/manage.php` (the list page: its New Customer Group button,
+the table's Customer Group Name and Options columns, the edit and delete links, with the create and edit
 page: Customer Group Name required at :15, Cancel and Save at :18-19),
 `application/controllers/admin/Cost_centers.php` (the list :15, create :20-30, edit :34-44, delete
 :52), `application/models/Cost_centers_model.php` (`add` :22-28 writing `created_by` :24 and
@@ -46,15 +43,15 @@ packs.
 Flow parity (FE-18, D-29): someone who used the Perfex screen does the same job in the same order,
 with the same business outcome.
 
-| Perfex step (`cost_centers/manage.php`, `form.php`, `Cost_centers.php`)                                                    | Node step (`CustomerGroupsList.tsx`, `CustomerGroupsForm.tsx`)                                                                                                                                                                                                                    |
-| -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Main Menu > Customer Groups, position 31, administrators only (`menu_helper.php:155-163`)                                  | the same Main Menu item at the same position, administrators only (D-25); it opens `/setup/customer-groups` and stays marked on the list, `/new` and `/:id`                                                                                                                       |
-| the list: ID, Customer Group Name, Date Created, Options; the ID descending; search; paging                                | the same columns in the same order, the ID descending by default with no arrow (G6), the server search, the pager; Date Created is the date and time in the customer's format, as Perfex's `_d()` does through `_dt()` (`H:i:s` or `g:i A`), empty when Perfex stored none (D-31) |
-| Add Customer Group opens the create PAGE (Customer Group Name required) > Save > the "added" alert > back to the list      | Add Customer Group opens the `/new` page (Perfex already used pages, so D-04 changes nothing) with the same field > Create Customer Group > the save summary > "Customer Group saved" > back to the list                                                                          |
-| the name link or the edit link opens the edit page prefilled > Save > the "updated" alert > back to the list               | the row, the Customer Group Name link or Edit opens `/:id` prefilled > Save Customer Group > the save summary ("Customer Group Name: old > new") > the toast > back to the exact list URL                                                                                         |
-| create writes the name, `created_by` (the signed-in staff member) and `datecreated` (the server time); edit saves the name | the same: the api writes the name, `created_by` and `datecreated` on create, as Perfex does, and only the name on edit (D-31)                                                                                                                                                     |
-| Perfex's Export buttons over the table                                                                                     | the kit's Export menu: CSV, Excel, PDF or Print of ID, Customer Group Name and Date Created for every row matching the search and sort; no PDF under Arabic, where Print covers it (D-09)                                                                                         |
-| the delete link > the browser's confirm > GET delete > the "deleted" alert                                                 | Delete > a dialog naming the Customer Group; refused up front while anything uses it (one line per use, nothing sent); otherwise "Customer Group deleted", or the refusal inside the dialog                                                                                       |
+| Perfex customer-groups screen (`customer_groups/manage.php`, `form.php`, `Customer_groups.php`)                            | Node step (`CustomerGroupsList.tsx`, `CustomerGroupsForm.tsx`)                                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Main Menu > Customer Groups, position 31, administrators only (`menu_helper.php:155-163`)                                  | the same Main Menu item at the same position, administrators only (D-25); it opens `/setup/customer-groups` and stays marked on the list, `/new` and `/:id`                                              |
+| the list: Customer Group Name and Options; search; paging                                                                  | the same Name-only list, server search, pager and shared Export menu                                                                                                                                     |
+| Add Customer Group opens the create PAGE (Customer Group Name required) > Save > the "added" alert > back to the list      | Add Customer Group opens the `/new` page (Perfex already used pages, so D-04 changes nothing) with the same field > Create Customer Group > the save summary > "Customer Group saved" > back to the list |
+| the name link or the edit link opens the edit page prefilled > Save > the "updated" alert > back to the list               | the row, the Customer Group Name link or Edit opens `/:id` prefilled > Save Customer Group > the save summary ("Customer Group Name: old > new") > the toast > back to the exact list URL                |
+| create writes the name, `created_by` (the signed-in staff member) and `datecreated` (the server time); edit saves the name | the same: the api writes the name, `created_by` and `datecreated` on create, as Perfex does, and only the name on edit (D-31)                                                                            |
+| Perfex's Export buttons over the table                                                                                     | the kit's Export menu exports Name for every row matching the search and sort                                                                                                                            |
+| the delete link > the browser's confirm > GET delete > the "deleted" alert                                                 | Delete > a dialog naming the Customer Group; refused up front while anything uses it (one line per use, nothing sent); otherwise "Customer Group deleted", or the refusal inside the dialog              |
 
 ## Dropped on purpose
 
@@ -75,8 +72,6 @@ goes back to the leads; the one that is a lead decision is marked).
   unchanged.
 - **The search matches the name and an exact id** (a simplification): Perfex's table searched every
   cell's text, the date included; Node searches the name as a substring and the id exactly.
-- **Date Created does not sort** (a simplification): the column may be empty, and the ID order is
-  the creation order.
 - **Unchanged, recorded so nobody expects otherwise:** a rename leaves a fixed asset's stored cost
   centre text naming the old name, exactly as Perfex does (D-29); duplicate names are accepted, as
   in Perfex.
@@ -86,7 +81,7 @@ goes back to the leads; the one that is a lead decision is marked).
   offers no PDF under a right-to-left locale; Print keeps every language.
 - The browser `confirm()`: the kit's `ConfirmDialog`, naming the Customer Group (3.2 D-25).
 - The heading on edit is the record name, not "Edit Customer Group" (the 3.2 page-title rule);
-  `edit_cost_center` is the document title.
+  `customer_group_edit_heading` is the document title.
 - The alert wording: the kit's toasts and the plain-language refusal replace the legacy alerts, and
   the verb + noun buttons replace `cancel` and `submit`.
 - Added on purpose: the save summary before every save (3.2 D-25.4).
@@ -99,36 +94,30 @@ All three live in the shell's route group, so they get the sidebar and the topba
 
 - `/setup/customer-groups` (`app/(shell)/setup/customer-groups/page.tsx`, `force-dynamic`):
   `pages/CustomerGroupsListPage.tsx`; the search, sort and page live in the URL (FE-15);
-  `generateMetadata` > `cost_centers`.
+  `generateMetadata` > `customer_groups`.
 - `/setup/customer-groups/new` (`new/page.tsx`): `pages/CustomerGroupsPage.tsx` with no id;
-  `generateMetadata` > `add_cost_center`.
+  `generateMetadata` > `customer_group_add_heading`.
 - `/setup/customer-groups/:id` (`[id]/page.tsx`): `notFound()` unless the id is a positive integer,
-  then the same page with `String(Number(id))`; `generateMetadata` > `edit_cost_center`.
+  then the same page with `String(Number(id))`; `generateMetadata` > `customer_group_edit_heading`.
 - `app/(shell)/setup/customer-groups/error.tsx`: the segment's error boundary (keys from `common`;
   never `error.message`).
 
 ## Data
 
-`api/customer-groups.endpoints.ts`, `COST_CENTERS_ENDPOINTS`: the six calls erp-api
+`api/customer-groups.endpoints.ts`, `CUSTOMER_GROUPS_ENDPOINTS`: the six calls erp-api
 `src/v1/customer-groups` serves.
 
-| call                                                             | used by                              | note                                                                                                                                    |
-| ---------------------------------------------------------------- | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/v1/customer-groups?q&sort&limit&cursor`                | `ListPageTemplate`                   | BE-19 keyset grammar, the ID descending by default, `id` and `name` sort; a row is the whole record: `{ id, name, dateCreated, usage }` |
-| `GET /api/v1/customer-groups/export?format&q&sort&column&header` | `ListPageTemplate` (the Export menu) | CSV, Excel, PDF or the print rows; `id`, `name`, `dateCreated` (`COST_CENTERS_EXPORT_COLUMNS`), one translated header each              |
-| `GET /api/v1/customer-groups/:id`                                | `useCustomerGroups`                  | the record; a row opened from the list seeds it (D-35)                                                                                  |
-| `POST /api/v1/customer-groups`                                   | `useSaveCustomerGroups().create`     | `{ name }`; a name another Customer Group holds is accepted; never retried                                                              |
-| `PATCH /api/v1/customer-groups/:id`                              | `useSaveCustomerGroups().update`     | `{ name }`; 404 `ERP-CORE-0004` when it was deleted meanwhile, shown inside the save summary; never retried                             |
-| `DELETE /api/v1/customer-groups/:id`                             | `useDeleteCostCenter`                | 204; 409 `ERP-CustomerGroups-0001` while in use; 404 `ERP-CORE-0004`; never retried                                                     |
+| call                                                             | used by                              | note                                                                                                        |
+| ---------------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| `GET /api/v1/customer-groups?q&sort&limit&cursor`                | `ListPageTemplate`                   | Server list state; rows contain `{ id, name }`                                                              |
+| `GET /api/v1/customer-groups/export?format&q&sort&column&header` | `ListPageTemplate` (the Export menu) | CSV, Excel, PDF or Print of the translated Name column                                                      |
+| `GET /api/v1/customer-groups/:id`                                | `useCustomerGroups`                  | the record; a row opened from the list seeds it (D-35)                                                      |
+| `POST /api/v1/customer-groups`                                   | `useSaveCustomerGroups().create`     | `{ name }`; a name another Customer Group holds is accepted; never retried                                  |
+| `PATCH /api/v1/customer-groups/:id`                              | `useSaveCustomerGroups().update`     | `{ name }`; 404 `ERP-CORE-0004` when it was deleted meanwhile, shown inside the save summary; never retried |
+| `DELETE /api/v1/customer-groups/:id`                             | `useDeleteCustomerGroup`             | 204; 409 `ERP-CUSTOMERGROUPS-0001` while customers remain; 404 `ERP-CORE-0004`; never retried               |
 
-- **The usage is never a column nor exported.** Its six groups (purchase requests, purchase orders,
-  purchase quotations, shipping charges, expenses, assets) let the delete dialog refuse up front
-  (`refusedCode`), one line per non-zero group, in that order. The api's live 409 covers the race.
-  After a 404 or a 409 on delete the list pages ask again (UI-SPEC G8).
-- `dateCreated` is the ISO instant of Perfex's wall clock in the company zone, or `null` when Perfex
-  stored no date; the list shows it as the date and time through the format door (`f.dateTime`,
-  Perfex's `_d()` handing a value with a time to `_dt()`), empty for `null`; the export's PDF and
-  Print carry the same text.
+- **Name is the only visible and exported field.** The API's live 409 is shown in the delete dialog,
+  and the list is revalidated after a stale 404 or in-use response.
 - After an edit opened from the list, the saved record is swapped into the cached list pages (no
   list request, D-36); after a create, or an edit of a permalink, the list pages ask again.
 - A 400 `ERP-VALIDATION-0001` carries `issues`, zod-parsed before `setError`; the api's text is
@@ -138,19 +127,14 @@ All three live in the shell's route group, so they get the sidebar and the topba
 
 `messages/en.json`, namespace `customer-groups`, registered in `src/messages/index.ts`.
 
-- **Legacy keys** keep their `english_lang.php` names, and their English text was taken from the
-  legacy language packs, copied byte-identical (never retyped): `cost_centers`,
-  `add_cost_center`, `edit_cost_center`, `id`, `cost_center_name`, `date_created`.
-- **Ours**, in snake_case: `noun_cost_center` (the noun of every verb + noun label: Perfex has no
-  lowercase key), `noun_cost_centers` (the plural in the list's failure line), `section_details`,
+- **Perfex keys** are `customer_groups`, `new_customer_group`, `customer_group_add_heading`,
+  `customer_group_edit_heading`, `customer_group_lowercase`, `section_details`,
   `empty_heading`, `empty_body`, `no_match_heading`, `no_match_body`, `enter_name`,
   `name_too_long`, `saved_toast`, `deleted_toast`, `edit_action_named`, `delete_action_named`,
   `delete_title`, `delete_body`, the six `in_use_*` lines (ICU plurals on `count`, the number the
-  formatted `countN`), `errors.ERP-CORE-0004` and `errors.ERP-CustomerGroups-0001`.
-- **Legacy keys not used**: `cost_center` (title case; our lowercase noun is the label noun),
-  `options` (the actions column header is visually hidden), `cancel` and `submit` (verb + noun
-  buttons). The generator's `list_title`, `new_title`, `record_title`, `name`, `label` and
-  `created_at` gave way to the legacy keys.
+  formatted `countN`), `errors.ERP-CORE-0004` and `errors.ERP-CUSTOMERGROUPS-0001`.
+- The shared verb+noun buttons and hidden actions header come from `common`; the screen has no ID or
+  date column.
 
 `messages/ar.json` holds the same key set, **unreviewed**: the legacy keys carry the English pack
 text (no Arabic noun is claimed), ours a draft Arabic placeholder, until the customer's reviewer

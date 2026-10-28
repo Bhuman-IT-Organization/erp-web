@@ -1,12 +1,11 @@
 {
   "customer-groups": {
-    "customer_groups": "Customer Groups",
-    "add_customer_group": "Add Customer Group",
-    "edit_customer_group": "Edit Customer Group",
-    "id": "ID",
+    "customer_groups": "Groups",
+    "new_customer_group": "New Customer Group",
+    "customer_group_add_heading": "Add Customer Group",
+    "customer_group_edit_heading": "Edit Customer Group",
     "customer_group_name": "Name",
-    "noun_customer_group": "customer group",
-    "noun_customer_groups": "customer groups",
+    "customer_group_lowercase": "customer group",
     "section_details": "Details",
     "empty_heading": "No customer groups yet",
     "empty_body": "Add a customer group to organize your customers.",
@@ -21,7 +20,8 @@
     "delete_title": "Delete customer group {name}?",
     "delete_body": "This action cannot be undone.",
     "errors": {
-      "ERP-CORE-0004": "This customer group no longer exists. It may have been removed."
+      "ERP-CORE-0004": "This customer group no longer exists. It may have been removed.",
+      "ERP-CUSTOMERGROUPS-0001": "This customer group still has customers, so it can't be deleted. Remove those customers from the group first, then delete it."
     }
   }
 }
