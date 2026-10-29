@@ -52,6 +52,8 @@ vi.mock('next/navigation', () => ({
 
 const NO_USE: LeadSourcesUsage = {
   leads: 0,
+  emailIntegrations: 0,
+  webToLeadForms: 0,
 };
 const source = (
   id: string,
@@ -63,7 +65,7 @@ const source = (
   usage: { ...NO_USE, ...usage },
 });
 const SPARE = source('8', 'Spare');
-const OFFICE = source('7', 'Office', { leads: 2 });
+const OFFICE = source('7', 'Office', { leads: 2, emailIntegrations: 3, webToLeadForms: 1 });
 const FUEL = source('11', 'Fuel < 50 km');
 const BOLD = source('12', '<b>x</b>');
 
@@ -216,11 +218,11 @@ describe('LeadSourcesList: the states (FE-27, D-39)', () => {
     }
   });
 
-  it('Empty: "No lead sources yet" and Add Lead Source to /setup/lead-sources/new', async () => {
+  it('Empty: Perfex empty-list text and Add Lead Source to /setup/lead-sources/new', async () => {
     api.list = { status: HTTP_OK, body: page([]) };
     show(<LeadSourcesList />);
     const empty = await screen.findByTestId('list-empty');
-    expect(within(empty).getByRole('heading').textContent).toBe(EN.empty_heading);
+    expect(within(empty).getByRole('heading').textContent).toBe(EN.leads_sources_not_found);
     expect(empty.textContent).toContain(EN.empty_body);
     const create = within(empty).getByRole('link', { name: EN.lead_new_source });
     expect(create.getAttribute('href')).toBe('/setup/lead-sources/new');
@@ -297,11 +299,15 @@ describe('LeadSourcesList: Delete (D-07, D-28, D-25.1, UI-SPEC G8)', () => {
     expect(await screen.findByText(EN.deleted_toast)).toBeTruthy();
   });
 
-  it('DeleteInUse: a lead source leads use shows the usage line, the ERP-LEADSOURCES-0001 refusal, and a disabled Delete', async () => {
+  it('DeleteInUse: each reference group gets a usage line and disables Delete', async () => {
     show(<LeadSourcesList />);
     const { open } = await openDelete(undefined, OFFICE);
     expect(within(open).getByRole('heading').textContent).toBe('Delete lead source Office?');
-    expect(linesOf(open)).toEqual(['2 leads use this lead source.']);
+    expect(linesOf(open)).toEqual([
+      '2 leads use this lead source.',
+      '3 email integrations use this lead source.',
+      '1 web-to-lead form uses this lead source.',
+    ]);
     expect(within(open).getByTestId('confirm-dialog-error').textContent).toBe(EN.errors[IN_USE]);
     const confirm = within(open).getByTestId('confirm-dialog-confirm');
     expect(confirm.hasAttribute('disabled')).toBe(true);

@@ -15,11 +15,13 @@ export const LEAD_SOURCES_MESSAGE_KEYS = {
 export const LEAD_SOURCES_NAME_MAX = 150;
 
 /**
- * What uses a lead source, one count per group, in the api's order: leads assigned to this source.
- * A delete is refused while any is non-zero (D-07).
+ * What uses a lead source, one count per group in the API's order. A delete is refused while any
+ * group is non-zero (D-07).
  */
 export const leadSourcesUsageSchema = z.object({
   leads: z.number().int().nonnegative(),
+  emailIntegrations: z.number().int().nonnegative(),
+  webToLeadForms: z.number().int().nonnegative(),
 });
 export type LeadSourcesUsage = z.infer<typeof leadSourcesUsageSchema>;
 export type LeadSourcesUsageGroup = keyof LeadSourcesUsage;

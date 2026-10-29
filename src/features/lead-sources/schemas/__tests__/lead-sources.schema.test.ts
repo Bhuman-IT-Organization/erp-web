@@ -17,7 +17,7 @@ import {
 } from '../lead-sources.schema';
 import en from '../../messages/en.json';
 
-const NO_USE: LeadSourcesUsage = { leads: 0 };
+const NO_USE: LeadSourcesUsage = { leads: 0, emailIntegrations: 0, webToLeadForms: 0 };
 const ITEM: LeadSources = { id: '7', name: 'Web site', usage: NO_USE };
 
 function firstKey(name: string): string | null {
@@ -62,7 +62,11 @@ describe('lead-sources schemas', () => {
 
   it('returns usage groups in schema order and handles missing usage', () => {
     expect(inUseGroups(NO_USE)).toEqual([]);
-    expect(inUseGroups({ leads: 2 })).toEqual(['leads']);
+    expect(inUseGroups({ ...NO_USE, leads: 2 })).toEqual(['leads']);
+    expect(inUseGroups({ ...NO_USE, emailIntegrations: 2, webToLeadForms: 1 })).toEqual([
+      'emailIntegrations',
+      'webToLeadForms',
+    ]);
     expect(inUseGroups(undefined)).toEqual([]);
   });
 

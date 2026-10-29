@@ -18,7 +18,9 @@ import {
 import { useDeleteLeadSource } from '@/features/lead-sources/hooks/use-lead-sources';
 import {
   leadSourcesRowSchema,
+  inUseGroups,
   type LeadSourcesRow,
+  type LeadSourcesUsageGroup,
 } from '@/features/lead-sources/schemas/lead-sources.schema';
 import { withAuth } from '@/hocs/withAuth';
 import { withPermission } from '@/hocs/withPermission';
@@ -31,13 +33,19 @@ import { useFormat } from '@/lib/i18n/format';
 const LIST_BASE = '/setup/lead-sources';
 const itemRoute = (row: LeadSourcesRow): string => `${LIST_BASE}/${encodeURIComponent(row.id)}`;
 
-/** Stale list codes when row has been deleted or attached to leads in the interim. */
+/** Stale list codes when the source has been deleted or become in-use since the list loaded. */
 const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE, IN_USE_CODE];
 
-/** True when the source is linked to one or more leads. */
+/** True when any reference group still uses the source. */
 function inUse(row: LeadSourcesRow | undefined): boolean {
-  return row !== undefined && row.usage.leads > 0;
+  return row !== undefined && inUseGroups(row.usage).length > 0;
 }
+
+const IN_USE_MESSAGE_KEYS = {
+  leads: 'in_use_leads',
+  emailIntegrations: 'in_use_email_integrations',
+  webToLeadForms: 'in_use_web_to_lead_forms',
+} as const satisfies Record<LeadSourcesUsageGroup, string>;
 
 export function LeadSourcesList(): ReactElement {
   const t = useTranslations('lead-sources');
@@ -71,18 +79,18 @@ export function LeadSourcesList(): ReactElement {
     return outcome;
   }
 
-  /** Renders refusal text if source is attached to existing leads, or standard deletion text. */
+  /** Renders one refusal line for each reference group still using the source. */
   function deleteBody(row: LeadSourcesRow | undefined): ReactNode {
     if (row === undefined || !inUse(row)) return t('delete_body');
 
-    return (
-      <span className="block">
-        {t('in_use_leads', {
-          count: row.usage.leads,
-          countN: f.number(row.usage.leads),
+    return inUseGroups(row.usage).map((group) => (
+      <span className="block" key={group}>
+        {t(IN_USE_MESSAGE_KEYS[group], {
+          count: row.usage[group],
+          countN: f.number(row.usage[group]),
         })}
       </span>
-    );
+    ));
   }
 
   // Columns: ID and Lead Source Name with total leads subtext; the template provides row actions.
@@ -161,7 +169,7 @@ export function LeadSourcesList(): ReactElement {
           },
         }}
         empty={{
-          nothingYetHeading: t('empty_heading'),
+          nothingYetHeading: t('leads_sources_not_found'),
           nothingYetBody: t('empty_body'),
           noResultsHeading: (query) => t('no_match_heading', { query }),
           noResultsBody: t('no_match_body'),

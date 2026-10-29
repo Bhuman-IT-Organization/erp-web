@@ -10,7 +10,7 @@
     "noun_lead_source": "lead source",
     "noun_lead_sources": "lead sources",
     "section_details": "Details",
-    "empty_heading": "No lead sources yet",
+    "leads_sources_not_found": "No leads sources found",
     "empty_body": "Add a lead source so incoming leads can be tracked against it.",
     "no_match_heading": "No lead sources match “{query}”",
     "no_match_body": "Check the spelling or clear the search to see every lead source.",
@@ -23,9 +23,12 @@
     "delete_title": "Delete lead source {name}?",
     "delete_body": "This cannot be undone.",
     "in_use_leads": "{count, plural, one {{countN} lead uses this lead source.} other {{countN} leads use this lead source.}}",
+    "in_use_email_integrations": "{count, plural, one {{countN} email integration uses this lead source.} other {{countN} email integrations use this lead source.}}",
+    "in_use_web_to_lead_forms": "{count, plural, one {{countN} web-to-lead form uses this lead source.} other {{countN} web-to-lead forms use this lead source.}}",
     "errors": {
       "ERP-CORE-0004": "This lead source no longer exists. It may have been removed.",
-      "ERP-LEADSOURCES-0001": "This lead source is still in use, so it can't be deleted. Remove it from everything that uses it first, then delete it."
+      "ERP-LEADSOURCES-0001": "The ID of the lead source is already using.",
+      "ERP-LEADSOURCES-0002": "This lead source is the default source in Settings, so it can't be deleted."
     }
   }
 }

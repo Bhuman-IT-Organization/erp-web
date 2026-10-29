@@ -9,7 +9,11 @@ import { fakeAdapter, problem } from '@/test/axios-fakes';
 import { renderWithProviders, screen, userEvent } from '@/test/render';
 import { useSaveLeadSources } from '../use-save-lead-sources';
 
-const ITEM = { id: 'a1', name: 'Web site', usage: { leads: 0 } };
+const ITEM = {
+  id: 'a1',
+  name: 'Web site',
+  usage: { leads: 0, emailIntegrations: 0, webToLeadForms: 0 },
+};
 
 function Probe({ id }: { readonly id: string | null }) {
   const { create, update } = useSaveLeadSources(id);

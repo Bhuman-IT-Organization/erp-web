@@ -41,7 +41,7 @@ describe('lead-sources endpoints', () => {
     expect(IN_USE_CODE).toBe('ERP-LEADSOURCES-0001');
     expect(LEAD_SOURCES_ERRORS).toEqual({
       namespace: 'lead-sources',
-      codes: ['ERP-CORE-0004', 'ERP-LEADSOURCES-0001'],
+      codes: ['ERP-CORE-0004', 'ERP-LEADSOURCES-0001', 'ERP-LEADSOURCES-0002'],
     });
   });
 

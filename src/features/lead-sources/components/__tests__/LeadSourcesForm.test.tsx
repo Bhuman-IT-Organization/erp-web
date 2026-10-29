@@ -50,6 +50,8 @@ vi.mock('next/navigation', () => ({
 
 const NO_USE = {
   leads: 0,
+  emailIntegrations: 0,
+  webToLeadForms: 0,
 };
 const ALPHA: LeadSources = {
   id: 'a1',

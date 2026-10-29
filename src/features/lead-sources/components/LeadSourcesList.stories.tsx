@@ -36,15 +36,15 @@ const NAMES = [
 
 const NO_USE: LeadSourcesUsage = {
   leads: 0,
+  emailIntegrations: 0,
+  webToLeadForms: 0,
 };
 
 const rows = (count: number): LeadSourcesRow[] =>
   Array.from({ length: count }, (_, i) => ({
     id: String(TOTAL - i),
     name: i < NAMES.length ? (NAMES[i] ?? 'Other') : `Lead Source ${String(TOTAL - i)}`,
-    dateCreated:
-      i % 3 === 2 ? null : `2026-0${String((i % 9) + 1)}-1${String(i % 9)}T08:00:00.000Z`,
-    usage: i === 0 ? { ...NO_USE, leads: 14 } : NO_USE,
+    usage: i === 0 ? { ...NO_USE, leads: 14, emailIntegrations: 3, webToLeadForms: 1 } : NO_USE,
   }));
 
 const listPage = (data: readonly LeadSourcesRow[], total = data.length) => ({
@@ -210,7 +210,8 @@ export const DeleteInUse: Story = {
       await expect(within(dialog).getByTestId('confirm-dialog-error')).toBeVisible();
     });
     await expect(dialog).toHaveTextContent('14 leads use this lead source.');
-    await expect(dialog).toHaveTextContent('3 customers use this lead source.');
+    await expect(dialog).toHaveTextContent('3 email integrations use this lead source.');
+    await expect(dialog).toHaveTextContent('1 web-to-lead form uses this lead source.');
     await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeDisabled();
   },
 };

@@ -19,12 +19,12 @@ const HTTP_NOT_FOUND = 404;
 const HTTP_SERVICE_UNAVAILABLE = 503;
 const NO_USE = {
   leads: 0,
-  customers: 0,
+  emailIntegrations: 0,
+  webToLeadForms: 0,
 };
 const RECORD = {
   id: 'a1',
   name: 'Google Ads',
-  dateCreated: '2026-10-02T20:30:15.000Z',
   usage: NO_USE,
 };
 
