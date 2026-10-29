@@ -8,7 +8,7 @@ The Contract Types management screen: a list, a create screen and an edit screen
 
 `application/views/admin/contracts/manage_types.php` with `application/views/admin/contracts/contract_type.php` (the list and modal dialog).
 
-## Flow parity
+## Legacy parity
 
 | Perfex step                                                                        | Node step                                                                                  |
 | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
