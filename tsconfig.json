@@ -10,5 +10,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "erp-web"]
+  "exclude": ["node_modules"]
 }
