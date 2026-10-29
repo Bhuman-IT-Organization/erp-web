@@ -1,29 +1,24 @@
-'use client';
-
-import Link from 'next/link';
-import { PrioritiesList } from '../components/PrioritiesList';
-import { LABELS, ROUTES } from '../schemas/ticket-priorities.constants';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
+import { GuardedTicketPrioritiesList } from '@/features/ticket-priorities/components/TicketPrioritiesList';
+import { pick } from '@/lib/i18n/pick';
 
 /**
- * Page layout for the ticket priorities list: heading, Create button and the table.
+ * The namespaces the client subtree needs: a nested provider REPLACES the messages above it. The
+ * list title is Perfex's menu key `shell.acs_ticket_priority_submenu`, so `shell` is in the slice.
  */
-export function TicketPrioritiesListPage() {
-  return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900">{LABELS.title}</h1>
-          <p className="text-sm text-gray-500 mt-1">{LABELS.subtitle}</p>
-        </div>
-        <Link
-          href={ROUTES.create}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-        >
-          {LABELS.createButton}
-        </Link>
-      </div>
+const SLICE = ['common', 'shell', 'ticket-priorities'] as const;
 
-      <PrioritiesList />
-    </div>
+/**
+ * The `/setup/ticket-priorities` composition (a Server Component): the list under its own message
+ * slice, behind its guards. The list's state is the URL, read in the browser (FE-15). No `<main>`:
+ * the shell's `PageShell` owns it.
+ */
+export async function TicketPrioritiesListPage() {
+  const messages = pick(await getMessages(), [...SLICE]);
+  return (
+    <NextIntlClientProvider messages={messages}>
+      <GuardedTicketPrioritiesList />
+    </NextIntlClientProvider>
   );
 }
