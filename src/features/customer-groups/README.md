@@ -9,8 +9,9 @@ customer-group screen and uses the `src/v1/customer-groups` API; it does not own
 The modern screen is available at `/setup/customer-groups`, with the customer-group breadcrumb
 provided by the application shell.
 
-**Administrators only** (D-06, D-26). Perfex's menu item was administrator-only, but its controller
-let any signed-in staff member list, add, edit and delete Customer Groups by address. Node closes that:
+**Administrators only** (D-06, D-26). Perfex's menu item was administrator-only, and its controller
+checks `is_admin()` when listing, adding, editing and deleting Customer Groups (`Clients.php:816,
+859`). Node closes that:
 the three routes are `ADMIN_GATE` in `src/config/route-gates.ts`, the mirror of `@erp/contracts`'
 `ROUTE_GATES` (kept in sync with erp-api's `packages/contracts` by hand), the menu item reads the
 same gate through `navGateOf`, and both screens sit behind `withAuth(withPermission(...))`: a
@@ -18,7 +19,7 @@ non-administrator sees the kit's "no access" state once `/me` has answered, and 
 api for nothing. The page gate is presentation only: the api refuses every handler to anyone but an
 administrator with 403 `ERP-AUTH-0005` regardless.
 
-**Names are text.** Node accepts what Perfex accepts (D-29): a trimmed name of 1 to 255 characters,
+**Names are text.** Node accepts a trimmed name of 1 to 191 characters (the API's `VARCHAR(191)`),
 every character allowed, `<` and `>` included, and a name another Customer Group already holds. A
 name is rendered as React text only, never as raw HTML, in the list cell, the delete dialog, the
 form title and the breadcrumb (T-4.1-91).
@@ -35,28 +36,29 @@ order is Name descending.
 Flow parity (FE-18, D-29): someone who used the Perfex screen does the same job in the same order,
 with the same business outcome.
 
-| Perfex customer-groups screen (`clients/groups_manage.php`)                                                           | Node step (`CustomerGroupsList.tsx`, `CustomerGroupsForm.tsx`)                                                                                                                                           |
-| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| the list: Name and Options; search; paging                                                                            | the same Name-only list, server search, pager and shared Export menu                                                                                                                                     |
-| Add Customer Group opens the create PAGE (Customer Group Name required) > Save > the "added" alert > back to the list | Add Customer Group opens the `/new` page (Perfex already used pages, so D-04 changes nothing) with the same field > Create Customer Group > the save summary > "Customer Group saved" > back to the list |
-| the name link or the edit link opens the edit page prefilled > Save > the "updated" alert > back to the list          | the row, the Customer Group Name link or Edit opens `/:id` prefilled > Save Customer Group > the save summary ("Customer Group Name: old > new") > the toast > back to the exact list URL                |
-| create saves the group name; edit saves the group name                                                                | the API saves the name on create and edit                                                                                                                                                                |
-| Perfex's Export buttons over the table                                                                                | the kit's Export menu exports Name for every row matching the search and sort                                                                                                                            |
-| the delete link > the browser's confirm > GET delete > the "deleted" alert                                            | Delete > a dialog naming the Customer Group; refused up front while anything uses it (one line per use, nothing sent); otherwise "Customer Group deleted", or the refusal inside the dialog              |
+| Perfex customer-groups screen (`clients/groups_manage.php`)                                                                                   | Node step (`CustomerGroupsList.tsx`, `CustomerGroupsForm.tsx`)                                                                                                                                                                                   |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| the list: Name and Options; search; paging                                                                                                    | the same Name-only list, server search, pager and shared Export menu                                                                                                                                                                             |
+| Add Customer Group opens the create modal (`groups_manage.php:8`; Customer Group Name required) > Save > the "added" alert > back to the list | Add Customer Group opens the `/new` page with the same field > Create Customer Group > the save summary > "Customer Group saved" > back to the list                                                                                              |
+| the name link or the edit link opens the edit page prefilled > Save > the "updated" alert > back to the list                                  | the row, the Customer Group Name link or Edit opens `/:id` prefilled > Save Customer Group > the save summary ("Customer Group Name: old > new") > the toast > back to the exact list URL                                                        |
+| create saves the group name; edit saves the group name                                                                                        | the API saves the name on create and edit                                                                                                                                                                                                        |
+| Perfex's Export buttons over the table                                                                                                        | the kit's Export menu exports Name for every row matching the search and sort                                                                                                                                                                    |
+| the delete link > the browser's confirm > GET delete > the "deleted" alert                                                                    | Delete > a dialog naming the Customer Group; confirmation sends DELETE. The list has no usage data, so the API may refuse with 409 when customers still use the group; that refusal is shown in the dialog. On success: "Customer Group deleted" |
 
 ## Dropped on purpose
 
 Each change, with its reason, for the lead's checkpoint (D-29: only a change to a business outcome
 goes back to the leads; the one that is a lead decision is marked).
 
-- **A delete while the Customer Group is in use is refused** (D-07, D-28). The API returns a 409,
-  the dialog explains that customers must first be removed from the group, Delete is disabled, and
-  no DELETE request is sent.
+- **A delete while the Customer Group is in use is refused** (D-07, D-28). The list does not include
+  usage data, so it sends DELETE after confirmation. The API returns 409 when customers still use
+  the group; the dialog explains that customers must first be removed from it.
 - **Administrators only** (D-26, a security fix): Node's routes and API are administrator-only.
 - **Only the name is saved** (D-26, D-31): the group has no additional editable fields in this
   screen, so Node sends only `name` on create and edit.
-- **The search matches the name and an exact id** (a simplification): Perfex's table searched every
-  cell's text, the date included; Node searches the name as a substring and the id exactly.
+- **The search matches the name and an exact id** (a simplification): the Node list displays only
+  Name (plus row actions), with no date column; Node searches the name as a substring and the id
+  exactly.
 - **Unchanged, recorded so nobody expects otherwise:** duplicate names are accepted, as in Perfex.
 - **Perfex's activity-log lines**: Node never writes Perfex's Activity Log; the domain event and the
   service log line are the record (D-18).
@@ -111,11 +113,8 @@ All three live in the shell's route group, so they get the sidebar and the topba
 `messages/en.json`, namespace `customer-groups`, registered in `src/messages/index.ts`.
 
 - **Perfex keys** are `customer_groups`, `new_customer_group`, `customer_group_add_heading`,
-  `customer_group_edit_heading`, `customer_group_lowercase`, `section_details`,
-  `empty_heading`, `empty_body`, `no_match_heading`, `no_match_body`, `enter_name`,
-  `name_too_long`, `saved_toast`, `deleted_toast`, `edit_action_named`, `delete_action_named`,
-  `delete_title`, `delete_body`, the six `in_use_*` lines (ICU plurals on `count`, the number the
-  formatted `countN`), `errors.ERP-CORE-0004` and `errors.ERP-CUSTOMERGROUPS-0001`.
+  `customer_group_edit_heading` and `customer_group_lowercase`. The other feature message keys are
+  specific to this screen; there are no `in_use_*` lines.
 - The shared verb+noun buttons and hidden actions header come from `common`; the screen has no ID or
   date column.
 
@@ -129,10 +128,11 @@ signs the file off (a data change).
 corepack yarn test src/features/customer-groups
 ```
 
-DOM tests (`*.test.tsx`) opt into happy-dom on line 1 and render through `src/test/render.tsx`; the
-network is a fake adapter on `http.defaults.adapter`. Every UI-SPEC state is a story export and an
-`it`: the list's `Loading`, `Empty`, `NoResults`, `Error`, `Loaded`, `DeleteConfirm`,
-`DeleteInUse`, `DeleteRefused`, `DeleteRetryable`, `Mobile` and `Rtl`; the form's `Default`,
-`Edit`, `SaveSummary`, `Loading`, `Mobile`, `Pending`, `FieldErrors`, `ServerError`,
-`SaveRefusedDeleted`, `EditFromList`, `NotFound`, `SeededNotFound` and `Rtl`. `corepack yarn check`
-audits every story with axe at 1280 and 375 px (`check:a11y`).
+Tests under this feature are the schema, endpoint, hook, component and route tests in the matching
+`__tests__` directories. The component tests use happy-dom and render through
+`src/test/render.tsx`; the network is a fake adapter on `http.defaults.adapter`. The existing list
+stories are `Loading`, `Empty`, `NoResults`, `Error`, `Loaded`, `DeleteConfirm`, `DeleteRetryable`,
+`Mobile` and `Rtl`. The form stories are `Default`, `Edit`, `SaveSummary`, `Loading`, `Mobile`,
+`Pending`, `FieldErrors`, `ServerError`, `SaveRefusedDeleted`, `EditFromList`, `NotFound`,
+`SeededNotFound` and `Rtl`. `corepack yarn check` audits stories with axe at 1280 and 375 px
+(`check:a11y`).
