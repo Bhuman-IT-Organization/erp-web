@@ -106,7 +106,7 @@ export function ContractTypesList(): ReactElement {
   const columns: readonly ListColumn<ContractTypesRow>[] = [
     {
       id: 'name',
-      header: t('name'),
+      header: t('contract_type_name'),
       sortField: 'name',
       primary: true,
       cell: (one) => (
@@ -164,7 +164,7 @@ export function ContractTypesList(): ReactElement {
           path: CONTRACT_TYPES_EXPORT_PATH,
           columns: CONTRACT_TYPES_EXPORT_COLUMNS,
           labels: {
-            name: t('name'),
+            name: t('contract_type_name'),
             contracts: t('contracts'),
           },
         }}

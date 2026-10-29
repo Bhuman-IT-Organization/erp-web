@@ -104,13 +104,15 @@ function respond(config: InternalAxiosRequestConfig) {
 const deletes = () => requests.filter((r) => r.method === 'DELETE');
 
 /** A private SWR cache, no automatic retry, and a URL with memory, as a browser has. */
-function show(ui: ReactElement, locale?: 'ar') {
+function show(ui: ReactElement, options: 'ar' | { searchParams?: string; locale?: 'ar' } = {}) {
+  const { searchParams = '', locale } =
+    typeof options === 'string' ? { locale: options, searchParams: '' } : options;
   return renderWithProviders(
     <>
       <Toaster />
       <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>{ui}</SWRConfig>
     </>,
-    { hasMemory: true, ...(locale === undefined ? {} : { locale }) },
+    { searchParams, hasMemory: true, ...(locale === undefined ? {} : { locale }) },
   );
 }
 
@@ -180,6 +182,15 @@ describe('ContractTypesList: the four states (FE-27, D-39)', () => {
     expect(create.getAttribute('href')).toBe('/setup/contract-types/new');
   });
 
+  it('NoResults: no rows for "zz": "No contract types match “zz”" with Clear search', async () => {
+    api.list = { status: HTTP_OK, body: page([]) };
+    show(<ContractTypesList />, { searchParams: '?q=zz' });
+    const empty = await screen.findByTestId('list-no-results');
+    expect(within(empty).getByRole('heading').textContent).toBe('No contract types match “zz”');
+    expect(empty.textContent).toContain(EN.no_match_body);
+    expect(within(empty).getByRole('button', { name: COMMON.clear_search })).toBeTruthy();
+  });
+
   it('Error: a 503 says the list could not load, in plain language with the plural noun, and offers Retry', async () => {
     api.list = {
       status: SERVICE_UNAVAILABLE,
@@ -201,7 +212,9 @@ describe('ContractTypesList: the four states (FE-27, D-39)', () => {
       '/setup/contract-types/a1',
     );
     const sortable = within(tableEl).getAllByRole('button', { name: /^Sort by / });
-    expect(sortable.map((b) => b.getAttribute('aria-label'))).toEqual([`Sort by ${EN.name}`]);
+    expect(sortable.map((b) => b.getAttribute('aria-label'))).toEqual([
+      `Sort by ${EN.contract_type_name}`,
+    ]);
   });
 });
 
@@ -242,7 +255,7 @@ describe('ContractTypesList: the toolbar (D-26, D-42)', () => {
     });
     const sent = requests.find((r) => r.url.pathname === EXPORT);
     expect(sent?.url.searchParams.get('format')).toBe('csv');
-    expect(sent?.url.searchParams.getAll('header')).toEqual([EN.name, EN.contracts]);
+    expect(sent?.url.searchParams.getAll('header')).toEqual([EN.contract_type_name, EN.contracts]);
   });
 });
 

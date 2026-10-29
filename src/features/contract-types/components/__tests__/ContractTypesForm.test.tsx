@@ -126,7 +126,7 @@ function show(ui: ReactElement, locale?: 'ar', swr: typeof GLOBAL = ISOLATED) {
   });
 }
 
-const nameBox = () => screen.findByRole('textbox', { name: EN.name });
+const nameBox = () => screen.findByRole('textbox', { name: EN.contract_type_name });
 /** Types a name, as a member does, and asks to save. */
 async function typeAndSubmit(value: string, submit = CREATE) {
   const user = userEvent.setup();
@@ -172,7 +172,7 @@ describe('ContractTypesForm: create (D-25.4, D-28)', () => {
     // A clean form cannot be submitted (the save bar); spaces make it dirty and still blank.
     await typeAndSubmit('   ');
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.contract_type_name}: ${EN.enter_name}`);
     await waitFor(() => {
       expect(document.activeElement).toBe(summary);
     });
@@ -241,7 +241,7 @@ describe('ContractTypesForm: when a save fails (D-29)', () => {
     await confirmSave(user);
     await closed();
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.contract_type_name}: ${EN.enter_name}`);
     await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
     expect(document.activeElement).toBe(summary);
     expect(document.body.textContent).not.toContain('raw server text');
@@ -291,7 +291,7 @@ describe('ContractTypesForm: edit (D-25.4, D-36, D-25.3)', () => {
     const open = await screen.findByTestId('confirm-dialog');
     expect(within(open).getByTestId('confirm-dialog-changes').textContent).toBe(
       COMMON.change_from_to
-        .replace('{label}', EN.name)
+        .replace('{label}', EN.contract_type_name)
         .replace('{from}', 'Alpha')
         .replace('{to}', 'Beta'),
     );
@@ -340,10 +340,9 @@ describe('ContractTypesForm: edit (D-25.4, D-36, D-25.3)', () => {
     expect(screen.getByTestId('confirm-dialog-confirm').hasAttribute('disabled')).toBe(true);
     expect(push).not.toHaveBeenCalled();
     // Behind the modal dialog (hidden from the accessibility tree while it is open), the edit is kept.
-    expect(screen.getByRole('textbox', { name: EN.name, hidden: true })).toHaveProperty(
-      'value',
-      'Beta',
-    );
+    expect(
+      screen.getByRole('textbox', { name: EN.contract_type_name, hidden: true }),
+    ).toHaveProperty('value', 'Beta');
   });
 
   it('a dirty form asks "Discard changes?" before Back to list leaves', async () => {

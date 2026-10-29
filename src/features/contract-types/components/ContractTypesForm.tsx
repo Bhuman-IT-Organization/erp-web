@@ -262,7 +262,7 @@ export function ContractTypesForm({ id }: ContractTypesFormProps): ReactElement 
   const noun = t('noun_contract_type');
   const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
   const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
-  const changes = nameChanges(pending, record, t('name'));
+  const changes = nameChanges(pending, record, t('contract_type_name'));
 
   /** The save summary's title: the new record's name, or the saved record's. */
   function summaryTitle(): string {
@@ -281,7 +281,9 @@ export function ContractTypesForm({ id }: ContractTypesFormProps): ReactElement 
           {
             id: 'details',
             title: t('section_details'),
-            fields: [{ name: 'name', label: t('name'), kind: 'text', required: true }],
+            fields: [
+              { name: 'name', label: t('contract_type_name'), kind: 'text', required: true },
+            ],
           },
         ]}
         onValid={setPending}

@@ -3,7 +3,7 @@
     "contract_types": "Contract Types",
     "new_contract_type": "New Contract Type",
     "contract_type_edit": "Edit Contract Type",
-    "name": "Name",
+    "contract_type_name": "Name",
     "contracts": "Contracts",
     "noun_contract_type": "contract type",
     "noun_contract_types": "contract types",
@@ -22,7 +22,7 @@
     "in_use_contracts": "{count, plural, one {{countN} contract uses this contract type.} other {{countN} contracts use this contract type.}}",
     "errors": {
       "ERP-CORE-0004": "This contract type no longer exists. It may have been removed.",
-      "ERP-CONTRACTTYPES-0001": "This contract type is still in use, so it can't be deleted. Remove it from everything that uses it first, then delete it."
+      "ERP-CONTRACTTYPES-0001": "The ID of the contract is already using."
     }
   }
 }
