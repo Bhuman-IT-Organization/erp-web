@@ -42,12 +42,7 @@ const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE, IN_USE_CODE];
 
 /** The dialog line of each usage group, in the api's order (D-07, D-28). */
 const USAGE_LINE_KEYS = {
-  purchaseRequests: 'in_use_purchase_requests',
-  purchaseOrders: 'in_use_purchase_orders',
-  purchaseQuotations: 'in_use_purchase_quotations',
-  shippingCharges: 'in_use_shipping_charges',
-  expenses: 'in_use_expenses',
-  assets: 'in_use_assets',
+  contracts: 'in_use_contracts',
 } as const satisfies Record<ContractTypeUsageGroup, string>;
 
 /** True when anything still uses the row: the delete is refused before it is asked (D-07). */
@@ -57,10 +52,10 @@ function inUse(row: ContractTypesRow | undefined): boolean {
 
 /**
  * The Contract Types list on the kit's `ListPageTemplate` (UIK-06): the template owns the URL state,
- * the settled search, the sort (the ID descending by default, as Perfex's table orders it, with no arrow,
- * D-16), the pager, the export and every state (loading, empty, no results, error, loaded) in the D-39 order;
- * this screen owns columns (ID, Contract Type Name, Date Created), the labelled Edit and Delete and the
- * delete dialog.
+ * the settled search, the sort (the name descending by default, as Perfex's table orders it, with no arrow),
+ * the pager, the export and every state (loading, empty, no results, error, loaded) in the D-39 order;
+ * this screen owns the Name column with the number of contracts using each type, the labelled Edit and Delete,
+ * and the delete dialog.
  */
 export function ContractTypesList(): ReactElement {
   const t = useTranslations('contract-types');
@@ -107,29 +102,21 @@ export function ContractTypesList(): ReactElement {
     ));
   }
 
-  // Perfex's columns: ID, Contract Type Name, Date Created.
+  // Perfex's columns: Name and the number of contracts using each type.
   const columns: readonly ListColumn<ContractTypesRow>[] = [
     {
-      id: 'id',
-      header: t('id'),
-      sortField: 'id',
-      cell: (one) => <bdi className="tabular-nums">{one.id}</bdi>,
-    },
-    {
       id: 'name',
-      header: t('contract_type_name'),
+      header: t('name'),
       sortField: 'name',
       primary: true,
-      cell: (one) => one.name,
-    },
-    {
-      id: 'dateCreated',
-      header: t('date_created'),
-      hideBelow: 'md',
-      cell: (one) =>
-        one.dateCreated === null ? null : (
-          <time dateTime={one.dateCreated}>{f.date(one.dateCreated)}</time>
-        ),
+      cell: (one) => (
+        <span className="flex items-center gap-2">
+          <span>{one.name}</span>
+          <span className="inline-flex items-center justify-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
+            {f.number(one.usage.contracts)}
+          </span>
+        </span>
+      ),
     },
   ];
 
@@ -172,14 +159,13 @@ export function ContractTypesList(): ReactElement {
             },
           },
         ]}
-        createAction={{ label: t('new_title'), href: `${LIST_BASE}/new` }}
+        createAction={{ label: t('new_contract_type'), href: `${LIST_BASE}/new` }}
         exportAction={{
           path: CONTRACT_TYPES_EXPORT_PATH,
           columns: CONTRACT_TYPES_EXPORT_COLUMNS,
           labels: {
-            id: t('id'),
-            name: t('contract_type_name'),
-            dateCreated: t('date_created'),
+            name: t('name'),
+            contracts: t('contracts'),
           },
         }}
         empty={{

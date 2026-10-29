@@ -35,10 +35,10 @@ export const CONTRACT_TYPES_PATH = CONTRACT_TYPES_ENDPOINTS.list.path satisfies 
 export const CONTRACT_TYPES_EXPORT_PATH = CONTRACT_TYPES_ENDPOINTS.export.path satisfies ApiPath;
 
 /**
- * The export's columns in the api's order (erp-api's export columns: Perfex's ID, Contract Type Name
- * and Date Created); `ListExport` types one label per column against it. The usage is never exported.
+ * The export's columns in the api's order (erp-api's export columns: Name and contracts count);
+ * `ListExport` types one label per column against it. The usage is never exported.
  */
-export const CONTRACT_TYPES_EXPORT_COLUMNS = ['id', 'name', 'dateCreated'] as const;
+export const CONTRACT_TYPES_EXPORT_COLUMNS = ['name', 'contracts'] as const;
 export type ContractTypesExportColumn = (typeof CONTRACT_TYPES_EXPORT_COLUMNS)[number];
 
 /** One record's path (its detail read, its update, its seed from the list row), the id encoded. */

@@ -6,43 +6,26 @@ import { z } from 'zod';
  */
 export const CONTRACT_TYPES_MESSAGE_KEYS = {
   name: 'enter_name',
-  nameTooLong: 'name_too_long',
 } as const;
 
 /**
- * The longest name the api's body takes: erp-api `CONTRACT_TYPES_NAME_MAX`, Perfex's `VARCHAR(255)`
- * `tblcontracts_types.name` column.
- */
-export const CONTRACT_TYPES_NAME_MAX = 255;
-
-/**
- * What uses a contract type, one count per group, in the api's order (erp-api `contractTypeUsageSchema`):
- * purchase requests, purchase orders, purchase quotations, shipping charges, expenses and assets.
- * A delete is refused while any is non-zero (D-07).
+ * What uses a contract type: contracts (tblcontracts and tblgoals).
+ * A delete is refused while non-zero (D-07).
  */
 export const contractTypeUsageSchema = z.object({
-  purchaseRequests: z.number().int().nonnegative(),
-  purchaseOrders: z.number().int().nonnegative(),
-  purchaseQuotations: z.number().int().nonnegative(),
-  shippingCharges: z.number().int().nonnegative(),
-  expenses: z.number().int().nonnegative(),
-  assets: z.number().int().nonnegative(),
+  contracts: z.number().int().nonnegative(),
 });
 export type ContractTypeUsage = z.infer<typeof contractTypeUsageSchema>;
 export type ContractTypeUsageGroup = keyof ContractTypeUsage;
 
-/** The six groups in the order the delete dialog names them. */
-const USAGE_GROUPS: readonly ContractTypeUsageGroup[] = Object.keys(
-  contractTypeUsageSchema.shape,
-) as ContractTypeUsageGroup[];
+/** The groups in the order the delete dialog names them. */
+const USAGE_GROUPS: readonly ContractTypeUsageGroup[] = ['contracts'];
 
 // Mirrors erp-api `contractTypesResponseSchema` (one contract type: the id as text, the name as stored,
-// Date Created as the ISO instant of Perfex's wall clock in the company zone or `null` when Perfex
-// stored none, D-31, and its usage); moves to @erp/contracts (ADR-0010).
+// and its usage); moves to @erp/contracts (ADR-0010).
 export const contractTypesSchema = z.object({
   id: z.string(),
   name: z.string(),
-  dateCreated: z.iso.datetime().nullable(),
   usage: contractTypeUsageSchema,
 });
 export type ContractTypes = z.infer<typeof contractTypesSchema>;
@@ -57,16 +40,12 @@ export type ContractTypesRow = z.infer<typeof contractTypesRowSchema>;
 
 /** The groups that still use the contract type, in the api's order: one dialog line each (D-07). */
 export function inUseGroups(usage: ContractTypeUsage): readonly ContractTypeUsageGroup[] {
-  return USAGE_GROUPS.filter((group) => usage[group] > 0);
+  return usage.contracts > 0 ? USAGE_GROUPS : [];
 }
 
-/** The form's values, for both create (`POST`) and edit (`PATCH`): the body the api takes. */
+/** The form's values, for both create (`POST`) and edit (`PATCH`): the body the api takes (LONGTEXT in MySQL, no length limit). */
 export const contractTypesFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, CONTRACT_TYPES_MESSAGE_KEYS.name)
-    .max(CONTRACT_TYPES_NAME_MAX, CONTRACT_TYPES_MESSAGE_KEYS.nameTooLong),
+  name: z.string().trim().min(1, CONTRACT_TYPES_MESSAGE_KEYS.name),
 });
 export type ContractTypesFormValues = z.infer<typeof contractTypesFormSchema>;
 

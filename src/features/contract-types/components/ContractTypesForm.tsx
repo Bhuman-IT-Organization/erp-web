@@ -27,7 +27,6 @@ import { useSaveContractTypes } from '@/features/contract-types/hooks/use-save-c
 import {
   EMPTY_CONTRACT_TYPES_FORM,
   CONTRACT_TYPES_MESSAGE_KEYS,
-  CONTRACT_TYPES_NAME_MAX,
   contractTypesFormSchema,
   contractTypesRowSchema,
   isContractTypesField,
@@ -48,7 +47,6 @@ import { useErrorText } from '@/lib/errors/use-error-text';
 import { useBreadcrumbLabel } from '@/lib/hooks/use-breadcrumb-label';
 import { readListReturn } from '@/lib/hooks/use-return-to-list';
 import { useUnsavedChanges } from '@/lib/hooks/use-unsaved-changes';
-import { useFormat } from '@/lib/i18n/format';
 
 const LIST_BASE = '/setup/contract-types';
 const FORM_ID = 'contract-types';
@@ -175,7 +173,6 @@ export function ContractTypesForm({ id }: ContractTypesFormProps): ReactElement 
   const t = useTranslations('contract-types');
   const tc = useTranslations('common');
   const router = useRouter();
-  const f = useFormat();
   // The feature's own codes first: a permalink to a missing record says so, not "Something went wrong".
   const errorText = useErrorText(CONTRACT_TYPES_ERRORS);
   const copy = useConfirmCopy();
@@ -276,7 +273,7 @@ export function ContractTypesForm({ id }: ContractTypesFormProps): ReactElement 
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">{record?.name ?? t('new_title')}</h1>
+      <h1 className="text-2xl font-semibold">{record?.name ?? t('new_contract_type')}</h1>
       <SchemaForm
         id={FORM_ID}
         form={form}
@@ -288,7 +285,7 @@ export function ContractTypesForm({ id }: ContractTypesFormProps): ReactElement 
           },
         ]}
         onValid={setPending}
-        translateError={(key) => t(key, { max: f.number(CONTRACT_TYPES_NAME_MAX) })}
+        translateError={(key) => t(key)}
         submitLabel={submitLabel}
         pendingLabel={pendingLabel}
         isPending={mutation.isMutating}
