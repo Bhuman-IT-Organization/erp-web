@@ -28,10 +28,10 @@ const itemRoute = (row: ServicesRow): string => `${LIST_BASE}/${encodeURICompone
 
 /**
  * The Services list of `services/manage.php` on the kit's `ListPageTemplate` (UIK-06): the
- * template owns the URL state, the settled search, the sort (the ID descending by default, as
+ * template owns the URL state, the settled search, the sort (the Service Name ascending by default, as
  * Perfex's table orders it, with no arrow, D-16), the pager, the export and every state (loading,
- * empty, no results, error, loaded) in the D-39 order; this screen owns Perfex's three columns (ID,
- * Service Name, Date Created: a date in the customer's format, empty when Perfex stored none,
+ * empty, no results, error, loaded) in the D-39 order; this screen owns Perfex's two columns (ID,
+ * Service Name, empty when Perfex stored none,
  * D-31), the labelled Edit and Delete and the delete dialog. No bulk action: Perfex has none (D-16).
  * Every visible string is a key (FE-19), classes are logical (FE-20), and a name is rendered as React
  * text only, never markup: Node accepts every character Perfex accepts, so this is the XSS defence
@@ -76,7 +76,7 @@ export function ServicesList(): ReactElement {
     return outcome;
   }
 
-  // Perfex's columns in Perfex's order (`services/manage.php`): ID, Service Name, Date Created.
+  // Perfex's columns in Perfex's order (`services/manage.php`): ID, Service Name.
   const columns: readonly ListColumn<ServicesRow>[] = [
     {
       id: 'id',
