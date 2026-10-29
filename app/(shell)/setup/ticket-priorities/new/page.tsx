@@ -1,10 +1,15 @@
-import type { ReactElement } from 'react';
-import { PrioritiesForm } from '@/features/ticket-priorities';
+import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
+import { TicketPrioritiesPage } from '@/features/ticket-priorities/pages/TicketPrioritiesPage';
 
-export default function NewTicketPriorityPage(): ReactElement {
-  return (
-    <div className="p-6">
-      <PrioritiesForm />
-    </div>
-  );
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('ticket-priorities');
+  return { title: t('ticket_priority_add') };
+}
+
+// Request-time render: the form is behind a session, so it must never be prerendered at build time.
+export const dynamic = 'force-dynamic';
+
+export default function Page() {
+  return <TicketPrioritiesPage id={null} />;
 }

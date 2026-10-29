@@ -1,7 +1,4 @@
-export * from './components/PrioritiesList';
-export * from './components/PrioritiesForm';
-export * from './pages/TicketPrioritiesListPage';
-export { PrioritiesList } from './components/PrioritiesList';
+// The feature's public surface (FE-07): another feature or a route imports from here only.
 export { TicketPrioritiesListPage } from './pages/TicketPrioritiesListPage';
-// export { PrioritiesForm } from './components/PrioritiesForm';  // keep your existing export
-export { getPriorityId, validatePriorityName } from './schemas/ticket-priorities.validation';
+export { TicketPrioritiesPage } from './pages/TicketPrioritiesPage';
+export type { TicketPriorities } from './schemas/ticket-priorities.schema';

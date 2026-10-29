@@ -1,3 +1,29 @@
 {
-  "ticket-priorities": {}
+  "ticket-priorities": {
+    "id": "المعرّف",
+    "new_ticket_priority": "أولوية جديدة",
+    "ticket_priority_add": "إضافة أولوية تذكرة جديدة",
+    "ticket_priority_edit": "تعديل أولوية التذكرة",
+    "ticket_priority_dt_name": "اسم الأولوية",
+    "no_ticket_priorities_found": "لم يتم العثور على أولويات تذاكر",
+    "ticket_priority_lowercase": "أولوية التذكرة",
+    "noun_ticket_priorities": "أولويات التذاكر",
+    "section_details": "التفاصيل",
+    "empty_body": "أضف أولوية تذكرة ليتم ترتيب تذاكر الدعم حسب الأهمية.",
+    "no_match_heading": "لا توجد أولويات تذاكر تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض كل أولويات التذاكر.",
+    "enter_name": "أدخل اسم الأولوية.",
+    "name_too_long": "يجب ألا يتجاوز اسم الأولوية {max} حرفاً.",
+    "saved_toast": "تم حفظ أولوية التذكرة",
+    "deleted_toast": "تم حذف أولوية التذكرة",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف أولوية التذكرة {name}",
+    "delete_title": "حذف أولوية التذكرة {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "errors": {
+      "ERP-CORE-0004": "أولوية التذكرة هذه لم تعد موجودة. ربما تمت إزالتها.",
+      "ERP-TICKETPRIORITIES-0001": "ما زالت إحدى التذاكر تستخدم هذه الأولوية، لذا لا يمكن حذفها. غيّر أولوية تلك التذاكر أولاً، ثم احذفها.",
+      "ERP-TICKETPRIORITIES-0002": "هذه الأولوية هي الأولوية الافتراضية للتذاكر المفتوحة عبر البريد الإلكتروني، لذا لا يمكن حذفها. اختر أولوية افتراضية أخرى أولاً، ثم احذفها."
+    }
+  }
 }
