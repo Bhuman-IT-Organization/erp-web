@@ -1,6 +1,11 @@
 // @vitest-environment happy-dom
 import { cleanup } from '@testing-library/react';
-import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
+import {
+  AxiosError,
+  AxiosHeaders,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Toaster } from '@/components/ui/sonner';
@@ -33,30 +38,47 @@ const problem = (status: number, code: string) => ({
   title: code,
   code,
 });
-let remove: { status: number; body?: unknown } = { status: 204 };
+interface Reply {
+  status: number;
+  body?: unknown;
+}
+type ListReply = Reply | 'pending';
+let remove: Reply = { status: 204 };
+let list: ListReply = { status: 200, body: page };
 let requests: { method: string; url: string }[] = [];
 function adapter(config: InternalAxiosRequestConfig) {
   const method = (config.method ?? 'get').toUpperCase();
   const url = new URL(http.getUri(config), 'http://erp.invalid');
   requests.push({ method, url: url.pathname });
-  const body =
-    url.pathname === '/api/v1/auth/me'
-      ? {
-          staffId: 1,
-          email: 'a@b.invalid',
-          firstName: 'A',
-          lastName: 'B',
-          isAdmin: true,
-          roleId: null,
-          permissions: [],
-          locale: null,
-        }
-      : method === 'DELETE'
-        ? remove
-        : page;
-  const status = method === 'DELETE' ? remove.status : 200;
-  const response = {
-    data: status === 204 ? undefined : body,
+  if (url.pathname === '/api/v1/auth/me') {
+    const body = {
+      staffId: 1,
+      email: 'a@b.invalid',
+      firstName: 'A',
+      lastName: 'B',
+      isAdmin: true,
+      roleId: null,
+      permissions: [],
+      locale: null,
+    };
+    return Promise.resolve({
+      data: body,
+      status: 200,
+      statusText: '200',
+      headers: new AxiosHeaders(),
+      config,
+    });
+  }
+  let reply: Reply;
+  if (method === 'DELETE') {
+    reply = remove;
+  } else {
+    if (list === 'pending') return new Promise<never>(() => undefined);
+    reply = list;
+  }
+  const status = reply.status;
+  const response: AxiosResponse<unknown> = {
+    data: status === 204 ? undefined : reply.body,
     status,
     statusText: String(status),
     headers: new AxiosHeaders(),
@@ -67,22 +89,23 @@ function adapter(config: InternalAxiosRequestConfig) {
     : Promise.reject(
         new AxiosError('failed', 'ERR_BAD_RESPONSE', config, null, {
           ...response,
-          data: remove.body,
+          data: reply.body,
         }),
       );
 }
-const show = () =>
+const show = (searchParams = '') =>
   renderWithProviders(
     <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
       <CustomerGroupsList />
       <Toaster />
     </SWRConfig>,
-    { hasMemory: true },
+    { hasMemory: true, searchParams },
   );
 beforeEach(() => {
   setSession({ accessToken: 'test', csrfToken: 'test' });
   resetApiStatus();
   remove = { status: 204 };
+  list = { status: 200, body: page };
   requests = [];
   push.mockClear();
   http.defaults.adapter = adapter;
@@ -94,6 +117,42 @@ afterEach(() => {
 });
 
 describe('CustomerGroupsList', () => {
+  it('shows the loading state while the first list response is pending', async () => {
+    list = 'pending';
+    show();
+    expect((await screen.findByTestId('list-loading')).getAttribute('aria-busy')).toBe('true');
+    expect(screen.queryByTestId('list-table')).toBeNull();
+  });
+  it('shows the empty state and its create link', async () => {
+    list = {
+      status: 200,
+      body: { ...page, data: [], meta: { ...page.meta, total: 0, rangeStart: 0 } },
+    };
+    show();
+    const empty = await screen.findByTestId('list-empty');
+    expect(within(empty).getByRole('heading').textContent).toBe('No customer groups yet');
+    expect(
+      within(empty).getByRole('link', { name: 'New Customer Group' }).getAttribute('href'),
+    ).toBe('/setup/customer-groups/new');
+  });
+  it('shows the no-results state for a search with no matches', async () => {
+    list = {
+      status: 200,
+      body: { ...page, data: [], meta: { ...page.meta, total: 0, rangeStart: 0 } },
+    };
+    show('?q=zz');
+    const noResults = await screen.findByTestId('list-no-results');
+    expect(noResults.textContent).toContain('No customer groups match');
+    expect(within(noResults).getByRole('button', { name: /clear search/i })).toBeTruthy();
+  });
+  it('shows a plain-language error and retry action when the list fails', async () => {
+    list = { status: 503, body: problem(503, 'ERP-UPSTREAM-0001') };
+    show();
+    const error = await screen.findByTestId('list-error');
+    expect(error.textContent).toContain("couldn't load customer group");
+    expect(error.textContent).not.toContain('ERP-UPSTREAM-0001');
+    expect(within(error).getByRole('button', { name: /retry/i })).toBeTruthy();
+  });
   it('shows Name only and provides the export action', async () => {
     show();
     const table = await screen.findByTestId('list-table');
