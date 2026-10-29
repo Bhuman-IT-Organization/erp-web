@@ -6,11 +6,8 @@ Customer Groups provides the list at `/setup/customer-groups`, the create form a
 `/setup/customer-groups/new` and the edit form at `/setup/customer-groups/:id`. It owns the
 customer-group screen and uses the `src/v1/customer-groups` API; it does not own customer data.
 
-**Still a Main Menu item** (D-25): Perfex puts Customer Groups in the main sidebar at position 31,
-after the position-30 band and before Tasks, not under Setup. The Node item stays exactly there
-(`src/config/navigation.ts`, `customer-groups`, icon `sitemap` through the Icon registry); only its
-address moved under `/setup` (D-05). On all three routes the sidebar opens the Main Menu with Cost
-Centers marked, and the breadcrumb comes from the menu tree (`activeTrailOf`).
+The modern screen is available at `/setup/customer-groups`, with the customer-group breadcrumb
+provided by the application shell.
 
 **Administrators only** (D-06, D-26). Perfex's menu item was administrator-only, but its controller
 let any signed-in staff member list, add, edit and delete Customer Groups by address. Node closes that:
@@ -28,53 +25,39 @@ form title and the breadcrumb (T-4.1-91).
 
 ## Legacy screen
 
-`application/views/admin/customer_groups/manage.php` (the list page: its New Customer Group button,
-the table's Customer Group Name and Options columns, the edit and delete links, with the create and edit
-page: Customer Group Name required at :15, Cancel and Save at :18-19),
-`application/controllers/admin/Cost_centers.php` (the list :15, create :20-30, edit :34-44, delete
-:52), `application/models/Cost_centers_model.php` (`add` :22-28 writing `created_by` :24 and
-`datecreated` :25, `update` :30-35, `delete` :37-42) and `application/helpers/menu_helper.php:155-163`
-(the administrator-only Main Menu item). Only the flow, the `_l()` keys and line numbers were taken
-from them; no text is quoted from the views, and every legacy text comes from the legacy language
-packs.
+`application/views/admin/clients/groups_manage.php` is the legacy list screen. It provides the New
+Customer Group action, a Name column, and the Options column with edit and delete actions. The
+modern list keeps the Name column as the record link and provides the same row actions. Its default
+order is Name descending.
 
 ## Legacy parity
 
 Flow parity (FE-18, D-29): someone who used the Perfex screen does the same job in the same order,
 with the same business outcome.
 
-| Perfex customer-groups screen (`customer_groups/manage.php`, `form.php`, `Customer_groups.php`)                            | Node step (`CustomerGroupsList.tsx`, `CustomerGroupsForm.tsx`)                                                                                                                                           |
-| -------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Main Menu > Customer Groups, position 31, administrators only (`menu_helper.php:155-163`)                                  | the same Main Menu item at the same position, administrators only (D-25); it opens `/setup/customer-groups` and stays marked on the list, `/new` and `/:id`                                              |
-| the list: Customer Group Name and Options; search; paging                                                                  | the same Name-only list, server search, pager and shared Export menu                                                                                                                                     |
-| Add Customer Group opens the create PAGE (Customer Group Name required) > Save > the "added" alert > back to the list      | Add Customer Group opens the `/new` page (Perfex already used pages, so D-04 changes nothing) with the same field > Create Customer Group > the save summary > "Customer Group saved" > back to the list |
-| the name link or the edit link opens the edit page prefilled > Save > the "updated" alert > back to the list               | the row, the Customer Group Name link or Edit opens `/:id` prefilled > Save Customer Group > the save summary ("Customer Group Name: old > new") > the toast > back to the exact list URL                |
-| create writes the name, `created_by` (the signed-in staff member) and `datecreated` (the server time); edit saves the name | the same: the api writes the name, `created_by` and `datecreated` on create, as Perfex does, and only the name on edit (D-31)                                                                            |
-| Perfex's Export buttons over the table                                                                                     | the kit's Export menu exports Name for every row matching the search and sort                                                                                                                            |
-| the delete link > the browser's confirm > GET delete > the "deleted" alert                                                 | Delete > a dialog naming the Customer Group; refused up front while anything uses it (one line per use, nothing sent); otherwise "Customer Group deleted", or the refusal inside the dialog              |
+| Perfex customer-groups screen (`clients/groups_manage.php`)                                                           | Node step (`CustomerGroupsList.tsx`, `CustomerGroupsForm.tsx`)                                                                                                                                           |
+| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| the list: Name and Options; search; paging                                                                            | the same Name-only list, server search, pager and shared Export menu                                                                                                                                     |
+| Add Customer Group opens the create PAGE (Customer Group Name required) > Save > the "added" alert > back to the list | Add Customer Group opens the `/new` page (Perfex already used pages, so D-04 changes nothing) with the same field > Create Customer Group > the save summary > "Customer Group saved" > back to the list |
+| the name link or the edit link opens the edit page prefilled > Save > the "updated" alert > back to the list          | the row, the Customer Group Name link or Edit opens `/:id` prefilled > Save Customer Group > the save summary ("Customer Group Name: old > new") > the toast > back to the exact list URL                |
+| create saves the group name; edit saves the group name                                                                | the API saves the name on create and edit                                                                                                                                                                |
+| Perfex's Export buttons over the table                                                                                | the kit's Export menu exports Name for every row matching the search and sort                                                                                                                            |
+| the delete link > the browser's confirm > GET delete > the "deleted" alert                                            | Delete > a dialog naming the Customer Group; refused up front while anything uses it (one line per use, nothing sent); otherwise "Customer Group deleted", or the refusal inside the dialog              |
 
 ## Dropped on purpose
 
 Each change, with its reason, for the lead's checkpoint (D-29: only a change to a business outcome
 goes back to the leads; the one that is a lead decision is marked).
 
-- **A delete while the Customer Group is in use is refused and names each use** (D-07, D-28). **Lead
-  decision of 2026-09-29**, the one business-outcome change: Perfex deleted the row and left the
-  purchase requests, orders and quotations, shipping charges, expenses and assets that pointed at
-  it naming nothing. Node counts each of the six (the columns found at runtime, so the expense and
-  shipping-charge columns count the moment their slice adds them) and the dialog names each
-  non-zero one.
-- **Administrators only** (D-26, a security fix): Perfex's screen was open to any signed-in staff
-  member by address, though only administrators saw the menu item; Node's routes and api are
-  administrator-only.
-- **Only the name is saved** (D-26, D-31): Perfex saved every posted field; Node saves the name,
-  and writes `created_by` and `datecreated` on create as Perfex writes them. The business outcome is
-  unchanged.
+- **A delete while the Customer Group is in use is refused** (D-07, D-28). The API returns a 409,
+  the dialog explains that customers must first be removed from the group, Delete is disabled, and
+  no DELETE request is sent.
+- **Administrators only** (D-26, a security fix): Node's routes and API are administrator-only.
+- **Only the name is saved** (D-26, D-31): the group has no additional editable fields in this
+  screen, so Node sends only `name` on create and edit.
 - **The search matches the name and an exact id** (a simplification): Perfex's table searched every
   cell's text, the date included; Node searches the name as a substring and the id exactly.
-- **Unchanged, recorded so nobody expects otherwise:** a rename leaves a fixed asset's stored cost
-  centre text naming the old name, exactly as Perfex does (D-29); duplicate names are accepted, as
-  in Perfex.
+- **Unchanged, recorded so nobody expects otherwise:** duplicate names are accepted, as in Perfex.
 - **Perfex's activity-log lines**: Node never writes Perfex's Activity Log; the domain event and the
   service log line are the record (D-18).
 - **Arabic PDF, parked** (D-09): the PDF's standard font cannot draw Arabic, so the Export menu
