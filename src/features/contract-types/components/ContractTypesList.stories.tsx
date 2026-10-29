@@ -18,19 +18,13 @@ const EXPORT_LIMIT = 10_000;
 const NAMES = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'];
 
 const NO_USE = {
-  purchaseRequests: 0,
-  purchaseOrders: 0,
-  purchaseQuotations: 0,
-  shippingCharges: 0,
-  expenses: 0,
-  assets: 0,
+  contracts: 0,
 };
 
 const rows = (count: number): ContractTypes[] =>
   Array.from({ length: count }, (_, i) => ({
     id: `r${String(i + 1)}`,
     name: `${NAMES[i % NAMES.length] ?? 'Alpha'} ${String(i + 1)}`,
-    dateCreated: `2026-0${String((i % 9) + 1)}-0${String((i % 9) + 1)}T08:00:00.000Z`,
     usage: NO_USE,
   }));
 
@@ -116,8 +110,22 @@ export const Error: Story = {
   ],
 };
 
+const MOBILE = {
+  parameters: {
+    viewport: {
+      options: {
+        mobile375: { name: 'Mobile 375', styles: { width: '375px', height: '740px' } },
+      },
+    },
+  },
+  globals: { viewport: { value: 'mobile375', isRotated: false } },
+} as const;
+
 /** FE-27 `Loaded`: 25 of 60: Name links to the record and sorts; Created in the customer's format. */
 export const Loaded: Story = {};
+
+/** Mobile: 375px viewport. */
+export const Mobile: Story = { ...MOBILE };
 
 /** Arabic: the page mirrors; the pager and the toolbar follow the inline direction. */
 export const Rtl: Story = { globals: { locale: 'ar' } };

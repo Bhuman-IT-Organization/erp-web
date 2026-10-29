@@ -11,14 +11,9 @@ import {
 import en from '../../messages/en.json';
 
 const NO_USE = {
-  purchaseRequests: 0,
-  purchaseOrders: 0,
-  purchaseQuotations: 0,
-  shippingCharges: 0,
-  expenses: 0,
-  assets: 0,
+  contracts: 0,
 };
-const ITEM = { id: 'a1', name: 'Alpha', dateCreated: '2026-01-02T20:30:00.000Z', usage: NO_USE };
+const ITEM = { id: 'a1', name: 'Alpha', usage: NO_USE };
 
 describe('contract-types schemas', () => {
   it('parses a wire item and rejects a missing field', () => {
@@ -28,7 +23,7 @@ describe('contract-types schemas', () => {
 
   it('reports inUseGroups accurately based on non-zero usage', () => {
     expect(inUseGroups(NO_USE)).toEqual([]);
-    expect(inUseGroups({ ...NO_USE, expenses: 2 })).toEqual(['expenses']);
+    expect(inUseGroups({ contracts: 2 })).toEqual(['contracts']);
   });
 
   it('the form schema trims the name and reports the message KEY, which exists in en.json', () => {
@@ -39,6 +34,11 @@ describe('contract-types schemas', () => {
       expect(result.error.issues[0]?.message).toBe(CONTRACT_TYPES_MESSAGE_KEYS.name);
     }
     expect(en['contract-types']).toHaveProperty(CONTRACT_TYPES_MESSAGE_KEYS.name);
+  });
+
+  it('accepts a very long name with no length limit', () => {
+    const longName = 'A'.repeat(5000);
+    expect(contractTypesFormSchema.parse({ name: longName })).toEqual({ name: longName });
   });
 
   it('a record becomes form values; only the form fields are api issue targets', () => {

@@ -32,8 +32,8 @@ describe('contract-types endpoints', () => {
     expect(contractTypesPath('a/1')).toBe('/api/v1/contract-types/a%2F1');
   });
 
-  it("lists Perfex's three export columns in the api order, one label each, and never the usage (D-42)", () => {
-    expect(CONTRACT_TYPES_EXPORT_COLUMNS).toEqual(['id', 'name', 'dateCreated']);
+  it("lists the export columns in the api order, one label each, and never the usage (D-42)", () => {
+    expect(CONTRACT_TYPES_EXPORT_COLUMNS).toEqual(['name', 'contracts']);
   });
 
   it("names the feature's own codes: a record that is not there (D-32), and the delete refused while in use (D-07)", () => {

@@ -10,14 +10,9 @@ import { renderWithProviders, screen } from '@/test/render';
 import { useContractTypes } from '../use-contract-types';
 
 const NO_USE = {
-  purchaseRequests: 0,
-  purchaseOrders: 0,
-  purchaseQuotations: 0,
-  shippingCharges: 0,
-  expenses: 0,
-  assets: 0,
+  contracts: 0,
 };
-const ITEM = { id: 'a 1', name: 'Alpha', dateCreated: '2026-01-02T20:30:00.000Z', usage: NO_USE };
+const ITEM = { id: 'a 1', name: 'Alpha', usage: NO_USE };
 
 function Probe({ id }: { readonly id: string | null }) {
   const { data, error } = useContractTypes(id);

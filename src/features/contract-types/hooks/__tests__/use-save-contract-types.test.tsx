@@ -10,14 +10,9 @@ import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
 import { useSaveContractTypes } from '../use-save-contract-types';
 
 const NO_USE = {
-  purchaseRequests: 0,
-  purchaseOrders: 0,
-  purchaseQuotations: 0,
-  shippingCharges: 0,
-  expenses: 0,
-  assets: 0,
+  contracts: 0,
 };
-const ITEM = { id: 'a1', name: 'Beta', dateCreated: '2026-01-02T20:30:00.000Z', usage: NO_USE };
+const ITEM = { id: 'a1', name: 'Beta', usage: NO_USE };
 
 function Probe({ id }: { readonly id: string | null }) {
   const { create, update } = useSaveContractTypes(id);

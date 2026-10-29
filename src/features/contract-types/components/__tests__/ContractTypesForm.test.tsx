@@ -49,14 +49,8 @@ vi.mock('next/navigation', () => ({
 const ALPHA: ContractTypes = {
   id: 'a1',
   name: 'Alpha',
-  dateCreated: '2026-01-02T20:30:00.000Z',
   usage: {
-    purchaseRequests: 0,
-    purchaseOrders: 0,
-    purchaseQuotations: 0,
-    shippingCharges: 0,
-    expenses: 0,
-    assets: 0,
+    contracts: 0,
   },
 };
 const me = (isAdmin: boolean) => ({
@@ -427,17 +421,15 @@ describe('ContractTypesForm: a record that is not there (D-32, D-39)', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
-  it('a name over CONTRACT_TYPES_NAME_MAX is refused on the client with name_too_long, and nothing is sent', async () => {
+  it('a very long name is accepted on the client with no length limit', async () => {
     show(<ContractTypesForm id={null} />);
     const user = userEvent.setup();
     const box = await nameBox();
     await user.click(box);
-    await user.paste('x'.repeat(256));
+    await user.paste('x'.repeat(300));
     await user.click(screen.getByRole('button', { name: CREATE }));
-    const expected = EN.name_too_long.replace('{max}', '255');
-    expect((await screen.findAllByText(expected)).length).toBeGreaterThan(0);
-    expect(screen.queryByTestId('confirm-dialog')).toBeNull();
-    expect(saves()).toEqual([]);
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(screen.getByTestId('confirm-dialog')).toBeTruthy();
   });
 });
 
