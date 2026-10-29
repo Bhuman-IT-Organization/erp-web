@@ -15,23 +15,21 @@ It supports create, edit, delete, and export.
 
 | Perfex screen behavior                            | Node implementation                                                                                                          |
 | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| List status ID, name, and `Total N` ticket count  | `ListPageTemplate`; the count is shown below each name                                                                       |
+| List status ID, name, and `Total N` ticket count  | `ListPageTemplate`; API rows include `ticket_count`, shown below each name                                                   |
 | Edit a status from its row                        | Row action opens `/setup/ticket-statuses/:id`                                                                                |
 | Add or edit name, color, and order in a modal     | Shared `SchemaForm` at `/new` and `/:id`; color accepts any text up to 7 characters and order may be blank or a whole number |
 | Hide Delete for built-in statuses                 | Delete row action is omitted when `isdefault` is set                                                                         |
 | Refuse deletion of a referenced or default status | `ConfirmDialog` keeps the API refusal visible using Perfex's `is_referenced` and `cant_delete_default` messages              |
-| Export the status list                            | API export endpoint exports the ID and name columns                                                                          |
+| Export the status list                            | API export endpoint includes ID, name, and ticket count                                                                      |
 
-The list endpoint returns the complete `{ data }` collection, not cursor pagination metadata. Search,
-sorting, and pagination therefore use `ListPageTemplate`'s supported unpaginated client mode. A
-successful save returns to the originating list; edits replace the cached row and creates revalidate
-the list.
+The API returns cursor-paged results as `{ data, meta }`, with `nextCursor`, `prevCursor`, `total`,
+`rangeStart`, `exportLimit`, and `printLimit` in `meta`. Search and sorting run on the API: the screen
+sends `limit`, `cursor`, `q`, and `sort` and renders the returned page. A successful save returns to
+the originating list; edits replace the cached row and creates revalidate the list.
 
 ## Dropped on purpose
 
 - The legacy modal interaction is replaced with the feature's create and edit routes.
-- Server-side list search and sorting are not available in the current API contract, so these list
-  interactions are local.
 - Built-in statuses cannot be deleted; the row action is hidden and the API remains authoritative.
 
 ## Routes

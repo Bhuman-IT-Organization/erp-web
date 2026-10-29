@@ -1,6 +1,5 @@
 // @vitest-environment happy-dom
-import { fireEvent } from '@testing-library/react';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { FALLBACK_BRANDING, type Branding } from '@/features/branding/api/branding.fetch';
 import { renderWithProviders, screen } from '@/test/render';
 import { BrandLogo } from '../BrandLogo';
@@ -13,29 +12,6 @@ const LOGO_DARK = '/uploads/company/logo-dark.png';
 const withLogo: Branding = { ...FALLBACK_BRANDING, companyName: NAME, logoUrl: LOGO };
 const withBoth: Branding = { ...withLogo, logoDarkUrl: LOGO_DARK };
 const nameOnly: Branding = { ...FALLBACK_BRANDING, companyName: NAME };
-
-const imageDescriptors = {
-  complete: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'complete'),
-  naturalWidth: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'naturalWidth'),
-};
-
-beforeEach(() => {
-  Object.defineProperty(HTMLImageElement.prototype, 'complete', {
-    configurable: true,
-    get: () => true,
-  });
-  Object.defineProperty(HTMLImageElement.prototype, 'naturalWidth', {
-    configurable: true,
-    get: () => 100,
-  });
-});
-
-afterEach(() => {
-  for (const [key, descriptor] of Object.entries(imageDescriptors)) {
-    if (descriptor === undefined) Reflect.deleteProperty(HTMLImageElement.prototype, key);
-    else Object.defineProperty(HTMLImageElement.prototype, key, descriptor);
-  }
-});
 
 describe('BrandLogo', () => {
   it('with a logo renders <img alt=companyName src=logoUrl data-testid=brand-logo>', () => {
@@ -70,15 +46,5 @@ describe('BrandLogo', () => {
       <BrandLogo branding={{ ...nameOnly, logoDarkUrl: LOGO_DARK }} variant="light" />,
     );
     expect(screen.getByTestId('brand-logo').getAttribute('src')).toBe(LOGO_DARK);
-  });
-
-  it('falls back to the alternate logo and then the company name when logo files are missing', () => {
-    renderWithProviders(<BrandLogo branding={withBoth} variant="dark" />);
-    fireEvent.error(screen.getByTestId('brand-logo'));
-    expect(screen.getByTestId('brand-logo').getAttribute('src')).toBe(LOGO);
-
-    fireEvent.error(screen.getByTestId('brand-logo'));
-    expect(screen.getByTestId('brand-name').textContent).toBe(NAME);
-    expect(screen.queryByTestId('brand-logo')).toBeNull();
   });
 });

@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { FALLBACK_BRANDING, type Branding } from '@/features/branding';
 import { physicalClassesIn, renderWithProviders, screen } from '@/test/render';
 import { LoginLogo } from '../LoginLogo';
@@ -15,28 +15,6 @@ const withLogo: Branding = {
 const nameOnly: Branding = { ...FALLBACK_BRANDING, companyName: NAME };
 
 const classes = (element: HTMLElement): string[] => element.className.split(' ');
-const imageDescriptors = {
-  complete: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'complete'),
-  naturalWidth: Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'naturalWidth'),
-};
-
-beforeEach(() => {
-  Object.defineProperty(HTMLImageElement.prototype, 'complete', {
-    configurable: true,
-    get: () => true,
-  });
-  Object.defineProperty(HTMLImageElement.prototype, 'naturalWidth', {
-    configurable: true,
-    get: () => 100,
-  });
-});
-
-afterEach(() => {
-  for (const [key, descriptor] of Object.entries(imageDescriptors)) {
-    if (descriptor === undefined) Reflect.deleteProperty(HTMLImageElement.prototype, key);
-    else Object.defineProperty(HTMLImageElement.prototype, key, descriptor);
-  }
-});
 
 describe('LoginLogo (lead 2026-09-26: never stretched, never blown up)', () => {
   it('shows any logo at its natural size and aspect ratio, capped by the card width and a height, never widened to the card', () => {
