@@ -36,7 +36,7 @@ Flow parity: users can perform the same core service-management tasks in the mod
 
 ## Dropped on purpose
 
-Nothing.
+None.
 
 ## Routes
 
