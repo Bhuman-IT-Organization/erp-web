@@ -21,6 +21,9 @@ import taxesAr from '@/features/taxes/messages/ar.json';
 import taxesEn from '@/features/taxes/messages/en.json';
 import leadsourcesAr from '@/features/lead-sources/messages/ar.json';
 import leadsourcesEn from '@/features/lead-sources/messages/en.json';
+import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
+import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
+
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
@@ -46,6 +49,7 @@ export const NAMESPACES = [
   'payment-modes',
   'currencies',
   'lead-sources',
+  'ticket-statuses',
   // registry end: namespaces
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
@@ -66,6 +70,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     paymentModesEn,
     currenciesEn,
     leadsourcesEn,
+    ticketStatusesEn,
     // registry end: en
   ],
   ar: [
@@ -81,6 +86,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     paymentModesAr,
     currenciesAr,
     leadsourcesAr,
+    ticketStatusesAr,
     // registry end: ar
   ],
 };

@@ -182,6 +182,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/cost-centers',
       '/setup/staff',
       '/setup/lead-sources',
+      '/setup/ticket-statuses',
       '/setup/taxes',
       '/setup/currencies',
       '/setup/payment-modes',

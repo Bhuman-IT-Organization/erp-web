@@ -73,7 +73,20 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/taxes',
       '/setup/taxes/:id',
       '/setup/taxes/new',
+      '/setup/ticket-statuses',
+      '/setup/ticket-statuses/:id',
+      '/setup/ticket-statuses/new',
     ]);
+  });
+
+  it('protects all Ticket Statuses pages with the administrator gate', () => {
+    for (const route of [
+      '/setup/ticket-statuses',
+      '/setup/ticket-statuses/new',
+      '/setup/ticket-statuses/:id',
+    ]) {
+      expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
+    }
   });
 
   it('declares every value as a catalogue code, a list of distinct codes or the administrator flag, never a loose string', () => {

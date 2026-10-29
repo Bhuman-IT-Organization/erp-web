@@ -1764,9 +1764,8 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'tickets-statuses',
         labelKey: 'shell.acs_ticket_statuses_submenu',
-        href: '/admin/tickets/statuses',
-        adminOnly: true,
-        legacy: true,
+        href: '/setup/ticket-statuses',
+        ...navGateOf('/setup/ticket-statuses'),
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
