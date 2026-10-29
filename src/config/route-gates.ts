@@ -83,15 +83,15 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/cost-centers': ADMIN_GATE,
   '/setup/cost-centers/new': ADMIN_GATE,
   '/setup/cost-centers/:id': ADMIN_GATE,
+  '/setup/contract-types': ADMIN_GATE,
+  '/setup/contract-types/new': ADMIN_GATE,
+  '/setup/contract-types/:id': ADMIN_GATE,
   '/setup/payment-modes': ADMIN_GATE,
   '/setup/payment-modes/new': ADMIN_GATE,
   '/setup/payment-modes/:id': ADMIN_GATE,
   '/setup/currencies': ADMIN_GATE,
   '/setup/currencies/new': ADMIN_GATE,
   '/setup/currencies/:id': ADMIN_GATE,
-  '/setup/contract-types': ADMIN_GATE,
-  '/setup/contract-types/new': ADMIN_GATE,
-  '/setup/contract-types/:id': ADMIN_GATE,
   // A new screen's three routes go between these markers, each on ADMIN_GATE: fail closed until the
   // module declares its own view code here AND in @erp/contracts (kept in sync by hand).
   // registry start: route-gates
