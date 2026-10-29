@@ -32,7 +32,7 @@ describe('contract-types endpoints', () => {
     expect(contractTypesPath('a/1')).toBe('/api/v1/contract-types/a%2F1');
   });
 
-  it("lists the export columns in the api order, one label each, and never the usage (D-42)", () => {
+  it('lists the export columns in the api order, one label each, and never the usage (D-42)', () => {
     expect(CONTRACT_TYPES_EXPORT_COLUMNS).toEqual(['name', 'contracts']);
   });
 

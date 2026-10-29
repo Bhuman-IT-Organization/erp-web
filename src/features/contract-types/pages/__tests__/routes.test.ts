@@ -46,4 +46,3 @@ describe('/setup/contract-types', () => {
     await expect(page.default(routeProps({ id }))).rejects.toThrow('NEXT_NOT_FOUND');
   });
 });
-

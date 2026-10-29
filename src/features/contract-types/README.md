@@ -10,12 +10,12 @@ The Contract Types management screen: a list, a create screen and an edit screen
 
 ## Flow parity
 
-| Perfex step | Node step |
-| --- | --- |
-| `manage_types.php` displays Name and the number of contracts using each type | `ContractTypesList.tsx` displays the Name column with the number of contracts badge inline |
-| Quick add on the contract form (`/admin/contracts/type`) | Stays on Perfex; Perfex still reads and writes `tblcontracts_types` |
-| Delete refused when contracts use the contract type (`tblcontracts.contract_type`) | Refused with 409 `ERP-CONTRACTTYPES-0001` when referenced by `tblcontracts` or `tblgoals` |
-| Export (CSV / Excel / PDF / Print) exports loaded rows | Export covers every matching row with columns `name` and `contracts` |
+| Perfex step                                                                        | Node step                                                                                  |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| `manage_types.php` displays Name and the number of contracts using each type       | `ContractTypesList.tsx` displays the Name column with the number of contracts badge inline |
+| Quick add on the contract form (`/admin/contracts/type`)                           | Stays on Perfex; Perfex still reads and writes `tblcontracts_types`                        |
+| Delete refused when contracts use the contract type (`tblcontracts.contract_type`) | Refused with 409 `ERP-CONTRACTTYPES-0001` when referenced by `tblcontracts` or `tblgoals`  |
+| Export (CSV / Excel / PDF / Print) exports loaded rows                             | Export covers every matching row with columns `name` and `contracts`                       |
 
 ## Dropped on purpose
 
