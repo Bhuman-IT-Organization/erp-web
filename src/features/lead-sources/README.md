@@ -19,8 +19,7 @@ are in `application/controllers/admin/Leads.php`; source persistence is in
 `application/models/Leads_model.php`.
 
 Perfex's list columns are ID, Lead Source Name and Options. The form has one field, Lead Source
-Name. The table is `tblleads_sources`; this feature uses its `id` and `name`. The list and web API
-response have no Date Added field.
+Name. The table is `tblleads_sources`; this feature uses its `id` and `name`.
 
 ## Legacy parity
 
@@ -51,8 +50,6 @@ source, email integrations and web-to-lead forms:
 
 ## Dropped on purpose
 
-- **Date Added is not shown or sent by the web API.** The list shows ID and Lead Source Name, with
-  row Options represented by Edit and Delete actions.
 - **Perfex's quick-add remains on Perfex.** This setup feature does not replace or block the lead
   form's inline source workflow.
 - **The legacy delete link and browser confirmation** are replaced by the named `ConfirmDialog`.
@@ -89,7 +86,7 @@ non-administrator is refused before the list or record API is requested.
 
 The usage object is neither a list column nor a separate export column. The list's name subtext
 shows `usage.leads`; the delete dialog shows all non-zero usage groups. `totalLeads` in the export
-is the sum of the three usage counts.
+counts leads only (`usage.leads`), matching the count shown in the list and Perfex.
 
 After an edit opened from the list, the saved record replaces that row in cached list pages. After
 a create or an edit opened from a permalink, the list pages are revalidated. Validation issues are

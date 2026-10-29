@@ -33,7 +33,7 @@ import { useFormat } from '@/lib/i18n/format';
 const LIST_BASE = '/setup/lead-sources';
 const itemRoute = (row: LeadSourcesRow): string => `${LIST_BASE}/${encodeURIComponent(row.id)}`;
 
-/** Stale list codes when the source has been deleted or become in-use since the list loaded. */
+/** Stale list codes when row has been deleted or attached to leads in the interim. */
 const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE, IN_USE_CODE];
 
 /** True when any reference group still uses the source. */
