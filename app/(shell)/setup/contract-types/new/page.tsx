@@ -4,7 +4,7 @@ import { ContractTypesPage } from '@/features/contract-types/pages/ContractTypes
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('contract-types');
-  return { title: t('add_contract_type') };
+  return { title: t('new_contract_type') };
 }
 
 // Request-time render: the form is behind a session, so it must never be prerendered at build time.

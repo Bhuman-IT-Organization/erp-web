@@ -5,7 +5,7 @@ import { ContractTypesPage } from '@/features/contract-types/pages/ContractTypes
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('contract-types');
-  return { title: t('edit_contract_type') };
+  return { title: t('contract_type_edit') };
 }
 
 // Request-time render: one record behind a session; nothing here may be prerendered.
