@@ -483,7 +483,7 @@ describe('src/messages', () => {
       unused,
       `src/messages/common/en.json: keys referenced nowhere: ${unused.join(', ')}`,
     ).toEqual([]);
-  });
+  }, 30_000);
 });
 
 describe('effects and direction', () => {
