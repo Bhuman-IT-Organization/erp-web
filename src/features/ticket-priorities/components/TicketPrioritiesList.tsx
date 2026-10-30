@@ -32,10 +32,10 @@ const itemRoute = (row: TicketPrioritiesRow): string =>
 
 /**
  * The Ticket Priorities list of Perfex's `admin/tickets/priorities` on the kit's
- * `ListPageTemplate`: the template owns the URL state, the search, the sort, the pager and every
- * state (loading, empty, no results, error, loaded); this screen owns Perfex's one column (the
- * priority name), the labelled Edit and Delete, and the delete dialog. No bulk action and no
- * export: Perfex has none here. Every visible string is a key (FE-19), classes are the kit's, and a
+ * `ListPageTemplate`: the template owns the URL state, the search, the sort, the pager, every
+ * state (loading, empty, no results, error, loaded) and the Export menu; this screen owns the two
+ * columns, ID and Ticket Priority Name, the labelled Edit and Delete, and the delete dialog. No bulk
+ * action: Perfex has none here. Every visible string is a key (FE-19), classes are the kit's, and a
  * name is rendered as React text only, never markup.
  *
  * **Delete** is ConfirmDialog kind 1. The row carries no usage, so the api decides: a 409
