@@ -1,7 +1,8 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { SWRConfig } from 'swr';
-import type { PredefinedReplies } from '@/features/predefined-replies/schemas/predefined-replies.schema';
+import { expect, userEvent, within } from 'storybook/test';
+import type { PredefinedRepliesRow } from '@/features/predefined-replies/schemas/predefined-replies.schema';
 import type { ApiAdapter } from '@/lib/api/call-api';
 import { http } from '@/lib/api/http';
 import { setSession } from '@/lib/auth/session';
@@ -17,14 +18,13 @@ const PAGE = 25;
 const EXPORT_LIMIT = 10_000;
 const NAMES = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'];
 
-const rows = (count: number): PredefinedReplies[] =>
+const rows = (count: number): PredefinedRepliesRow[] =>
   Array.from({ length: count }, (_, i) => ({
     id: `r${String(i + 1)}`,
     name: `${NAMES[i % NAMES.length] ?? 'Alpha'} ${String(i + 1)}`,
-    message: `Reply message ${String(i + 1)}`,
   }));
 
-const listPage = (data: readonly PredefinedReplies[], total = data.length) => ({
+const listPage = (data: readonly PredefinedRepliesRow[], total = data.length) => ({
   data,
   meta: {
     nextCursor: data.length < total ? 'next' : null,
@@ -108,6 +108,36 @@ export const Error: Story = {
 
 /** FE-27 `Loaded`: 25 of 60: Name links to the record and sorts; Created in the customer's format. */
 export const Loaded: Story = {};
+
+/** The list at a narrow viewport. */
+export const Mobile: Story = {
+  parameters: {
+    viewport: {
+      options: {
+        mobile375: { name: 'Mobile 375', styles: { width: '375px', height: '740px' } },
+      },
+    },
+  },
+  globals: { viewport: { value: 'mobile375', isRotated: false } },
+};
+
+/** The destructive confirmation for deleting a predefined reply. */
+export const DeleteConfirm: Story = {
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const nameLink = await canvas.findByRole('link', { name: 'Alpha 1' });
+    const row = nameLink.closest('tr');
+    if (row === null) throw new globalThis.Error('Alpha 1 row was not rendered');
+    await userEvent.click(
+      within(within(row).getByTestId('row-actions-inline')).getByRole('button', {
+        name: 'Delete predefined reply Alpha 1',
+      }),
+    );
+    const dialog = await within(document.body).findByTestId('confirm-dialog');
+    await expect(within(dialog).getByRole('heading')).toHaveTextContent('Delete Alpha 1?');
+    await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeEnabled();
+  },
+};
 
 /** Arabic: the page mirrors; the pager and the toolbar follow the inline direction. */
 export const Rtl: Story = { globals: { locale: 'ar' } };

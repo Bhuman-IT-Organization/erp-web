@@ -17,7 +17,10 @@ export const predefinedRepliesSchema = z.object({
 
 export type PredefinedReplies = z.infer<typeof predefinedRepliesSchema>;
 
-export const predefinedRepliesRowSchema = predefinedRepliesSchema;
+export const predefinedRepliesRowSchema = z.object({
+  id: z.union([z.string(), z.number()]).transform(String),
+  name: z.string(),
+});
 export type PredefinedRepliesRow = z.infer<typeof predefinedRepliesRowSchema>;
 
 export const predefinedRepliesFormSchema = z.object({
@@ -36,10 +39,12 @@ export const EMPTY_PREDEFINED_REPLIES_FORM: PredefinedRepliesFormValues = {
   message: '',
 };
 
-export function toPredefinedRepliesForm(item: PredefinedReplies): PredefinedRepliesFormValues {
+export function toPredefinedRepliesForm(
+  item: PredefinedReplies | PredefinedRepliesRow,
+): PredefinedRepliesFormValues {
   return {
     name: item.name,
-    message: item.message,
+    message: 'message' in item ? item.message : '',
   };
 }
 

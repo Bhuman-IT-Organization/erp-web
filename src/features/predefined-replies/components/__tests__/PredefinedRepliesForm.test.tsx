@@ -533,7 +533,7 @@ describe('GuardedPredefinedRepliesForm: the generated gate is ADMIN_GATE (fail c
 describe('PredefinedRepliesForm: Arabic (FE-20)', () => {
   it('renders under ar with the Arabic label and no physical-direction class', async () => {
     const { container } = show(<PredefinedRepliesForm id={null} />, 'ar');
-    expect(await screen.findByRole('textbox', { name: 'الاسم' })).toBeTruthy();
+    expect(await screen.findByRole('textbox', { name: 'اسم الرد المحدد مسبقاً' })).toBeTruthy();
     expect(document.documentElement.dir).toBe('rtl');
     expect(physicalClassesIn(container)).toEqual([]);
   });

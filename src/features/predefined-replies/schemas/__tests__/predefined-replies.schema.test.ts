@@ -3,6 +3,7 @@ import {
   PREDEFINED_REPLIES_MESSAGE_KEYS,
   predefinedRepliesFormSchema,
   predefinedRepliesSchema,
+  predefinedRepliesRowSchema,
   isPredefinedRepliesField,
   toPredefinedRepliesForm,
   validationIssuesSchema,
@@ -12,6 +13,14 @@ import en from '../../messages/en.json';
 const ITEM = { id: 'a1', name: 'Alpha', message: 'Hello there' };
 
 describe('predefined-replies schemas', () => {
+  it('parses a list row containing only id and name', () => {
+    expect(predefinedRepliesRowSchema.parse({ id: 'a1', name: 'Alpha' })).toEqual({
+      id: 'a1',
+      name: 'Alpha',
+    });
+    expect(predefinedRepliesRowSchema.safeParse({ id: 'a1' }).success).toBe(false);
+  });
+
   it('parses a wire item and rejects a missing field', () => {
     expect(predefinedRepliesSchema.parse(ITEM)).toEqual(ITEM);
     expect(predefinedRepliesSchema.safeParse({ id: 'a1', name: 'Alpha' }).success).toBe(false);
@@ -31,6 +40,10 @@ describe('predefined-replies schemas', () => {
 
   it('a record becomes form values; only the form fields are api issue targets', () => {
     expect(toPredefinedRepliesForm(ITEM)).toEqual({ name: 'Alpha', message: 'Hello there' });
+    expect(toPredefinedRepliesForm({ id: 'a1', name: 'Alpha' })).toEqual({
+      name: 'Alpha',
+      message: '',
+    });
     expect(isPredefinedRepliesField('name')).toBe(true);
     expect(isPredefinedRepliesField('id')).toBe(false);
   });

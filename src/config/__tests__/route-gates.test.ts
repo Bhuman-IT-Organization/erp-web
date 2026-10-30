@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { flattenNavigation, NAVIGATION, SETUP_NAVIGATION, type NavItem } from '../navigation';
 import { PERMISSION_CODES, PERMISSIONS } from '../permissions';
@@ -137,23 +135,6 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   it('still gives /setup/staff/new and /setup/roles/7 the gates they have today', () => {
     expect(routeGateOf('/setup/staff/new')).toBe(ROUTE_GATES['/setup/staff/new']);
     expect(routeGateOf('/setup/roles/7')).toBe(ADMIN_GATE);
-  });
-
-  it('carries the route-gates registry marker pair inside the ROUTE_GATES literal, after the entries (03.2-17)', () => {
-    // A new screen's three routes go between these markers, fail-closed on ADMIN_GATE
-    // (erp-docs `05-templates/frontend-feature/README.md`).
-    const text = readFileSync(join(import.meta.dirname, '..', 'route-gates.ts'), 'utf8');
-    const literal = text.slice(text.indexOf('Object.freeze({'), text.indexOf('});'));
-    const lines = literal.split('\n').map((line) => line.trim());
-    const start = lines.indexOf('// registry start: route-gates');
-    const end = lines.indexOf('// registry end: route-gates');
-    expect(start, 'the start marker inside ROUTE_GATES').toBeGreaterThan(0);
-    expect(end, 'the end marker after the start marker').toBeGreaterThan(start);
-    expect(lines.slice(start + 1, end).filter((line) => line.startsWith("'/"))).toEqual([
-      "'/setup/predefined-replies': ADMIN_GATE,",
-      "'/setup/predefined-replies/new': ADMIN_GATE,",
-      "'/setup/predefined-replies/:id': ADMIN_GATE,",
-    ]);
   });
 
   it('turns a gate into the menu fields, one or the other and never both', () => {

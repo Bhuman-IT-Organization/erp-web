@@ -1,10 +1,11 @@
 // @vitest-environment happy-dom
-import { cleanup } from '@testing-library/react';
+import { cleanup, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import type { ReactElement } from 'react';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PredefinedReplies } from '@/features/predefined-replies/schemas/predefined-replies.schema';
+import type { PredefinedRepliesRow } from '@/features/predefined-replies/schemas/predefined-replies.schema';
 import { resetApiStatus } from '@/lib/api/api-status';
 import { http } from '@/lib/api/http';
 import { clearSession, setSession } from '@/lib/auth/session';
@@ -25,12 +26,12 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
 }));
 
-const ROWS: readonly PredefinedReplies[] = [
-  { id: 'a1', name: 'Alpha', message: 'First reply' },
-  { id: 'b2', name: 'Beta', message: 'Second reply' },
+const ROWS: readonly PredefinedRepliesRow[] = [
+  { id: 'a1', name: 'Alpha' },
+  { id: 'b2', name: 'Beta' },
 ];
 
-const page = (rows: readonly PredefinedReplies[]) => ({
+const page = (rows: readonly PredefinedRepliesRow[]) => ({
   data: rows,
   meta: {
     nextCursor: null,
@@ -61,14 +62,19 @@ const problem = (status: number, code: string) => ({
 
 type Reply = { readonly status: number; readonly body?: unknown } | 'pending';
 
-let api: { me: Reply; list: Reply };
+let api: { me: Reply; list: Reply; delete: Reply };
 let requests: URL[] = [];
 
 function respond(config: InternalAxiosRequestConfig) {
   const url = new URL(http.getUri(config), 'http://erp.invalid');
   requests.push(url);
 
-  const reply = url.pathname === '/api/v1/auth/me' ? api.me : api.list;
+  const reply =
+    url.pathname === '/api/v1/auth/me'
+      ? api.me
+      : config.method?.toUpperCase() === 'DELETE'
+        ? api.delete
+        : api.list;
 
   if (reply === 'pending') return new Promise<never>(() => undefined);
 
@@ -85,10 +91,14 @@ function respond(config: InternalAxiosRequestConfig) {
   return Promise.reject(new AxiosError('failed', 'ERR_BAD_RESPONSE', config, null, response));
 }
 
-function show(ui: ReactElement, locale?: 'ar') {
+function show(ui: ReactElement, options: { searchParams?: string; locale?: 'ar' } = {}) {
   return renderWithProviders(
     <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>{ui}</SWRConfig>,
-    { hasMemory: true, ...(locale === undefined ? {} : { locale }) },
+    {
+      hasMemory: true,
+      searchParams: options.searchParams ?? '',
+      ...(options.locale === undefined ? {} : { locale: options.locale }),
+    },
   );
 }
 
@@ -100,6 +110,7 @@ beforeEach(() => {
   api = {
     me: { status: HTTP_OK, body: me(true) },
     list: { status: HTTP_OK, body: page(ROWS) },
+    delete: { status: HTTP_OK, body: { success: true } },
   };
 
   http.defaults.adapter = respond;
@@ -155,6 +166,38 @@ describe('PredefinedRepliesList: the four states (FE-27, D-39)', () => {
     expect(within(error).getByRole('button', { name: COMMON.retry })).toBeTruthy();
   });
 
+  it('No results: a search with no matches shows the no-results state', async () => {
+    api.list = { status: HTTP_OK, body: page([]) };
+    show(<PredefinedRepliesList />, { searchParams: '?q=zz' });
+
+    const noResults = await screen.findByTestId('list-no-results');
+    expect(noResults.textContent).toContain(EN.no_match_heading.replace('{query}', 'zz'));
+    expect(noResults.textContent).toContain(EN.no_match_body);
+  });
+
+  it('Delete: confirms the selected reply and sends a DELETE request', async () => {
+    show(<PredefinedRepliesList />);
+
+    await screen.findByTestId('list-table');
+    const row = screen.getByRole('link', { name: 'Alpha' }).closest('tr');
+    if (row === null) throw new Error('Alpha row was not rendered');
+    await userEvent.click(
+      within(within(row).getByTestId('row-actions-inline')).getByRole('button', {
+        name: EN.delete_action_named.replace('{name}', 'Alpha'),
+      }),
+    );
+
+    const dialog = await screen.findByTestId('confirm-dialog');
+    expect(dialog.textContent).toContain(EN.delete_title.replace('{name}', 'Alpha'));
+
+    const confirm = within(dialog).getByTestId('confirm-dialog-confirm');
+    await userEvent.click(confirm);
+
+    await waitFor(() => {
+      expect(requests.some((url) => url.pathname === `${LIST}/a1`)).toBe(true);
+    });
+  });
+
   it('Loaded: Name links to the record and is the only sortable column', async () => {
     show(<PredefinedRepliesList />);
 
@@ -163,9 +206,6 @@ describe('PredefinedRepliesList: the four states (FE-27, D-39)', () => {
     expect(screen.getByRole('link', { name: 'Alpha' }).getAttribute('href')).toBe(
       '/setup/predefined-replies/a1',
     );
-
-    expect(within(table).queryByText('First reply')).toBeNull();
-    expect(within(table).queryByText('Second reply')).toBeNull();
 
     const sortable = within(table).getAllByRole('button', { name: /^Sort by / });
     expect(sortable.map((button) => button.getAttribute('aria-label'))).toEqual([
@@ -196,7 +236,7 @@ describe('GuardedPredefinedRepliesList: the generated gate is ADMIN_GATE (fail c
 
 describe('PredefinedRepliesList: Arabic (FE-20)', () => {
   it('renders under ar with no physical-direction class', async () => {
-    const { container } = show(<PredefinedRepliesList />, 'ar');
+    const { container } = show(<PredefinedRepliesList />, { locale: 'ar' });
 
     await screen.findByTestId('list-table');
 

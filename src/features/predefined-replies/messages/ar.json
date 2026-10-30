@@ -25,7 +25,8 @@
     },
     "predefined_replies": "الردود المحددة مسبقاً",
     "new_predefined_reply": "رد محدد مسبقاً جديد",
-    "predefined_replies_dt_name": "الاسم",
-    "ticket_form_message": "الرسالة"
+    "predefined_replies_dt_name": "اسم الرد المحدد مسبقاً",
+    "ticket_form_message": "الرسالة",
+    "predefined_reply_add_edit_name": "اسم الرد المحدد مسبقاً"
   }
 }

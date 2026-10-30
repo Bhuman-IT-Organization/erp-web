@@ -20,7 +20,13 @@ const HTTP_OK = 200;
 const HTTP_BAD_REQUEST = 400;
 const HTTP_NOT_FOUND = 404;
 const HTTP_SERVICE_UNAVAILABLE = 503;
-const RECORD = { id: 'a1', name: 'Alpha', label: 'A', createdAt: '2026-01-02T20:30:00.000Z' };
+const RECORD = {
+  id: 'a1',
+  name: 'Alpha',
+  message: 'Hello from Alpha',
+  label: 'A',
+  createdAt: '2026-01-02T20:30:00.000Z',
+};
 
 type Answer = { readonly status: number; readonly body?: unknown } | 'pending';
 
@@ -82,7 +88,10 @@ type Story = StoryObj<typeof meta>;
 /** Types a name and asks to save, as a member does; the save summary opens. */
 async function typeAndSubmit(root: HTMLElement, submit = 'Create predefined reply'): Promise<void> {
   const canvas = within(root);
-  await userEvent.type(await canvas.findByRole('textbox', { name: /^Name/ }), 'Beta');
+  await userEvent.type(
+    await canvas.findByRole('textbox', { name: /^Predefined Reply Name/ }),
+    'Beta',
+  );
   await userEvent.click(canvas.getByRole('button', { name: submit }));
 }
 
@@ -221,7 +230,9 @@ export const EditFromList: Story = {
     nextjs: { navigation: { pathname: '/setup/predefined-replies/a1' } },
   },
   play: async ({ canvasElement }) => {
-    const box = await within(canvasElement).findByRole('textbox', { name: /^Name/ });
+    const box = await within(canvasElement).findByRole('textbox', {
+      name: /^Predefined Reply Name/,
+    });
     await expect(box).toHaveValue('Alpha');
   },
 };

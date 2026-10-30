@@ -25,7 +25,8 @@
     },
     "predefined_replies": "Predefined Replies",
     "new_predefined_reply": "New Predefined Reply",
-    "predefined_replies_dt_name": "Name",
-    "ticket_form_message": "Message"
+    "predefined_replies_dt_name": "Predefined Reply Name",
+    "ticket_form_message": "Message",
+    "predefined_reply_add_edit_name": "Predefined Reply Name"
   }
 }

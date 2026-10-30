@@ -59,13 +59,14 @@ interface PredefinedRepliesFormProps {
 }
 
 type RecordRead = CommonApiResult<PredefinedReplies>;
+type PredefinedRepliesRecord = PredefinedReplies | PredefinedRepliesRow;
 type SaveFailure = Extract<ApiResult<PredefinedReplies>, { ok: false }>;
 
 function recordPath(id: string | null): ReturnType<typeof predefinedRepliesPath> | null {
   return id === null ? null : predefinedRepliesPath(id);
 }
 
-function knownValues(record: PredefinedReplies | undefined): {
+function knownValues(record: PredefinedRepliesRecord | undefined): {
   values?: PredefinedRepliesFormValues;
 } {
   return record === undefined ? {} : { values: toPredefinedRepliesForm(record) };
@@ -85,7 +86,7 @@ function waitsForRecord(
 
 function breadcrumbLabel(
   id: string | null,
-  record: PredefinedReplies | undefined,
+  record: PredefinedRepliesRecord | undefined,
   item: RecordRead,
 ): string | null | undefined {
   if (id === null) return undefined;
@@ -104,7 +105,7 @@ function retryableFailure(result: ApiResult<PredefinedReplies> | undefined): Sav
 
 function nameChanges(
   pending: PredefinedRepliesFormValues | null,
-  record: PredefinedReplies | undefined,
+  record: PredefinedRepliesRecord | undefined,
   label: string,
 ): readonly SummaryChange[] {
   return pending === null || record === undefined || pending.name === record.name
@@ -113,7 +114,7 @@ function nameChanges(
 }
 
 function discardTarget(
-  record: PredefinedReplies | undefined,
+  record: PredefinedRepliesRecord | undefined,
   noun: string,
 ): { readonly recordName: string } | { readonly noun: string } {
   return record === undefined ? { noun } : { recordName: record.name };
@@ -295,7 +296,7 @@ export function PredefinedRepliesForm({ id }: PredefinedRepliesFormProps): React
             fields: [
               {
                 name: 'name',
-                label: t('predefined_replies_dt_name'),
+                label: t('predefined_reply_add_edit_name'),
                 kind: 'text',
                 required: true,
               },

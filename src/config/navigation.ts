@@ -1750,6 +1750,7 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         href: '/setup/predefined-replies',
         ...navGateOf('/setup/predefined-replies'),
       },
+      // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
         id: 'tickets-priorities',
         labelKey: 'shell.acs_ticket_priority_submenu',
