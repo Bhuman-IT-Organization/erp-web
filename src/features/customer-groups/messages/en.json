@@ -2,7 +2,7 @@
   "customer-groups": {
     "customer_groups": "Groups",
     "new_customer_group": "New Customer Group",
-    "customer_group_add_heading": "Add Customer Group",
+    "customer_group_add_heading": "Add New Customer Group",
     "customer_group_edit_heading": "Edit Customer Group",
     "customer_group_name": "Name",
     "customer_group_lowercase": "customer group",

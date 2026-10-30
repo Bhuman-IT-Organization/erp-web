@@ -113,8 +113,8 @@ All three live in the shell's route group, so they get the sidebar and the topba
 `messages/en.json`, namespace `customer-groups`, registered in `src/messages/index.ts`.
 
 - **Perfex keys** are `customer_groups`, `new_customer_group`, `customer_group_add_heading`,
-  `customer_group_edit_heading` and `customer_group_lowercase`. The other feature message keys are
-  specific to this screen; there are no `in_use_*` lines.
+  `customer_group_edit_heading`, `customer_group_name` and `customer_group_lowercase`. The other
+  feature message keys are specific to this screen; there are no `in_use_*` lines.
 - The shared verb+noun buttons and hidden actions header come from `common`; the screen has no ID or
   date column.
 
