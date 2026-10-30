@@ -686,14 +686,6 @@ const ensureDir = (abs) => {
 const cleanup = () => {
   for (const probe of probes) rmSync(join(root, probe.path), { force: true });
   for (const dir of createdDirs) rmSync(dir, { recursive: true, force: true });
-  for (const rel of [
-    'app/zz-lint-probe',
-    'src/components/atoms/zz-lint-probe',
-    'src/features/zz-lint-probe',
-    'src/lib/zz-lint-probe',
-  ]) {
-    rmSync(join(root, rel), { recursive: true, force: true });
-  }
 };
 process.on('SIGINT', () => {
   cleanup();
