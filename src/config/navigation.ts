@@ -1770,9 +1770,8 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'tickets-services',
         labelKey: 'shell.acs_ticket_services_submenu',
-        href: '/admin/tickets/services',
-        adminOnly: true,
-        legacy: true,
+        href: '/setup/services',
+        ...navGateOf('/setup/services'),
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
