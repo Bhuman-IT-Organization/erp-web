@@ -18,7 +18,7 @@ Manage reusable replies for support tickets from the administrator-only Setup sc
 
 The list contains only the **Predefined Reply Name** column; Perfex does not show a Message column in this list.
 
-## Deliberate differences
+## Dropped on purpose
 
 - The form uses a plain text box rather than Perfex's rich-text editor. The API stores the reply as plain text, so the editor's formatting controls would imply formatting support that is not preserved. Existing formatting is detected and users are warned that it will be removed on save.
 - The ticket-side **Save as predefined reply** action remains in Perfex; this screen covers management only.
