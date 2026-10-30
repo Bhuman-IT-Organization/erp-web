@@ -159,7 +159,7 @@ beforeEach(() => {
   requests = [];
   api = {
     me: { status: HTTP_OK, body: me(true) },
-    list: { status: HTTP_OK, body: page([SPARE, OFFICE, LEGACY]) },
+    list: { status: HTTP_OK, body: page([LEGACY, OFFICE, SPARE]) },
     remove: { status: NO_CONTENT },
     exported: { status: HTTP_OK, body: new Blob(['id\r\n'], { type: 'text/csv' }) },
   };
@@ -257,7 +257,7 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
     expect(within(error).getByRole('button', { name: COMMON.retry })).toBeTruthy();
   });
 
-  it("Loaded: the title, then Perfex's ID, Service Name and Date Created; the name is the link; ID and the name sort, Date Created does not; no checkbox column", async () => {
+  it("Loaded: the title, then Perfex's ID, Service Name; the name is the link; ID and the name sort; no checkbox column", async () => {
     show(<ServicesList />);
     const list = await table();
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(EN.services);
@@ -275,14 +275,8 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
       `Sort by ${EN.id}`,
       `Sort by ${EN.services_dt_name}`,
     ]);
-    // Date Created is not a keyset key (nullable): its header has no sort button and no aria-sort.
-    const dateHeader = headers[2];
-    expect(dateHeader?.querySelector('button')).toBeNull();
-    expect(dateHeader?.hasAttribute('aria-sort')).toBe(false);
     // No bulk actions (D-16): no checkbox anywhere, no selection bar.
     expect(within(list).queryAllByRole('checkbox')).toEqual([]);
-    // The usage is never a column.
-    expect(list.textContent).not.toContain('2 purchase orders');
   });
 
   it('the ID is digits in <bdi> with tabular numbers', async () => {
@@ -293,30 +287,24 @@ describe('ServicesList: the states (FE-27, D-39)', () => {
     expect(id.className).toContain('tabular-nums');
   });
 
-  it('the default order is the api default: the first read carries no sort (the ID descending, no arrow, G6)', async () => {
-    show(<ServicesList />);
-    await table();
-    expect(listReads()[0]?.url.searchParams.get('sort')).toBeNull();
-    const sorts = within(await table())
-      .getAllByRole('columnheader')
-      .map((th) => th.getAttribute('aria-sort'));
-    expect(sorts).not.toContain('ascending');
-    expect(sorts).not.toContain('descending');
-  });
-
-  it('Mobile: only Date Created is hidden below md (ID, the name and the actions stay)', async () => {
+  it('the default order is the api default: name ascending, with no explicit sort or sort arrow', async () => {
     show(<ServicesList />);
     const list = await table();
 
-    const headers = within(list).getAllByRole('columnheader');
+    expect(listReads()[0]?.url.searchParams.get('sort')).toBeNull();
 
-    expect(headers.map((header) => header.textContent)).toEqual([
-      EN.id,
-      EN.services_dt_name,
-      COMMON.actions,
-    ]);
+    const names = within(list)
+      .getAllByRole('link')
+      .map((link) => link.textContent.trim());
 
-    expect(screen.getByRole('link', { name: 'Office' })).toBeTruthy();
+    expect(names).toEqual(['Legacy', 'Office', 'Spare']);
+
+    const sorts = within(list)
+      .getAllByRole('columnheader')
+      .map((th) => th.getAttribute('aria-sort'));
+
+    expect(sorts).not.toContain('ascending');
+    expect(sorts).not.toContain('descending');
   });
 
   it('two services with the same name are both listed, as Perfex allows (D-29)', async () => {
@@ -529,7 +517,7 @@ describe('ServicesList: the toolbar (D-19, D-26, D-42, ADR-0043)', () => {
     expect(listReads().map((r) => r.url.searchParams.get('q'))).not.toContain('o');
   });
 
-  it('the Export menu offers CSV, Excel, PDF and Print; CSV sends the three translated labels in the api order: ID, Service Name, Date Created', async () => {
+  it('the Export menu offers CSV, Excel, PDF and Print; CSV sends the two translated labels in the api order: ID, Service Name', async () => {
     URL.createObjectURL = vi.fn(() => 'blob:erp.invalid/1');
     URL.revokeObjectURL = vi.fn();
     show(<ServicesList />);

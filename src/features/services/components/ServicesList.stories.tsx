@@ -89,7 +89,26 @@ const meta = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
+/** FE-27 `NoResults`: no services match the current search; offers Clear search. */
+export const NoResults: Story = {
+  decorators: [withApi({ status: HTTP_OK, body: page([]) })],
+  parameters: {
+    nextjs: {
+      appDirectory: true,
+      navigation: {
+        pathname: '/setup/services',
+        query: { q: 'zz' },
+      },
+    },
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    const empty = await canvas.findByTestId('list-no-results');
 
+    await expect(empty).toHaveTextContent('No services match “zz”');
+    await expect(within(empty).getByRole('button', { name: 'Clear search' })).toBeVisible();
+  },
+};
 /** FE-27 `Loading`: the list skeleton while the first answer is unknown; no empty or error text. */
 export const Loading: Story = {
   decorators: [withApi('pending')],
