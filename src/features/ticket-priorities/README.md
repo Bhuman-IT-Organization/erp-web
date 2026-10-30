@@ -71,17 +71,17 @@ All three live in the shell's route group, so they get the sidebar and the topba
 
 ## Data
 
-`api/ticket-priorities.endpoints.ts`, `TICKET_PRIORITIES_ENDPOINTS`: the five calls erp-api
+`api/ticket-priorities.endpoints.ts`, `TICKET_PRIORITIES_ENDPOINTS`: the six calls erp-api
 `src/v1/ticket-priorities` serves. Reads go through `useCommonApi` and writes through
 `useCommonMutation`, never through a hand-written client.
 
-| call                                                | used by                            | note                                                                                                                                                    |
-| --------------------------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `GET /api/v1/ticket-priorities?q&sort&limit&cursor` | `ListPageTemplate`                 | BE-19 keyset grammar; a row is the whole record: `{ id, name }`                                                                                         |
-| `GET /api/v1/ticket-priorities/:id`                 | `useTicketPriorities`              | the record; a row opened from the list seeds it                                                                                                         |
-| `POST /api/v1/ticket-priorities`                    | `useSaveTicketPriorities().create` | `{ name }`; a duplicate name is accepted; never retried                                                                                                 |
-| `PATCH /api/v1/ticket-priorities/:id`               | `useSaveTicketPriorities().update` | `{ name }`; 404 `ERP-CORE-0004` when it was deleted meanwhile, shown inside the save summary; never retried                                             |
-| `DELETE /api/v1/ticket-priorities/:id`              | `useDeleteTicketPriority`          | 204; 409 `ERP-TICKETPRIORITIES-0001` (used by a ticket); 409 `ERP-TICKETPRIORITIES-0002` (the email-piping default); 404 `ERP-CORE-0004`; never retried |
+| call                                   | used by                                              | note                                                                                                                                                    |
+| -------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|                                        | `GET /api/v1/ticket-priorities/export?q&sort&format` | `ListPageTemplate`'s Export menu                                                                                                                        | `id` and `name` (`TICKET_PRIORITIES_EXPORT_COLUMNS`); csv, xlsx, pdf or print; the list's search and sort |
+| `GET /api/v1/ticket-priorities/:id`    | `useTicketPriorities`                                | the record; a row opened from the list seeds it                                                                                                         |
+| `POST /api/v1/ticket-priorities`       | `useSaveTicketPriorities().create`                   | `{ name }`; a duplicate name is accepted; never retried                                                                                                 |
+| `PATCH /api/v1/ticket-priorities/:id`  | `useSaveTicketPriorities().update`                   | `{ name }`; 404 `ERP-CORE-0004` when it was deleted meanwhile, shown inside the save summary; never retried                                             |
+| `DELETE /api/v1/ticket-priorities/:id` | `useDeleteTicketPriority`                            | 204; 409 `ERP-TICKETPRIORITIES-0001` (used by a ticket); 409 `ERP-TICKETPRIORITIES-0002` (the email-piping default); 404 `ERP-CORE-0004`; never retried |
 
 - The row carries no usage, so the delete dialog never refuses up front: the api's 409 is shown
   inside the dialog. After a 404 the list pages ask again; after a 409 they do not (nothing in the
