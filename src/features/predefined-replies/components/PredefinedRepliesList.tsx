@@ -9,6 +9,8 @@ import {
   NOT_FOUND_CODE,
   PREDEFINED_REPLIES_ERRORS,
   PREDEFINED_REPLIES_PATH,
+  PREDEFINED_REPLIES_EXPORT_PATH,
+  PREDEFINED_REPLIES_EXPORT_COLUMNS,
   predefinedRepliesHooks,
   predefinedRepliesPath,
 } from '@/features/predefined-replies/api/predefined-replies.endpoints';
@@ -22,6 +24,7 @@ import { CLIENT_TIMINGS } from '@/lib/api/client-timings';
 import { revalidateLists, seedRow } from '@/lib/api/row-seed';
 
 const LIST_BASE = '/setup/predefined-replies';
+
 const itemRoute = (row: PredefinedRepliesRow): string =>
   `${LIST_BASE}/${encodeURIComponent(row.id)}`;
 
@@ -40,15 +43,10 @@ export function PredefinedRepliesList(): ReactElement {
   const columns: readonly ListColumn<PredefinedRepliesRow>[] = [
     {
       id: 'name',
-      header: t('name'),
+      header: t('predefined_replies_dt_name'),
       sortField: 'name',
       primary: true,
       cell: (item) => item.name,
-    },
-    {
-      id: 'message',
-      header: t('message'),
-      cell: (item) => item.message,
     },
   ];
 
@@ -69,7 +67,7 @@ export function PredefinedRepliesList(): ReactElement {
   return (
     <>
       <ListPageTemplate
-        title={t('list_title')}
+        title={t('predefined_replies')}
         path={PREDEFINED_REPLIES_PATH}
         rowSchema={predefinedRepliesRowSchema}
         listBase={LIST_BASE}
@@ -82,6 +80,17 @@ export function PredefinedRepliesList(): ReactElement {
         columns={columns}
         rowActions={(item) => [
           {
+            id: 'edit',
+            kind: 'main',
+            icon: 'pen-to-square',
+            label: tc('edit'),
+            ariaLabel: t('edit_action_named', { name: item.name }),
+            onSelect: () => {
+              seedRow(predefinedRepliesPath(item.id), item);
+              window.location.assign(itemRoute(item));
+            },
+          },
+          {
             id: 'delete',
             kind: 'destructive',
             icon: 'trash-can',
@@ -92,7 +101,14 @@ export function PredefinedRepliesList(): ReactElement {
             },
           },
         ]}
-        createAction={{ label: t('new_title'), href: `${LIST_BASE}/new` }}
+        createAction={{ label: t('new_predefined_reply'), href: `${LIST_BASE}/new` }}
+        exportAction={{
+          path: PREDEFINED_REPLIES_EXPORT_PATH,
+          columns: PREDEFINED_REPLIES_EXPORT_COLUMNS,
+          labels: {
+            name: t('predefined_replies_dt_name'),
+          },
+        }}
         empty={{
           nothingYetHeading: t('empty_heading'),
           nothingYetBody: t('empty_body'),

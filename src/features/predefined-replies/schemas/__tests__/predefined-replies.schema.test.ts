@@ -20,7 +20,7 @@ describe('predefined-replies schemas', () => {
   it('the form schema trims the name and reports the message KEY, which exists in en.json', () => {
     expect(
       predefinedRepliesFormSchema.parse({ name: '  Alpha ', message: ' Hello there ' }),
-    ).toEqual({ name: 'Alpha', message: 'Hello there' });
+    ).toEqual({ name: 'Alpha', message: ' Hello there ' });
     const result = predefinedRepliesFormSchema.safeParse({ name: '   ' });
     expect(result.success).toBe(false);
     if (!result.success) {

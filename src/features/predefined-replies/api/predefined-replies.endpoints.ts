@@ -19,6 +19,10 @@ export const PREDEFINED_REPLIES_ENDPOINTS = {
 
 export const PREDEFINED_REPLIES_PATH = PREDEFINED_REPLIES_ENDPOINTS.list.path satisfies ApiPath;
 
+export const PREDEFINED_REPLIES_EXPORT_PATH = '/api/v1/predefined-replies/export' satisfies ApiPath;
+
+export const PREDEFINED_REPLIES_EXPORT_COLUMNS = ['name'] as const;
+
 export function predefinedRepliesPath(id: string): ApiPath {
   return PREDEFINED_REPLIES_ENDPOINTS.detail.path.replace(':id', encodeURIComponent(id)) as ApiPath;
 }

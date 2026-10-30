@@ -89,12 +89,12 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/currencies': ADMIN_GATE,
   '/setup/currencies/new': ADMIN_GATE,
   '/setup/currencies/:id': ADMIN_GATE,
-  // A new screen's three routes go between these markers, each on ADMIN_GATE: fail closed until the
-  // module declares its own view code here AND in @erp/contracts (kept in sync by hand).
-  // registry start: route-gates
   '/setup/predefined-replies': ADMIN_GATE,
   '/setup/predefined-replies/new': ADMIN_GATE,
   '/setup/predefined-replies/:id': ADMIN_GATE,
+  // A new screen's three routes go between these markers, each on ADMIN_GATE: fail closed until the
+  // module declares its own view code here AND in @erp/contracts (kept in sync by hand).
+  // registry start: route-gates
   // registry end: route-gates
 });
 

@@ -1,14 +1,10 @@
 {
   "predefined-replies": {
-    "list_title": "Predefined Replies",
-    "new_title": "New Predefined Reply",
     "record_title": "Predefined Reply",
     "noun_predefined_reply": "predefined reply",
     "noun_predefined_replies": "predefined replies",
     "section_details": "Details",
     "id": "ID",
-    "name": "Name",
-    "message": "Message",
     "empty_heading": "No predefined replies yet",
     "empty_body": "Create the first one and it appears here.",
     "no_match_heading": "No predefined replies match “{query}”",
@@ -20,9 +16,16 @@
     "delete_title": "Delete {name}?",
     "delete_body": "This action cannot be undone.",
     "delete_action_named": "Delete predefined reply {name}",
+    "edit_action_named": "Edit {name}",
     "deleted_toast": "Predefined reply deleted",
+    "formatting_warning": "This reply contains formatting that will be removed when you save it.",
+    "message_paragraph_helper": "Leave an empty line to start a new paragraph.",
     "errors": {
       "ERP-CORE-0004": "This predefined reply no longer exists. It may have been removed."
-    }
+    },
+    "predefined_replies": "Predefined Replies",
+    "new_predefined_reply": "New Predefined Reply",
+    "predefined_replies_dt_name": "Name",
+    "ticket_form_message": "Message"
   }
 }

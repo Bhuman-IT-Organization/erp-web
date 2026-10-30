@@ -65,7 +65,7 @@ const meta = {
   args: { id: null },
   // Expanded on purpose (Prettier keeps it): a long generated name or --prefix still fits.
   parameters: {
-    nextjs: { appDirectory: true, navigation: { pathname: '/predefined-replies/new' } },
+    nextjs: { appDirectory: true, navigation: { pathname: '/setup/predefined-replies/new' } },
   },
   decorators: [
     (Story) => (
@@ -96,14 +96,37 @@ async function confirmSummary(): Promise<void> {
   await userEvent.click(confirm);
 }
 
-/** `/predefined-replies/new`: empty, the required mark, "Create predefined reply" disabled until something is typed. */
+/** `/setup/predefined-replies/new`: empty form; create is disabled until something is typed. */
 export const Default: Story = { decorators: [withApi()] };
 
-/** `/predefined-replies/:id`: the record's name as the title, "Save predefined reply". */
+/** `/setup/predefined-replies/:id`: the record's name as the title, "Save predefined reply". */
 export const Edit: Story = {
   args: { id: 'a1' },
   decorators: [withApi()],
-  parameters: { nextjs: { navigation: { pathname: '/predefined-replies/a1' } } },
+  parameters: { nextjs: { navigation: { pathname: '/setup/predefined-replies/a1' } } },
+};
+/** Existing formatting is shown as a warning before saving. */
+/** Existing formatting is shown as a warning before saving. */
+export const FormattingWarning: Story = {
+  args: { id: 'a1' },
+  decorators: [
+    withApi(
+      { status: HTTP_OK, body: RECORD },
+      {
+        status: HTTP_OK,
+        body: {
+          ...RECORD,
+          message: 'First paragraph\n\nSecond paragraph',
+          hasOtherFormatting: true,
+        },
+      },
+    ),
+  ],
+  parameters: {
+    nextjs: {
+      navigation: { pathname: '/setup/predefined-replies/a1' },
+    },
+  },
 };
 
 /** Every save is confirmed by what it does (D-25.4): "Create predefined reply Beta?". */
@@ -171,7 +194,7 @@ export const SaveRefused: Story = {
   args: { id: 'a1' },
   decorators: [withApi(problem(HTTP_NOT_FOUND, 'ERP-CORE-0004'))],
   parameters: {
-    nextjs: { navigation: { pathname: '/predefined-replies/a1' } },
+    nextjs: { navigation: { pathname: '/setup/predefined-replies/a1' } },
   },
   play: async ({ canvasElement }) => {
     await typeAndSubmit(canvasElement, 'Save predefined reply');
@@ -195,7 +218,7 @@ export const EditFromList: Story = {
     },
   ],
   parameters: {
-    nextjs: { navigation: { pathname: '/predefined-replies/a1' } },
+    nextjs: { navigation: { pathname: '/setup/predefined-replies/a1' } },
   },
   play: async ({ canvasElement }) => {
     const box = await within(canvasElement).findByRole('textbox', { name: /^Name/ });
@@ -214,7 +237,7 @@ const TEXTS: Record<Locale, { readonly notFound: string; readonly back: string }
     back: commonAr.common.back_to_list,
   },
 };
-const RETURN_KEY = 'erp.list.return:/predefined-replies';
+const RETURN_KEY = 'erp.list.return:/setup/predefined-replies';
 
 /** The not-found page: the plain message, no button, and ONE link: Back to list, to `href`. */
 async function expectNotFound(root: HTMLElement, locale: unknown, href: string): Promise<void> {
@@ -238,15 +261,15 @@ export const NotFound: Story = {
   decorators: [
     withApi({ status: HTTP_OK, body: RECORD }, problem(HTTP_NOT_FOUND, 'ERP-CORE-0004')),
   ],
-  parameters: { nextjs: { navigation: { pathname: '/predefined-replies/gone' } } },
+  parameters: { nextjs: { navigation: { pathname: '/setup/predefined-replies/gone' } } },
   beforeEach: () => {
-    sessionStorage.setItem(RETURN_KEY, JSON.stringify({ url: '/predefined-replies?q=al' }));
+    sessionStorage.setItem(RETURN_KEY, JSON.stringify({ url: '/setup/predefined-replies?q=al' }));
     return () => {
       sessionStorage.removeItem(RETURN_KEY);
     };
   },
   play: async ({ canvasElement, globals }) => {
-    await expectNotFound(canvasElement, globals.locale, '/predefined-replies?q=al');
+    await expectNotFound(canvasElement, globals.locale, '/setup/predefined-replies?q=al');
   },
 };
 
@@ -266,16 +289,25 @@ export const SeededNotFound: Story = {
       return <Story />;
     },
   ],
-  parameters: { nextjs: { navigation: { pathname: '/predefined-replies/s4' } } },
+  parameters: { nextjs: { navigation: { pathname: '/setup/predefined-replies/s4' } } },
   // Nothing recorded, whatever an earlier story in this tab left: the link is the list base.
   beforeEach: () => {
     sessionStorage.removeItem(RETURN_KEY);
   },
   play: async ({ canvasElement, globals }) => {
-    await expectNotFound(canvasElement, globals.locale, '/predefined-replies');
+    await expectNotFound(canvasElement, globals.locale, '/setup/predefined-replies');
     await expect(within(canvasElement).queryByRole('textbox')).toBeNull();
   },
 };
 
 /** Arabic: the form mirrors; the labels are the Arabic pack's, the noun an English placeholder. */
 export const Rtl: Story = { decorators: [withApi()], globals: { locale: 'ar' } };
+/** Form displayed at a mobile viewport width. */
+export const Mobile: Story = {
+  decorators: [withApi()],
+  parameters: {
+    viewport: {
+      defaultViewport: 'mobile1',
+    },
+  },
+};

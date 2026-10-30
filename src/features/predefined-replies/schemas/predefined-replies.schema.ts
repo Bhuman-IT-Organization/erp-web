@@ -12,6 +12,7 @@ export const predefinedRepliesSchema = z.object({
   id: z.union([z.string(), z.number()]).transform(String),
   name: z.string(),
   message: z.string(),
+  hasOtherFormatting: z.boolean().optional(),
 });
 
 export type PredefinedReplies = z.infer<typeof predefinedRepliesSchema>;
@@ -25,7 +26,7 @@ export const predefinedRepliesFormSchema = z.object({
     .trim()
     .min(1, PREDEFINED_REPLIES_MESSAGE_KEYS.name)
     .max(PREDEFINED_REPLIES_NAME_MAX, PREDEFINED_REPLIES_MESSAGE_KEYS.nameTooLong),
-  message: z.string().trim().min(1, PREDEFINED_REPLIES_MESSAGE_KEYS.message),
+  message: z.string().default(''),
 });
 
 export type PredefinedRepliesFormValues = z.infer<typeof predefinedRepliesFormSchema>;
@@ -36,7 +37,10 @@ export const EMPTY_PREDEFINED_REPLIES_FORM: PredefinedRepliesFormValues = {
 };
 
 export function toPredefinedRepliesForm(item: PredefinedReplies): PredefinedRepliesFormValues {
-  return { name: item.name, message: item.message };
+  return {
+    name: item.name,
+    message: item.message,
+  };
 }
 
 export const PREDEFINED_REPLIES_FIELDS = ['name', 'message'] as const;

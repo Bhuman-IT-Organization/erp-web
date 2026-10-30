@@ -135,7 +135,7 @@ describe('PredefinedRepliesList: the four states (FE-27, D-39)', () => {
     const empty = await screen.findByTestId('list-empty');
     expect(empty.textContent).toContain(EN.empty_heading);
 
-    const create = within(empty).getByRole('link', { name: EN.new_title });
+    const create = within(empty).getByRole('link', { name: EN.new_predefined_reply });
     expect(create.getAttribute('href')).toBe('/setup/predefined-replies/new');
   });
 
@@ -164,12 +164,12 @@ describe('PredefinedRepliesList: the four states (FE-27, D-39)', () => {
       '/setup/predefined-replies/a1',
     );
 
-    expect(within(table).getByText('First reply')).toBeTruthy();
-    expect(within(table).getByText('Second reply')).toBeTruthy();
+    expect(within(table).queryByText('First reply')).toBeNull();
+    expect(within(table).queryByText('Second reply')).toBeNull();
 
     const sortable = within(table).getAllByRole('button', { name: /^Sort by / });
     expect(sortable.map((button) => button.getAttribute('aria-label'))).toEqual([
-      `Sort by ${EN.name}`,
+      `Sort by ${EN.predefined_replies_dt_name}`,
     ]);
   });
 });

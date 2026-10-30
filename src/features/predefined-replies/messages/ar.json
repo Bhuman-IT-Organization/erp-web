@@ -1,14 +1,10 @@
 {
   "predefined-replies": {
-    "list_title": "الردود المحددة مسبقاً",
-    "new_title": "رد محدد مسبقاً جديد",
     "record_title": "رد محدد مسبقاً",
     "noun_predefined_reply": "رد محدد مسبقاً",
     "noun_predefined_replies": "الردود المحددة مسبقاً",
     "section_details": "التفاصيل",
     "id": "المعرّف",
-    "name": "الاسم",
-    "message": "الرسالة",
     "empty_heading": "لا توجد ردود محددة مسبقاً بعد",
     "empty_body": "أنشئ أول رد وسيظهر هنا.",
     "no_match_heading": "لا توجد ردود محددة مسبقاً تطابق «{query}»",
@@ -17,8 +13,19 @@
     "enter_message": "أدخل رسالة.",
     "saved_toast": "تم حفظ الرد المحدد مسبقاً",
     "name_too_long": "يجب ألا يتجاوز الاسم {max} حرفاً.",
+    "edit_action_named": "تعديل {name}",
+    "formatting_warning": "يحتوي هذا الرد على تنسيق ستتم إزالته عند حفظه.",
+    "message_paragraph_helper": "اترك سطراً فارغاً لبدء فقرة جديدة.",
+    "delete_title": "هل تريد حذف {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "delete_action_named": "حذف الرد المحدد مسبقاً {name}",
+    "deleted_toast": "تم حذف الرد المحدد مسبقاً",
     "errors": {
       "ERP-CORE-0004": "هذا الرد المحدد مسبقاً غير موجود. ربما تمت إزالته."
-    }
+    },
+    "predefined_replies": "الردود المحددة مسبقاً",
+    "new_predefined_reply": "رد محدد مسبقاً جديد",
+    "predefined_replies_dt_name": "الاسم",
+    "ticket_form_message": "الرسالة"
   }
 }
