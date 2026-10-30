@@ -29,7 +29,7 @@ import { LeadSourcesList, GuardedLeadSourcesList } from '../LeadSourcesList';
 /**
  * The list screen on `ListPageTemplate` (UIK-06). The template's own tests cover the URL state, the
  * search, the pager and the export mechanics; these cover what the SCREEN decides: Perfex's columns
- * (ID, Lead Source Name), the labelled Edit and Delete, the delete refused up front from usage or
+ * (ID, Source Name), the labelled Edit and Delete, the delete refused up front from usage or
  * live from the api, one `it` per state of the UI-SPEC, the names rendered as text (T-4.1-91), and
  * the administrator-only guard.
  */
@@ -218,7 +218,7 @@ describe('LeadSourcesList: the states (FE-27, D-39)', () => {
     }
   });
 
-  it('Empty: Perfex empty-list text and Add Lead Source to /setup/lead-sources/new', async () => {
+  it('Empty: Perfex empty-list text and New Source to /setup/lead-sources/new', async () => {
     api.list = { status: HTTP_OK, body: page([]) };
     show(<LeadSourcesList />);
     const empty = await screen.findByTestId('list-empty');
@@ -226,6 +226,18 @@ describe('LeadSourcesList: the states (FE-27, D-39)', () => {
     expect(empty.textContent).toContain(EN.empty_body);
     const create = within(empty).getByRole('link', { name: EN.lead_new_source });
     expect(create.getAttribute('href')).toBe('/setup/lead-sources/new');
+  });
+
+  it('No results: names the query and offers Clear search', async () => {
+    api.list = { status: HTTP_OK, body: page([]) };
+    show(<LeadSourcesList />, { searchParams: '?q=unmatched' });
+    const noResults = await screen.findByTestId('list-no-results');
+    expect(within(noResults).getByRole('heading').textContent).toBe(
+      EN.no_match_heading.replace('{query}', 'unmatched'),
+    );
+    expect(noResults.textContent).toContain(EN.no_match_body);
+    expect(within(noResults).getByRole('button', { name: COMMON.clear_search })).toBeTruthy();
+    expect(screen.queryByTestId('list-empty')).toBeNull();
   });
 
   it('Error: a 503 says the list could not load, in plain language with the plural noun, and offers Retry', async () => {
@@ -241,7 +253,7 @@ describe('LeadSourcesList: the states (FE-27, D-39)', () => {
     expect(within(error).getByRole('button', { name: COMMON.retry })).toBeTruthy();
   });
 
-  it("Loaded: the title, then Perfex's ID and Lead Source Name; the name is the link", async () => {
+  it("Loaded: the title, then Perfex's ID and Source Name; the name is the link", async () => {
     show(<LeadSourcesList />);
     const list = await table();
     expect(screen.getByRole('heading', { level: 1 }).textContent).toBe(EN.lead_sources);
@@ -325,7 +337,7 @@ describe('LeadSourcesList: the toolbar (D-19, D-26, D-42, ADR-0043)', () => {
     });
   });
 
-  it('Add Lead Source links to /setup/lead-sources/new', async () => {
+  it('New Source links to /setup/lead-sources/new', async () => {
     show(<LeadSourcesList />);
     await table();
     expect(screen.getByRole('link', { name: EN.lead_new_source }).getAttribute('href')).toBe(

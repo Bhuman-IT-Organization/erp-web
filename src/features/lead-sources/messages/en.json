@@ -1,10 +1,10 @@
 {
   "lead-sources": {
     "lead_sources": "Lead Sources",
-    "lead_new_source": "New Lead Source",
-    "edit_source": "Edit Lead Source",
+    "lead_new_source": "New Source",
+    "edit_source": "Edit Source",
     "id": "ID",
-    "leads_sources_table_name": "Lead Source Name",
+    "leads_sources_table_name": "Source Name",
     "leads_table_total": "Total Leads: {countN}",
     "leads_table_total_export": "Total Leads",
     "noun_lead_source": "lead source",

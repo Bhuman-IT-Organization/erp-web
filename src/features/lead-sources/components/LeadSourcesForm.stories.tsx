@@ -87,7 +87,7 @@ type Story = StoryObj<typeof meta>;
 async function typeAndSubmit(root: HTMLElement, submit = 'Create lead source'): Promise<void> {
   const canvas = within(root);
   await userEvent.type(
-    await canvas.findByRole('textbox', { name: /^Lead Source Name/ }),
+    await canvas.findByRole('textbox', { name: /^Source Name/ }),
     'LinkedIn Campaign',
   );
   await userEvent.click(canvas.getByRole('button', { name: submit }));
@@ -116,7 +116,7 @@ export const SaveSummary: Story = {
   decorators: [withApi()],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const name = await canvas.findByRole('textbox', { name: /^Lead Source Name/ });
+    const name = await canvas.findByRole('textbox', { name: /^Source Name/ });
     await waitFor(async () => {
       await expect(name).toHaveValue('Google Ads');
     });
@@ -128,7 +128,7 @@ export const SaveSummary: Story = {
       await expect(dialog).toBeVisible();
     });
     const changes = within(dialog).getByTestId('confirm-dialog-changes');
-    await expect(changes).toHaveTextContent('Lead Source Name: Google Ads → LinkedIn Campaign');
+    await expect(changes).toHaveTextContent('Source Name: Google Ads → LinkedIn Campaign');
   },
 };
 
@@ -224,7 +224,7 @@ export const EditFromList: Story = {
     nextjs: { navigation: { pathname: '/setup/lead-sources/a1' } },
   },
   play: async ({ canvasElement }) => {
-    const box = await within(canvasElement).findByRole('textbox', { name: /^Lead Source Name/ });
+    const box = await within(canvasElement).findByRole('textbox', { name: /^Source Name/ });
     await expect(box).toHaveValue('Google Ads');
   },
 };

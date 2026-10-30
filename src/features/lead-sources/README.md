@@ -18,16 +18,16 @@ including `<` and `>`. Duplicate names are allowed. Names are rendered as text, 
 are in `application/controllers/admin/Leads.php`; source persistence is in
 `application/models/Leads_model.php`.
 
-Perfex's list columns are ID, Lead Source Name and Options. The form has one field, Lead Source
-Name. The table is `tblleads_sources`; this feature uses its `id` and `name`.
+Perfex's list columns are ID, Source Name and Options. The form has one field, Source Name. The table
+is `tblleads_sources`; this feature uses its `id` and `name`.
 
 ## Legacy parity
 
-The Node list shows ID and Lead Source Name, with the template's Edit and Delete actions and the
+The Node list shows ID and Source Name, with the template's Edit and Delete actions and the
 lead count beneath each name. It sorts by name ascending by default, searches the name or an exact
 ID, and supports paging.
 
-The create and edit forms each have one field, Lead Source Name. Create opens a confirmation summary
+The create and edit forms each have one field, Source Name. Create opens a confirmation summary
 before saving; edit shows the name change in its summary. On success, the user returns to the list
 and sees a toast.
 
@@ -78,7 +78,7 @@ non-administrator is refused before the list or record API is requested.
 | Call                                                          | Used by                       | Behavior                                                                                                            |
 | :------------------------------------------------------------ | :---------------------------- | :------------------------------------------------------------------------------------------------------------------ |
 | `GET /api/v1/lead-sources?q&sort&limit&cursor`                | `ListPageTemplate`            | Paginated list; rows contain `{ id, name, usage }`. Name sorts ascending by default; `id` and `name` can be sorted. |
-| `GET /api/v1/lead-sources/export?format&q&sort&column&header` | Export menu                   | Exports ID, Lead Source Name and Total Leads for CSV, Excel, PDF where supported, or Print.                         |
+| `GET /api/v1/lead-sources/export?format&q&sort&column&header` | Export menu                   | Exports ID, Source Name and Total Leads for CSV, Excel, PDF where supported, or Print.                              |
 | `GET /api/v1/lead-sources/:id`                                | `useLeadSources`              | Reads the record; a row opened from the list seeds the form.                                                        |
 | `POST /api/v1/lead-sources`                                   | `useSaveLeadSources().create` | Creates a source from `{ name }`; never retried.                                                                    |
 | `PATCH /api/v1/lead-sources/:id`                              | `useSaveLeadSources().update` | Renames a source from `{ name }`; never retried.                                                                    |

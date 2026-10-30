@@ -517,7 +517,7 @@ describe('LeadSourcesForm: Arabic (FE-20)', () => {
 });
 
 describe("LeadSourcesForm: Perfex's one field (W2A-03, D-29)", () => {
-  it('/new is titled "Add Lead Source" with Lead Source Name empty and required, in one Details section', async () => {
+  it('/new is titled "New Source" with Source Name empty and required, in one Details section', async () => {
     show(<LeadSourcesForm id={null} />);
     expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(EN.lead_new_source);
     const name = await nameBox();
