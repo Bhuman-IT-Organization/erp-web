@@ -74,7 +74,7 @@ function respond(config: InternalAxiosRequestConfig, answer: Answer) {
   return Promise.reject(new AxiosError('failed', 'ERR_BAD_RESPONSE', config, null, response));
 }
 
-/** `/me` answers an administrator; a DELETE answers `remove`; the list answers `list`. */
+// Perfex's columns: ID and Priority Name (`ticket_priority_dt_name`); the actions column is the template's.
 function api(list: Answer, remove: Answer = { status: HTTP_NO_CONTENT }): ApiAdapter {
   return (config) => {
     const path = (config.url ?? '').split('?')[0] ?? '';

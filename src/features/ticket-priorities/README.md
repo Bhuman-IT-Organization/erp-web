@@ -21,22 +21,22 @@ form title and the breadcrumb.
 
 ## Legacy screen
 
-`application/views/admin/tickets/priorities/manage.php` (Perfex's `admin/tickets/priorities` screen, with the `Tickets` controller's priority actions and ...keep the rest of your sentence)
+`application/views/admin/tickets/priorities/manage.php` (Perfex's `admin/tickets/priorities` screen, with the `Tickets` controller's `priorities`, `priority` and `delete_priority` actions).
 
 ## Legacy parity
 
 Flow parity: someone who used the Perfex screen does the same job in the same order, with the same
 business outcome.
 
-| Perfex step                                                                           | Node step (`TicketPrioritiesList.tsx`, `TicketPrioritiesForm.tsx`)                                                                                                   |
-| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Setup > Support > Priorities (`acs_ticket_priority_submenu`)                          | the same menu item and label; it opens `/setup/ticket-priorities`                                                                                                    |
-| the list: one column, Priority Name (`ticket_priority_dt_name`), with edit and delete | the same column, with the name as the link, a labelled Edit and a labelled Delete; server search, sort by name, the pager                                            |
-| New Priority (`new_ticket_priority`)                                                  | New Priority opens the `/new` page, titled `ticket_priority_add`, with the same one field > Create ticket priority > "Ticket priority saved" > back to list          |
-| edit (`ticket_priority_edit`): the name prefilled > save                              | the row, the name link or Edit opens `/:id` prefilled > the save summary ("Priority Name: old > new") > the toast > back to the exact list URL                       |
-| name rule: required, up to 50 characters, no unique-name rule                         | the same: required, trimmed, at most 50, any character; a duplicate name is saved                                                                                    |
-| delete is refused while a ticket uses the priority, or it is the email-piping default | Delete > a dialog naming the priority; the api's refusal stays inside the dialog: `ERP-TICKETPRIORITIES-0001` (used by a ticket), `-0002` (the email-piping default) |
-| no priorities (`no_ticket_priorities_found`)                                          | the empty state shows that text, the explanation and New Priority                                                                                                    |
+| Perfex step                                                                                                        | Node step (`TicketPrioritiesList.tsx`, `TicketPrioritiesForm.tsx`)                                                                                                       |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Setup > Support > Priorities (`acs_ticket_priority_submenu`)                                                       | the same menu item and label; it opens `/setup/ticket-priorities`                                                                                                        |
+| the list: two columns, ID and Priority Name (`ticket_priority_dt_name`), with edit and delete, and the Export menu | the same two columns, with the name as the link, a labelled Edit and a labelled Delete; the Export menu, served by the API; server search, sort by ID or name, the pager |
+| New Priority (`new_ticket_priority`)                                                                               | New Priority opens the `/new` page, titled `ticket_priority_add`, with the same one field > Create ticket priority > "Ticket priority saved" > back to list              |
+| edit (`ticket_priority_edit`): the name prefilled > save                                                           | the row, the name link or Edit opens `/:id` prefilled > the save summary ("Priority Name: old > new") > the toast > back to the exact list URL                           |
+| name rule: required, up to 50 characters, no unique-name rule                                                      | the same: required, trimmed, at most 50, any character; a duplicate name is saved                                                                                        |
+| delete is refused while a ticket uses the priority, or it is the email-piping default                              | Delete > a dialog naming the priority; the api's refusal stays inside the dialog: `ERP-TICKETPRIORITIES-0001` (used by a ticket), `-0002` (the email-piping default)     |
+| no priorities (`no_ticket_priorities_found`)                                                                       | the empty state shows that text, the explanation and New Priority                                                                                                        |
 
 ## Dropped on purpose
 
@@ -48,7 +48,7 @@ business outcome.
   the document title.
 - **The alert wording**: the kit's toasts and the plain-language refusals replace the legacy alerts,
   and the verb + noun buttons replace `cancel` and `submit`.
-- **No export and no bulk action**: Perfex offers none here.
+- **No bulk action**: Perfex offers none here.
 - **Perfex's activity-log lines**: Node never writes Perfex's Activity Log.
 - **Added on purpose**: the save summary before every save.
 

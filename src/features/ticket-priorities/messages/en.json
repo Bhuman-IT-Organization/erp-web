@@ -2,9 +2,10 @@
   "ticket-priorities": {
     "id": "ID",
     "new_ticket_priority": "New Priority",
-    "ticket_priority_add": "Add New Ticket Priority",
-    "ticket_priority_edit": "Edit Ticket Priority",
-    "ticket_priority_dt_name": "Priority Name",
+    "ticket_priority_add": "Add Priority",
+    "ticket_priority_edit": "Edit Priority",
+    "ticket_priority_dt_name": "Ticket Priority Name",
+    "ticket_priority_add_edit_name": "Priority Name",
     "no_ticket_priorities_found": "No Ticket Priorities Found",
     "ticket_priority_lowercase": "ticket priority",
     "noun_ticket_priorities": "ticket priorities",

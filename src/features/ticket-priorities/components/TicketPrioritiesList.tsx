@@ -74,7 +74,7 @@ export function TicketPrioritiesList(): ReactElement {
     return outcome;
   }
 
-  // Perfex's one column (`ticket_priority_dt_name`); the actions column is the template's.
+  //Perfex's columns: ID and Priority Name (`ticket_priority_dt_name`); the actions column is the template's.
   // Perfex's name column, plus the ID the Cost Centers list shows; the actions column is the template's.
   const columns: readonly ListColumn<TicketPrioritiesRow>[] = [
     {
