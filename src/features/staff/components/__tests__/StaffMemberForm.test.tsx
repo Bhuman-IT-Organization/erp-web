@@ -1151,7 +1151,7 @@ describe('StaffMemberForm — after a save (D-28, D-36)', () => {
       expect(listReads().length).toBeGreaterThan(before);
     });
     expect(push).toHaveBeenCalledWith(RETURN_URL, { scroll: false });
-  }, 30_000);
+  });
 
   it("a save that changes the actor's own password sends them to /login (the api ended their sessions)", async () => {
     api.me = { status: HTTP_OK, body: me(true, [], JANE_ID) };
