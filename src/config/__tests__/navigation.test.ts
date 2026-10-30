@@ -183,6 +183,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/staff',
       '/setup/customer-groups',
       '/setup/ticket-statuses',
+      '/setup/lead-sources',
       '/setup/taxes',
       '/setup/currencies',
       '/setup/payment-modes',
