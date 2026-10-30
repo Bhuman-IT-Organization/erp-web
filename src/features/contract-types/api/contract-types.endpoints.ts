@@ -61,9 +61,9 @@ export const VALIDATION_CODE = 'ERP-VALIDATION-0001';
 export const NOT_FOUND_CODE = 'ERP-CORE-0004';
 
 /**
- * The api's refusal of a delete while anything still uses the contract type: purchase requests,
- * purchase orders, purchase quotations, shipping charges, expenses or assets (409, D-07, D-28). The
- * list refuses up front from the row's usage (`refusedCode`) and keeps the live answer for the race.
+ * The api's refusal of a delete while anything still uses the contract type: contracts or goals
+ * (409, D-07, D-28). The list refuses up front from the row's usage (`refusedCode`) and keeps the
+ * live answer for the race.
  */
 export const IN_USE_CODE = 'ERP-CONTRACTTYPES-0001';
 
