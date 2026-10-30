@@ -1,0 +1,38 @@
+{
+  "ticket-statuses": {
+    "acs_ticket_statuses_submenu": "حالات التذاكر",
+    "new_ticket_status": "حالة تذكرة جديدة",
+    "ticket_statuses_dt_name": "اسم حالة التذكرة",
+    "ticket_status_add_edit_color": "اختيار اللون",
+    "ticket_status_add_edit_order": "ترتيب الحالة",
+    "id": "المعرّف",
+    "noun_ticket_status": "حالة تذكرة",
+    "noun_ticket_statuses": "حالات التذاكر",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد حالات تذاكر حتى الآن",
+    "empty_body": "أضف حالة تذكرة لتحديد الحالة الحالية للتذاكر.",
+    "no_match_heading": "لا توجد حالات تذاكر تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض جميع حالات التذاكر.",
+    "enter_name": "أدخل اسم حالة التذكرة.",
+    "name_too_long": "يجب ألا يتجاوز اسم حالة التذكرة {max} حرفًا.",
+    "enter_colour": "أدخل لون الحالة باستخدام 7 أحرف كحد أقصى.",
+    "enter_order": "أدخل عددًا صحيحًا لترتيب الحالة.",
+    "total_ticket_count": "الإجمالي {count}",
+    "ticket_statuses_table_total": "الإجمالي",
+    "saved_toast": "تم حفظ حالة التذكرة",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف {name}",
+    "delete_title": "حذف حالة التذكرة: {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "deleted_toast": "تم حذف حالة التذكرة بنجاح",
+    "is_referenced": "معرّف حالة التذكرة مستخدم بالفعل.",
+    "cant_delete_default": "لا يمكن حذف حالة التذكرة الافتراضية.",
+    "change_setting_first": "حالة التذكرة هذه هي حالة الرد الافتراضية. قم بتغيير الإعداد أولاً.",
+    "errors": {
+      "ERP-CORE-0004": "لم تعد حالة التذكرة هذه موجودة. ربما تمت إزالتها.",
+      "ERP-TICKETSTATUSES-0001": "معرّف حالة التذكرة مستخدم بالفعل.",
+      "ERP-TICKETSTATUSES-0002": "لا يمكن حذف حالة التذكرة الافتراضية.",
+      "ERP-TICKETSTATUSES-0003": "حالة التذكرة هذه هي حالة الرد الافتراضية. قم بتغيير الإعداد أولاً."
+    }
+  }
+}
