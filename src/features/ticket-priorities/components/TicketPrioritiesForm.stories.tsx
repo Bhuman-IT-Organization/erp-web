@@ -22,7 +22,7 @@ const HTTP_NOT_FOUND = 404;
 const HTTP_SERVICE_UNAVAILABLE = 503;
 const EN = en['ticket-priorities'];
 const RECORD = { id: 'a1', name: 'Urgent' };
-const FIELD = new RegExp(`^${EN.ticket_priority_dt_name}`);
+const FIELD = new RegExp(`^${EN.ticket_priority_add_edit_name}`);
 
 type Answer = { readonly status: number; readonly body?: unknown } | 'pending';
 
@@ -147,7 +147,7 @@ export const SaveSummary: Story = {
       await expect(dialog).toBeVisible();
     });
     await expect(within(dialog).getByTestId('confirm-dialog-changes')).toHaveTextContent(
-      `${EN.ticket_priority_dt_name}: Urgent → Critical`,
+      `${EN.ticket_priority_add_edit_name}: Urgent → Critical`,
     );
   },
 };

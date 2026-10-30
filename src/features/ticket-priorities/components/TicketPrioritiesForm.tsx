@@ -253,7 +253,7 @@ export function TicketPrioritiesForm({ id }: TicketPrioritiesFormProps): ReactEl
   const noun = t('ticket_priority_lowercase');
   const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
   const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
-  const changes = nameChanges(pending, record, t('ticket_priority_dt_name'));
+  const changes = nameChanges(pending, record, t('ticket_priority_add_edit_name'));
 
   /** The save summary's title: the new record's name, or the saved record's. */
   function summaryTitle(): string {
@@ -273,7 +273,12 @@ export function TicketPrioritiesForm({ id }: TicketPrioritiesFormProps): ReactEl
             id: 'details',
             title: t('section_details'),
             fields: [
-              { name: 'name', label: t('ticket_priority_dt_name'), kind: 'text', required: true },
+              {
+                name: 'name',
+                label: t('ticket_priority_add_edit_name'),
+                kind: 'text',
+                required: true,
+              },
             ],
           },
         ]}

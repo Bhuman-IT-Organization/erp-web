@@ -16,6 +16,7 @@ const PERFEX_KEYS = [
   'ticket_priority_add',
   'ticket_priority_edit',
   'ticket_priority_dt_name',
+  'ticket_priority_add_edit_name',
   'no_ticket_priorities_found',
   'ticket_priority_lowercase',
 ] as const;

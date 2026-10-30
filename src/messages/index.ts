@@ -28,7 +28,6 @@ import leadsourcesEn from '@/features/lead-sources/messages/en.json';
 import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
 import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
 
-import '@/features/ticket-priorities/messages/en.json';
 import ticketPrioritiesAr from '@/features/ticket-priorities/messages/ar.json';
 import ticketPrioritiesEn from '@/features/ticket-priorities/messages/en.json';
 // registry end: imports
@@ -84,7 +83,6 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     ticketStatusesEn,
     customerGroupsEn,
     ticketPrioritiesEn,
-
     // registry end: en
   ],
   ar: [

@@ -5,6 +5,7 @@
     "ticket_priority_add": "إضافة أولوية تذكرة جديدة",
     "ticket_priority_edit": "تعديل أولوية التذكرة",
     "ticket_priority_dt_name": "اسم الأولوية",
+    "ticket_priority_add_edit_name": "اسم الأولوية",
     "no_ticket_priorities_found": "لم يتم العثور على أولويات تذاكر",
     "ticket_priority_lowercase": "أولوية التذكرة",
     "noun_ticket_priorities": "أولويات التذاكر",

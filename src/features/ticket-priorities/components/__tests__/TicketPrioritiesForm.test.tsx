@@ -120,7 +120,7 @@ function show(ui: ReactElement, locale?: 'ar', swr: typeof GLOBAL = ISOLATED) {
   });
 }
 
-const nameBox = () => screen.findByRole('textbox', { name: EN.ticket_priority_dt_name });
+const nameBox = () => screen.findByRole('textbox', { name: EN.ticket_priority_add_edit_name });
 /** Types a name, as a member does, and asks to save. */
 async function typeAndSubmit(value: string, submit = CREATE) {
   const user = userEvent.setup();
@@ -178,7 +178,7 @@ describe('TicketPrioritiesForm: /new', () => {
     await nameBox();
     await typeAndSubmit('   ');
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.ticket_priority_dt_name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.ticket_priority_add_edit_name}: ${EN.enter_name}`);
     await waitFor(() => {
       expect(document.activeElement).toBe(summary);
     });
@@ -311,7 +311,7 @@ describe('TicketPrioritiesForm: when a save fails', () => {
     await confirmSave(user);
     await closed();
     const summary = await screen.findByTestId('error-summary');
-    expect(summary.textContent).toContain(`${EN.ticket_priority_dt_name}: ${EN.enter_name}`);
+    expect(summary.textContent).toContain(`${EN.ticket_priority_add_edit_name}: ${EN.enter_name}`);
     await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
     expect(document.activeElement).toBe(summary);
     expect(document.body.textContent).not.toContain('raw server text');
@@ -360,7 +360,7 @@ describe('TicketPrioritiesForm: edit', () => {
     const open = await screen.findByTestId('confirm-dialog');
     expect(within(open).getByTestId('confirm-dialog-changes').textContent).toBe(
       COMMON.change_from_to
-        .replace('{label}', EN.ticket_priority_dt_name)
+        .replace('{label}', EN.ticket_priority_add_edit_name)
         .replace('{from}', 'Urgent')
         .replace('{to}', 'Critical'),
     );
@@ -385,7 +385,7 @@ describe('TicketPrioritiesForm: edit', () => {
     expect(screen.getByTestId('confirm-dialog-confirm').hasAttribute('disabled')).toBe(true);
     expect(push).not.toHaveBeenCalled();
     expect(
-      screen.getByRole('textbox', { name: EN.ticket_priority_dt_name, hidden: true }),
+      screen.getByRole('textbox', { name: EN.ticket_priority_add_edit_name, hidden: true }),
     ).toHaveProperty('value', 'Critical');
   });
 
@@ -484,7 +484,9 @@ describe('GuardedTicketPrioritiesForm and Arabic', () => {
 
   it('renders under ar with the Arabic title and field label and no physical-direction class', async () => {
     const { container } = show(<TicketPrioritiesForm id={null} />, 'ar');
-    expect(await screen.findByRole('textbox', { name: AR.ticket_priority_dt_name })).toBeTruthy();
+    expect(
+      await screen.findByRole('textbox', { name: AR.ticket_priority_add_edit_name }),
+    ).toBeTruthy();
     expect((await screen.findByRole('heading', { level: 1 })).textContent).toBe(
       AR.ticket_priority_add,
     );
