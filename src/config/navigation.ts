@@ -1723,10 +1723,9 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'customer-groups',
         labelKey: 'shell.customer_groups',
-        href: '/admin/clients/groups',
-        adminOnly: true,
+        href: '/setup/customer-groups',
+        ...navGateOf('/setup/customer-groups'),
         module: 'crm',
-        legacy: true,
       },
     ],
   },
@@ -1795,10 +1794,10 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'leads-sources',
         labelKey: 'shell.acs_leads_sources_submenu',
-        href: '/admin/leads/sources',
-        adminOnly: true,
+        href: '/setup/lead-sources',
+
         module: 'crm',
-        legacy: true,
+        ...navGateOf('/setup/lead-sources'),
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
