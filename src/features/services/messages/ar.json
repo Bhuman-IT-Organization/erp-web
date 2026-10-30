@@ -2,6 +2,7 @@
   "services": {
     "services": "الخدمات",
     "new_service": "خدمة جديدة",
+    "ticket_service_edit": "تعديل خدمة التذكرة",
     "id": "المعرّف",
     "services_dt_name": "اسم الخدمة",
     "section_details": "التفاصيل",

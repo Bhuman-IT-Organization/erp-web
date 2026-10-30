@@ -3,6 +3,7 @@
     "services": "Services",
     "new_service": "New Service",
     "id": "ID",
+    "ticket_service_edit": "Edit Ticket Service",
     "services_dt_name": "Service Name",
     "section_details": "Details",
     "service_lowercase": "service",

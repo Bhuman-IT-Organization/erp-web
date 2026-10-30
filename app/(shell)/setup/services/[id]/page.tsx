@@ -5,7 +5,7 @@ import { ServicesPage } from '@/features/services/pages/ServicesPage';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('services');
-  return { title: t('edit_service') };
+  return { title: t('ticket_service_edit') };
 }
 
 export const dynamic = 'force-dynamic';

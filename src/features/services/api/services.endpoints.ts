@@ -10,7 +10,8 @@ import {
 /**
  * The resource's wire contract: every call this feature makes, method and path. The api half is
  * erp-api `src/v1/services`. A row is the whole record: `{ id, name }`. A delete is `DELETE …/:id`
- * (204, 404, or 409 while a ticket uses the service). No export: the Perfex screen has none.
+ * (204, 404, or 409 while a ticket uses the service).
+ * Export is supported through GET /api/v1/services/export.
  */
 export const SERVICES_ENDPOINTS = {
   list: { method: 'GET', path: '/api/v1/services' },

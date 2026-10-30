@@ -4,7 +4,7 @@ import { ServicesPage } from '@/features/services/pages/ServicesPage';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('services');
-  return { title: t('add_service') };
+  return { title: t('new_service') };
 }
 
 // Request-time render: a form behind a session, never prerendered at build time.
