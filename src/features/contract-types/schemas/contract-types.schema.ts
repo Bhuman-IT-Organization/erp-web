@@ -9,17 +9,18 @@ export const CONTRACT_TYPES_MESSAGE_KEYS = {
 } as const;
 
 /**
- * What uses a contract type: contracts (tblcontracts and tblgoals).
+ * What uses a contract type: contracts (tblcontracts) and goals (tblgoals).
  * A delete is refused while non-zero (D-07).
  */
 export const contractTypeUsageSchema = z.object({
   contracts: z.number().int().nonnegative(),
+  goals: z.number().int().nonnegative(),
 });
 export type ContractTypeUsage = z.infer<typeof contractTypeUsageSchema>;
 export type ContractTypeUsageGroup = keyof ContractTypeUsage;
 
 /** The groups in the order the delete dialog names them. */
-const USAGE_GROUPS: readonly ContractTypeUsageGroup[] = ['contracts'];
+const USAGE_GROUPS: readonly ContractTypeUsageGroup[] = ['contracts', 'goals'];
 
 // Mirrors erp-api `contractTypesResponseSchema` (one contract type: the id as text, the name as stored,
 // and its usage); moves to @erp/contracts (ADR-0010).
@@ -40,7 +41,7 @@ export type ContractTypesRow = z.infer<typeof contractTypesRowSchema>;
 
 /** The groups that still use the contract type, in the api's order: one dialog line each (D-07). */
 export function inUseGroups(usage: ContractTypeUsage): readonly ContractTypeUsageGroup[] {
-  return usage.contracts > 0 ? USAGE_GROUPS : [];
+  return USAGE_GROUPS.filter((group) => usage[group] > 0);
 }
 
 /** The form's values, for both create (`POST`) and edit (`PATCH`): the body the api takes (LONGTEXT in MySQL, no length limit). */

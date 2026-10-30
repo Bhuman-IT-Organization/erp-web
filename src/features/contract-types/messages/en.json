@@ -20,6 +20,7 @@
     "delete_title": "Delete contract type {name}?",
     "delete_body": "This cannot be undone.",
     "in_use_contracts": "{count, plural, one {{countN} contract uses this contract type.} other {{countN} contracts use this contract type.}}",
+    "in_use_goals": "{count, plural, one {{countN} goal uses this contract type.} other {{countN} goals use this contract type.}}",
     "errors": {
       "ERP-CORE-0004": "This contract type no longer exists. It may have been removed.",
       "ERP-CONTRACTTYPES-0001": "The ID of the contract is already using."

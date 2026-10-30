@@ -51,6 +51,7 @@ const ALPHA: ContractTypes = {
   name: 'Alpha',
   usage: {
     contracts: 0,
+    goals: 0,
   },
 };
 const me = (isAdmin: boolean) => ({

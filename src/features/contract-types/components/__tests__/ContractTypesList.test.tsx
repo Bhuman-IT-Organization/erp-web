@@ -42,9 +42,10 @@ vi.mock('next/navigation', () => ({
   useRouter: () => ({ push, replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
 }));
 
-const ALPHA: ContractTypes = { id: 'a1', name: 'Alpha', usage: { contracts: 0 } };
-const BETA: ContractTypes = { id: 'b2', name: 'Beta', usage: { contracts: 3 } };
-const ROWS: readonly ContractTypes[] = [ALPHA, BETA];
+const ALPHA: ContractTypes = { id: 'a1', name: 'Alpha', usage: { contracts: 0, goals: 0 } };
+const BETA: ContractTypes = { id: 'b2', name: 'Beta', usage: { contracts: 3, goals: 0 } };
+const GAMMA: ContractTypes = { id: 'c3', name: 'Gamma', usage: { contracts: 0, goals: 2 } };
+const ROWS: readonly ContractTypes[] = [ALPHA, BETA, GAMMA];
 
 const page = (rows: readonly ContractTypes[]) => ({
   data: rows,
@@ -137,6 +138,12 @@ async function openDelete(user = userEvent.setup(), one: ContractTypes = ALPHA) 
   );
   return { user, open: await dialog() };
 }
+
+/** The dialog's usage lines, one block span each. */
+const linesOf = (open: HTMLElement): (string | null)[] =>
+  [...open.querySelectorAll('[data-slot="alert-dialog-description"] > span')].map(
+    (span) => span.textContent,
+  );
 
 // Harness order (RESEARCH Pitfall 9): the session first; unmount BEFORE the session is cleared.
 beforeEach(() => {
@@ -235,6 +242,19 @@ describe('ContractTypesList: delete and in-use refusal', () => {
     const { user, open } = await openDelete(undefined, BETA);
     expect(within(open).getByRole('heading').textContent).toBe('Delete contract type Beta?');
     expect(within(open).getByTestId('confirm-dialog-error').textContent).toBe(EN.errors[IN_USE]);
+    expect(linesOf(open)).toEqual(['3 contracts use this contract type.']);
+    const confirm = within(open).getByTestId('confirm-dialog-confirm');
+    expect(confirm.hasAttribute('disabled')).toBe(true);
+    await user.click(confirm);
+    expect(deletes()).toHaveLength(0);
+  });
+
+  it('DeleteInUse: a contract type used only by goals shows the goals usage line, refusal error, disabled confirm, and never sends a DELETE', async () => {
+    show(<ContractTypesList />);
+    const { user, open } = await openDelete(undefined, GAMMA);
+    expect(within(open).getByRole('heading').textContent).toBe('Delete contract type Gamma?');
+    expect(within(open).getByTestId('confirm-dialog-error').textContent).toBe(EN.errors[IN_USE]);
+    expect(linesOf(open)).toEqual(['2 goals use this contract type.']);
     const confirm = within(open).getByTestId('confirm-dialog-confirm');
     expect(confirm.hasAttribute('disabled')).toBe(true);
     await user.click(confirm);

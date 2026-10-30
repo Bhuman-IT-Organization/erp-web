@@ -19,6 +19,7 @@ const NAMES = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon'];
 
 const NO_USE = {
   contracts: 0,
+  goals: 0,
 };
 
 const rows = (count: number): ContractTypes[] =>

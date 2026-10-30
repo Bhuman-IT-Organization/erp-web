@@ -11,6 +11,7 @@ import { useContractTypes } from '../use-contract-types';
 
 const NO_USE = {
   contracts: 0,
+  goals: 0,
 };
 const ITEM = { id: 'a 1', name: 'Alpha', usage: NO_USE };
 

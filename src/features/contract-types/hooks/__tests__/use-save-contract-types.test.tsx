@@ -11,6 +11,7 @@ import { useSaveContractTypes } from '../use-save-contract-types';
 
 const NO_USE = {
   contracts: 0,
+  goals: 0,
 };
 const ITEM = { id: 'a1', name: 'Beta', usage: NO_USE };
 

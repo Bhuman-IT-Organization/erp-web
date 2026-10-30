@@ -12,6 +12,7 @@ import en from '../../messages/en.json';
 
 const NO_USE = {
   contracts: 0,
+  goals: 0,
 };
 const ITEM = { id: 'a1', name: 'Alpha', usage: NO_USE };
 
@@ -23,7 +24,9 @@ describe('contract-types schemas', () => {
 
   it('reports inUseGroups accurately based on non-zero usage', () => {
     expect(inUseGroups(NO_USE)).toEqual([]);
-    expect(inUseGroups({ contracts: 2 })).toEqual(['contracts']);
+    expect(inUseGroups({ contracts: 2, goals: 0 })).toEqual(['contracts']);
+    expect(inUseGroups({ contracts: 0, goals: 3 })).toEqual(['goals']);
+    expect(inUseGroups({ contracts: 2, goals: 3 })).toEqual(['contracts', 'goals']);
   });
 
   it('the form schema trims the name and reports the message KEY, which exists in en.json', () => {

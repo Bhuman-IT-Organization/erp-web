@@ -43,6 +43,7 @@ const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE, IN_USE_CODE];
 /** The dialog line of each usage group, in the api's order (D-07, D-28). */
 const USAGE_LINE_KEYS = {
   contracts: 'in_use_contracts',
+  goals: 'in_use_goals',
 } as const satisfies Record<ContractTypeUsageGroup, string>;
 
 /** True when anything still uses the row: the delete is refused before it is asked (D-07). */
