@@ -2,6 +2,7 @@
   "ticket-statuses": {
     "acs_ticket_statuses_submenu": "حالات التذاكر",
     "new_ticket_status": "حالة تذكرة جديدة",
+    "ticket_status_edit": "تحرير حالة التذكرة",
     "ticket_statuses_dt_name": "اسم حالة التذكرة",
     "ticket_status_add_edit_color": "اختيار اللون",
     "ticket_status_add_edit_order": "ترتيب الحالة",

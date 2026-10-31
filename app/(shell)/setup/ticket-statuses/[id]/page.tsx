@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import { TicketStatusesPage } from '@/features/ticket-statuses/pages/TicketStatusesPage';
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('ticket-statuses');
-  return { title: t('ticket_statuses_dt_name') };
+  return { title: t('ticket_status_edit') };
 }
 
 // Request-time render: one record behind a session; nothing here may be prerendered.

@@ -2,6 +2,7 @@
   "ticket-statuses": {
     "acs_ticket_statuses_submenu": "Ticket Statuses",
     "new_ticket_status": "New Ticket Status",
+    "ticket_status_edit": "Edit Ticket Status",
     "ticket_statuses_dt_name": "Ticket Status Name",
     "ticket_status_add_edit_color": "Pick Color",
     "ticket_status_add_edit_order": "Status Order",
