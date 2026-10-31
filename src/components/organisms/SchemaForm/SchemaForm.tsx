@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Fragment, useRef, type ReactElement, type ReactNode } from 'react';
+import { Fragment, useRef, type ChangeEvent, type ReactElement, type ReactNode } from 'react';
 import {
   Controller,
   useFormState,
@@ -429,7 +429,13 @@ function SpecField<T extends FieldValues>({
           id,
           name: field.name,
           value: asText(field.value),
-          onChange: field.onChange,
+          onChange:
+            spec.kind === 'number'
+              ? (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+                  const value = event.target.value;
+                  field.onChange(value === '' ? undefined : Number(value));
+                }
+              : field.onChange,
           onBlur: field.onBlur,
           disabled,
           placeholder: spec.placeholder,

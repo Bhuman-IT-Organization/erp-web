@@ -62,6 +62,11 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/expense-categories',
       '/setup/expense-categories/:id',
       '/setup/expense-categories/new',
+
+      '/setup/lead-statuses',
+      '/setup/lead-statuses/:id',
+      '/setup/lead-statuses/new',
+
       '/setup/lead-sources',
       '/setup/lead-sources/:id',
       '/setup/lead-sources/new',

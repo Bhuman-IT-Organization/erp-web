@@ -1799,14 +1799,15 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         ...navGateOf('/setup/lead-sources'),
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
+
       {
         id: 'leads-statuses',
         labelKey: 'shell.acs_leads_statuses_submenu',
-        href: '/admin/leads/statuses',
-        adminOnly: true,
+        href: '/setup/lead-statuses',
+        ...navGateOf('/setup/lead-statuses'),
         module: 'crm',
-        legacy: true,
       },
+
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
         id: 'leads-email-integration',
