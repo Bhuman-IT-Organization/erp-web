@@ -46,11 +46,7 @@ export const leadStatusesFormSchema = z.object({
     .max(LEAD_STATUSES_NAME_MAX, LEAD_STATUSES_MESSAGE_KEYS.nameTooLong),
 
   color: z.string().max(MAX_COLOR_LENGTH, LEAD_STATUSES_MESSAGE_KEYS.invalidColor),
-  statusorder: z
-    .number()
-    .int(LEAD_STATUSES_MESSAGE_KEYS.invalidOrder)
-    .min(1, LEAD_STATUSES_MESSAGE_KEYS.invalidOrder)
-    .optional(),
+  statusorder: z.coerce.number<number>().int(LEAD_STATUSES_MESSAGE_KEYS.invalidOrder).optional(),
 });
 
 export type LeadStatusesFormValues = z.infer<typeof leadStatusesFormSchema>;

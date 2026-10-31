@@ -127,7 +127,7 @@ afterEach(() => {
 
 const inputName = () =>
   screen.findByRole('textbox', {
-    name: EN.status_name,
+    name: EN.leads_status_table_name,
   });
 
 describe('LeadStatusesForm', () => {
@@ -137,7 +137,7 @@ describe('LeadStatusesForm', () => {
     const input = await inputName();
 
     expect(input.getAttribute('aria-required')).toBe('true');
-    expect(screen.getByText(EN.order)).toBeTruthy();
+    expect(screen.getByText(EN.leads_status_add_edit_order)).toBeTruthy();
 
     expect(requests.filter((request) => request.method === 'GET')).toEqual([]);
   });
@@ -203,7 +203,7 @@ describe('LeadStatusesForm', () => {
 
     await waitFor(() => {
       const input = screen.getByRole('textbox', {
-        name: EN.status_name,
+        name: EN.leads_status_table_name,
       });
 
       expect(input).toHaveProperty('value', 'Interested');
@@ -221,7 +221,7 @@ describe('LeadStatusesForm', () => {
 
     expect(
       screen.queryByRole('textbox', {
-        name: EN.status_name,
+        name: EN.leads_status_table_name,
       }),
     ).toBeNull();
   });

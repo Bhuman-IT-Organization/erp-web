@@ -68,7 +68,7 @@ Fields:
 - `id` - Unique status identifier.
 - `name` - Status name, maximum 50 characters.
 - `statusorder` - Display order.
-- `color` - Stored hexadecimal color.
+- `color` - Status color value, with a maximum length of 10 characters.
 - `isdefault` - Identifies the built-in Customer status.
 
 The API also exposes information about the configured default status and status usage.
@@ -104,7 +104,7 @@ corepack yarn check
 
 Verify the list, create, edit, delete, validation, permissions, and refusal cases in the browser.
 
-The frontend migration is still being verified. Missing tests, Storybook states, and Nginx routing must be completed before final sign-off.
+The frontend migration is implemented. Final verification includes reviewing Storybook states, confirming frontend and API routing, and running the required project checks.
 
 The frontend migration is implemented and is undergoing final verification.
 

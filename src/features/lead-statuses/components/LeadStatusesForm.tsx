@@ -209,8 +209,8 @@ function EditorDialogs({
   const copy = useConfirmCopy();
   const t = useTranslations('lead-statuses');
   const changes = buildSummaryChanges(initialValues, pending, {
-    name: t('status_name'),
-    color: t('color'),
+    name: t('leads_status_table_name'),
+    color: t('leads_status_color'),
     order: t('leads_status_add_edit_order'),
   });
 
@@ -293,8 +293,8 @@ export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
 
   const sections = buildSections({
     heading: t('lead_statuses'),
-    name: t('status_name'),
-    color: t('color'),
+    name: t('leads_status_table_name'),
+    color: t('leads_status_color'),
     order: t('leads_status_add_edit_order'),
   });
 

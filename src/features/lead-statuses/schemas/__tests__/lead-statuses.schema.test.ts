@@ -56,12 +56,38 @@ describe('Lead Statuses Schema', () => {
     ).toBe(false);
   });
 
-  it('rejects invalid order values', () => {
+  it('converts string order values into numbers', () => {
+    const result = leadStatusesFormSchema.safeParse({
+      name: 'Interested',
+      color: '#28B8DA',
+      statusorder: '12',
+    });
+
+    expect(result.success).toBe(true);
+
+    if (result.success) {
+      expect(result.data.statusorder).toBe(12);
+    }
+  });
+
+  it('accepts zero and negative whole numbers for order', () => {
+    for (const statusorder of [0, -1, -10]) {
+      expect(
+        leadStatusesFormSchema.safeParse({
+          name: 'Interested',
+          color: '#28B8DA',
+          statusorder,
+        }).success,
+      ).toBe(true);
+    }
+  });
+
+  it('rejects decimal order values', () => {
     expect(
       leadStatusesFormSchema.safeParse({
         name: 'Interested',
         color: '#28B8DA',
-        statusorder: -1,
+        statusorder: 1.5,
       }).success,
     ).toBe(false);
   });

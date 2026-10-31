@@ -1,3 +1,4 @@
+import { expect, userEvent, within } from 'storybook/test';
 import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { SWRConfig } from 'swr';
@@ -99,7 +100,7 @@ function respond(config: InternalAxiosRequestConfig, reply: Reply) {
   );
 }
 
-function withApi(list: Reply): Decorator {
+function withApi(list: Reply, remove: Reply = { status: 204 }): Decorator {
   return function ApiDecorator(Story) {
     setSession({
       accessToken: 'story',
@@ -114,6 +115,10 @@ function withApi(list: Reply): Decorator {
           status: 200,
           body: ADMIN,
         });
+      }
+
+      if ((config.method ?? 'get').toUpperCase() === 'DELETE') {
+        return respond(config, remove);
       }
 
       return respond(config, list);
@@ -148,6 +153,17 @@ const MOBILE = {
   globals: { viewport: { value: 'mobile375', isRotated: false } },
 } as const;
 
+const openDelete = async (
+  canvasElement: HTMLElement,
+  name = 'Interested',
+): Promise<HTMLElement> => {
+  const canvas = within(canvasElement);
+
+  await userEvent.click(await canvas.findByRole('button', { name: `Delete ${name}` }));
+
+  return within(canvasElement.ownerDocument.body).findByTestId('confirm-dialog');
+};
+
 const meta = {
   title: 'Features/LeadStatuses/LeadStatusesList',
   component: LeadStatusesList,
@@ -178,6 +194,18 @@ export const Empty: Story = {
   ],
 };
 
+export const NoResults: Story = {
+  decorators: [
+    withApi({
+      status: 200,
+      body: page([]),
+    }),
+  ],
+  parameters: {
+    nuqs: { searchParams: '?q=zz' },
+  },
+};
+
 export const Error: Story = {
   decorators: [
     withApi({
@@ -199,6 +227,64 @@ export const Loaded: Story = {
       body: page(ROWS),
     }),
   ],
+};
+
+export const DeleteConfirm: Story = {
+  decorators: [
+    withApi({
+      status: 200,
+      body: page(ROWS),
+    }),
+  ],
+  play: async ({ canvasElement }) => {
+    const dialog = await openDelete(canvasElement);
+
+    await expect(within(dialog).getByRole('heading')).toHaveTextContent('Delete Interested?');
+
+    await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeEnabled();
+  },
+};
+
+export const DeleteInUse: Story = {
+  decorators: [
+    withApi({
+      status: 200,
+      body: page(ROWS),
+    }),
+  ],
+  play: async ({ canvasElement }) => {
+    const dialog = await openDelete(canvasElement, 'Contacted');
+
+    await expect(within(dialog).findByTestId('confirm-dialog-error')).resolves.toBeVisible();
+
+    await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeDisabled();
+  },
+};
+
+export const DeleteRefused: Story = {
+  decorators: [
+    withApi(
+      {
+        status: 200,
+        body: page(ROWS),
+      },
+      {
+        status: 409,
+        body: {
+          status: 409,
+          code: 'ERP-LEADSTATUSES-0001',
+          title: 'Conflict',
+        },
+      },
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const dialog = await openDelete(canvasElement);
+
+    await userEvent.click(within(dialog).getByTestId('confirm-dialog-confirm'));
+
+    await expect(within(dialog).findByTestId('confirm-dialog-error')).resolves.toBeVisible();
+  },
 };
 
 /** Lead Statuses list at mobile width (375px). */

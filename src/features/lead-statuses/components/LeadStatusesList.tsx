@@ -178,7 +178,7 @@ export function LeadStatusesList(): ReactElement {
 
     {
       id: 'statusorder',
-      header: t('order'),
+      header: t('leads_status_add_edit_order'),
       hideBelow: 'md',
       cell: (one) =>
         one.statusorder === null ? null : (
@@ -249,9 +249,9 @@ export function LeadStatusesList(): ReactElement {
           columns: LEAD_STATUSES_EXPORT_COLUMNS,
           labels: {
             id: t('id'),
-            name: t('status_name'),
-            statusorder: t('order'),
-            color: t('color'),
+            name: t('leads_status_table_name'),
+            statusorder: t('leads_status_add_edit_order'),
+            color: t('leads_status_color'),
             isdefault: t('built_in'),
           },
         }}

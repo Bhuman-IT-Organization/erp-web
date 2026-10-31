@@ -6,9 +6,9 @@
     "noun_lead_status": "حالة عميل محتمل",
     "noun_lead_statuses": "حالات العملاء المحتملين",
     "id": "المعرّف",
-    "status_name": "اسم الحالة",
-    "color": "اللون",
-    "order": "الترتيب",
+    "leads_status_table_name": "اسم الحالة",
+    "leads_status_color": "اللون",
+    "leads_status_add_edit_order": "الترتيب",
     "built_in": "مدمجة",
     "add_lead_status": "إضافة حالة",
     "edit_action_named": "تعديل {name}",
@@ -26,13 +26,14 @@
     "no_match_body": "جرّب بحثًا مختلفًا.",
     "enter_name": "أدخل اسم الحالة",
     "name_too_long": "يجب ألا يتجاوز الاسم 50 حرفًا",
-    "invalid_color": "أدخل لونًا صالحًا مثل #RRGGBB",
-    "invalid_order": "يجب أن يكون الترتيب عددًا صحيحًا موجبًا",
+    "invalid_color": "يجب ألا يتجاوز اللون 10 أحرف",
+    "invalid_order": "يجب أن يكون الترتيب عددًا صحيحًا",
     "errors": {
       "ERP-CORE-0004": "حالة العميل المحتمل غير موجودة.",
       "ERP-LEADSTATUSES-0001": "هذه الحالة قيد الاستخدام ولا يمكن حذفها.",
       "ERP-LEADSTATUSES-0002": "لا يمكن حذف الحالة المدمجة.",
-      "ERP-LEADSTATUSES-0003": "لا يمكن حذف الحالة الافتراضية."
+      "ERP-LEADSTATUSES-0003": "لا يمكن حذف الحالة الافتراضية.",
+      "ERP-LEADSTATUSES-0004": "قيمة الترتيب غير صالحة."
     }
   }
 }
