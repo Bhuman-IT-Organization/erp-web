@@ -1,0 +1,27 @@
+{
+  "customer-groups": {
+    "customer_groups": "المجموعات",
+    "new_customer_group": "مجموعة عملاء جديدة",
+    "customer_group_add_heading": "إضافة مجموعة عملاء",
+    "customer_group_edit_heading": "تعديل مجموعة العملاء",
+    "customer_group_name": "الاسم",
+    "customer_group_lowercase": "مجموعة عملاء",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد مجموعات عملاء بعد",
+    "empty_body": "أضف مجموعة عملاء لتنظيم عملائك.",
+    "no_match_heading": "لا توجد مجموعات عملاء تطابق “{query}”.",
+    "no_match_body": "جرّب بحثاً مختلفاً.",
+    "enter_name": "أدخل اسم مجموعة العملاء.",
+    "name_too_long": "يجب ألا يتجاوز اسم مجموعة العملاء {max} حرفاً.",
+    "saved_toast": "تم حفظ مجموعة العملاء",
+    "deleted_toast": "تم حذف مجموعة العملاء",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف مجموعة العملاء {name}",
+    "delete_title": "حذف مجموعة العملاء {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "errors": {
+      "ERP-CUSTOMERGROUPS-0001": "لا يمكن حذف مجموعة العملاء لأنها ما زالت تحتوي على عملاء.",
+      "ERP-CORE-0004": "مجموعة العملاء هذه لم تعد موجودة. ربما تمت إزالتها."
+    }
+  }
+}

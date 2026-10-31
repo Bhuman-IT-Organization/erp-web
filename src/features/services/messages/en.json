@@ -1,0 +1,28 @@
+{
+  "services": {
+    "services": "Services",
+    "new_service": "New Service",
+    "id": "ID",
+    "ticket_service_edit": "Edit Ticket Service",
+    "services_dt_name": "Service Name",
+    "section_details": "Details",
+    "service_lowercase": "service",
+    "noun_services": "services",
+    "enter_name": "Enter a service name",
+    "name_too_long": "The name can have at most {max} characters",
+    "saved_toast": "Service saved",
+    "deleted_toast": "Service deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete service {name}",
+    "delete_title": "Delete service {name}?",
+    "delete_body": "This cannot be undone.",
+    "empty_heading": "No entries found",
+    "empty_body": "Add a service to use it on tickets.",
+    "no_match_heading": "No services match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see all services.",
+    "errors": {
+      "ERP-CORE-0004": "This service no longer exists.",
+      "ERP-SERVICES-0001": "This service is used by tickets and cannot be deleted."
+    }
+  }
+}

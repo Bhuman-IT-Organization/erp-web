@@ -1,0 +1,38 @@
+{
+  "ticket-statuses": {
+    "acs_ticket_statuses_submenu": "Ticket Statuses",
+    "new_ticket_status": "New Ticket Status",
+    "ticket_statuses_dt_name": "Ticket Status Name",
+    "ticket_status_add_edit_color": "Pick Color",
+    "ticket_status_add_edit_order": "Status Order",
+    "id": "ID",
+    "noun_ticket_status": "ticket status",
+    "noun_ticket_statuses": "ticket statuses",
+    "section_details": "Details",
+    "empty_heading": "No ticket statuses yet",
+    "empty_body": "Add a ticket status so tickets can use it to indicate their current state.",
+    "no_match_heading": "No ticket statuses match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every ticket status.",
+    "enter_name": "Enter a ticket status name.",
+    "name_too_long": "Keep the ticket status name to {max} characters or fewer.",
+    "enter_colour": "Enter a status color using up to 7 characters.",
+    "enter_order": "Enter a whole number for the status order.",
+    "total_ticket_count": "Total {count}",
+    "ticket_statuses_table_total": "Total",
+    "saved_toast": "Ticket status saved",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete {name}",
+    "delete_title": "Delete ticket status: {name}?",
+    "delete_body": "This action cannot be undone.",
+    "deleted_toast": "Ticket status deleted successfully",
+    "is_referenced": "The ID of the ticket status is already using.",
+    "cant_delete_default": "Cant delete default ticket status",
+    "change_setting_first": "This ticket status is the default reply status. Change the setting first.",
+    "errors": {
+      "ERP-CORE-0004": "This ticket status no longer exists. It may have been removed.",
+      "ERP-TICKETSTATUSES-0001": "The ID of the ticket status is already using.",
+      "ERP-TICKETSTATUSES-0002": "Cant delete default ticket status",
+      "ERP-TICKETSTATUSES-0003": "This ticket status is the default reply status. Change the setting first."
+    }
+  }
+}
