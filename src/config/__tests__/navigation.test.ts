@@ -190,6 +190,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/currencies',
       '/setup/payment-modes',
       '/setup/expense-categories',
+      '/setup/contract-types',
       '/setup/email-templates',
       '/setup/sent-emails',
       '/setup/email-status',

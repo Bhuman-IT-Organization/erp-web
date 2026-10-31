@@ -21,6 +21,8 @@ import staffEn from '@/features/staff/messages/en.json';
 import statusEn from '@/features/status/messages/en.json';
 import taxesAr from '@/features/taxes/messages/ar.json';
 import taxesEn from '@/features/taxes/messages/en.json';
+import contractTypesAr from '@/features/contract-types/messages/ar.json';
+import contractTypesEn from '@/features/contract-types/messages/en.json';
 import servicesAr from '@/features/services/messages/ar.json';
 import servicesEn from '@/features/services/messages/en.json';
 import leadsourcesAr from '@/features/lead-sources/messages/ar.json';
@@ -55,6 +57,7 @@ export const NAMESPACES = [
   'mail',
   'payment-modes',
   'currencies',
+  'contract-types',
   'lead-sources',
   'ticket-statuses',
   'customer-groups',
@@ -78,6 +81,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     mailEn,
     paymentModesEn,
     currenciesEn,
+    contractTypesEn,
     servicesEn,
     leadsourcesEn,
     ticketStatusesEn,
@@ -97,6 +101,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     mailAr,
     paymentModesAr,
     currenciesAr,
+    contractTypesAr,
     servicesAr,
     leadsourcesAr,
     ticketStatusesAr,

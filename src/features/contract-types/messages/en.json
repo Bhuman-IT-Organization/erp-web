@@ -1,0 +1,29 @@
+{
+  "contract-types": {
+    "contract_types": "Contracts Types",
+    "new_contract_type": "New Contract Type",
+    "contract_type_edit": "Edit Contract Type",
+    "contract_type_name": "Name",
+    "contracts": "Contracts",
+    "noun_contract_type": "contract type",
+    "noun_contract_types": "contract types",
+    "section_details": "Details",
+    "empty_heading": "No contract types yet",
+    "empty_body": "Add a contract type so contracts can use it.",
+    "no_match_heading": "No contract types match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every contract type.",
+    "enter_name": "Enter a contract type name.",
+    "saved_toast": "Contract type saved",
+    "deleted_toast": "Contract type deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete contract type {name}",
+    "delete_title": "Delete contract type {name}?",
+    "delete_body": "This cannot be undone.",
+    "in_use_contracts": "{count, plural, one {{countN} contract uses this contract type.} other {{countN} contracts use this contract type.}}",
+    "in_use_goals": "{count, plural, one {{countN} goal uses this contract type.} other {{countN} goals use this contract type.}}",
+    "errors": {
+      "ERP-CORE-0004": "This contract type no longer exists. It may have been removed.",
+      "ERP-CONTRACTTYPES-0001": "The ID of the contract is already using."
+    }
+  }
+}

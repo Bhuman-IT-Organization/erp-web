@@ -1882,10 +1882,9 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'contracts-types',
         labelKey: 'shell.acs_contract_types',
-        href: '/admin/contracts/types',
-        adminOnly: true,
+        href: '/setup/contract-types',
+        ...navGateOf('/setup/contract-types'),
         module: 'sales',
-        legacy: true,
       },
     ],
   },
