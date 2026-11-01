@@ -1,5 +1,4 @@
 import type { ApiPath } from '@/lib/api/call-api';
-import { useCommonMutation } from '@/lib/api/use-common-mutation';
 import { createResourceHooks } from '@/lib/api/create-resource-hooks';
 import type { FeatureErrorCodes } from '@/lib/errors/error-messages';
 import {
@@ -7,7 +6,6 @@ import {
   type PredefinedReplies,
   type PredefinedRepliesFormValues,
 } from '@/features/predefined-replies/schemas/predefined-replies.schema';
-import { z } from 'zod';
 
 export const PREDEFINED_REPLIES_ENDPOINTS = {
   list: { method: 'GET', path: '/api/v1/predefined-replies' },
@@ -27,27 +25,12 @@ export function predefinedRepliesPath(id: string): ApiPath {
   return PREDEFINED_REPLIES_ENDPOINTS.detail.path.replace(':id', encodeURIComponent(id)) as ApiPath;
 }
 
-const predefinedReplyDeleteSchema = z.object({
-  success: z.literal(true),
-});
-
 const resourceHooks = createResourceHooks<PredefinedReplies, PredefinedRepliesFormValues>(
   PREDEFINED_REPLIES_PATH,
   predefinedRepliesSchema,
 );
 
-export const predefinedRepliesHooks = {
-  ...resourceHooks,
-  useRemove: (id: string) =>
-    useCommonMutation<undefined, { success: true }>(
-      `${PREDEFINED_REPLIES_PATH}/${encodeURIComponent(id)}` as ApiPath,
-      {
-        method: 'DELETE',
-        schema: predefinedReplyDeleteSchema,
-        invalidate: [PREDEFINED_REPLIES_PATH],
-      },
-    ),
-};
+export const predefinedRepliesHooks = resourceHooks;
 
 export const VALIDATION_CODE = 'ERP-VALIDATION-0001';
 export const NOT_FOUND_CODE = 'ERP-CORE-0004';

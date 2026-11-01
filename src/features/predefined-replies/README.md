@@ -13,14 +13,14 @@ Manage reusable replies for support tickets from the administrator-only Setup sc
 - List replies by name.
 - Create, edit and delete replies.
 - Export replies.
-- Display messages as plain text.
+- Display reply content as plain text in the form.
 - Warn when saving removes formatting.
 
 The list contains only the **Predefined Reply Name** column; Perfex does not show a Message column in this list.
 
 ## Dropped on purpose
 
-- The form uses a plain text box rather than Perfex's rich-text editor. The API stores the reply as plain text, so the editor's formatting controls would imply formatting support that is not preserved. Existing formatting is detected and users are warned that it will be removed on save.
+- The form uses a plain text box rather than Perfex's rich-text editor. The API stores the reply as escaped HTML, while the form edits and displays the reply as plain text. Existing formatting is detected and users are warned that it will be removed on save.
 - The ticket-side **Save as predefined reply** action remains in Perfex; this screen covers management only.
 - There is no duplicate menu entry. The screen appears once under Setup → Support → Predefined Replies.
 

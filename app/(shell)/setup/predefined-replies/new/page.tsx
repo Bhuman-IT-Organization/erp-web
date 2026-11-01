@@ -4,7 +4,7 @@ import { PredefinedRepliesPage } from '@/features/predefined-replies/pages/Prede
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('predefined-replies');
-  return { title: t('new_title') };
+  return { title: t('new_predefined_reply') };
 }
 
 // Request-time render: the form is behind a session, so it must never be prerendered at build time.

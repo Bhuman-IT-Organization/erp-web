@@ -17,6 +17,7 @@ import { PredefinedRepliesList, GuardedPredefinedRepliesList } from '../Predefin
 const EN = en['predefined-replies'];
 const COMMON = commonEn.common;
 const HTTP_OK = 200;
+const HTTP_NO_CONTENT = 204;
 const SERVICE_UNAVAILABLE = 503;
 const LIST = '/api/v1/predefined-replies';
 
@@ -110,7 +111,7 @@ beforeEach(() => {
   api = {
     me: { status: HTTP_OK, body: me(true) },
     list: { status: HTTP_OK, body: page(ROWS) },
-    delete: { status: HTTP_OK, body: { success: true } },
+    delete: { status: HTTP_NO_CONTENT },
   };
 
   http.defaults.adapter = respond;

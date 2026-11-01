@@ -1744,6 +1744,7 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         adminOnly: true,
         legacy: true,
       },
+      // admin-only: the Perfex gate is is_admin() for this screen.
       {
         id: 'tickets-predefined-replies',
         labelKey: 'shell.acs_ticket_predefined_replies_submenu',

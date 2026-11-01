@@ -302,7 +302,7 @@ export function PredefinedRepliesForm({ id }: PredefinedRepliesFormProps): React
               },
               {
                 name: 'message',
-                label: t('ticket_form_message'),
+                label: t('predefined_reply_add_edit_content'),
                 kind: 'textarea',
                 required: false,
               },

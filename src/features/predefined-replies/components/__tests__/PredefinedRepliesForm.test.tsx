@@ -134,7 +134,7 @@ async function typeAndSubmit(value: string, submit = CREATE) {
   await user.type(box, value);
 
   const messageBox = await screen.findByRole('textbox', {
-    name: EN.ticket_form_message,
+    name: EN.predefined_reply_add_edit_content,
   });
   await user.clear(messageBox);
   await user.type(messageBox, 'Hello there');

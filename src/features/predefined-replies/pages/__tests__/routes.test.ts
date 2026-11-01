@@ -22,39 +22,42 @@ vi.mock('../PredefinedRepliesPage', () => ({
 }));
 
 describe('/setup/predefined-replies', () => {
-  it('renders the list page', async () => {
+  it('renders the list page with the correct title', async () => {
     const page = await import('../../../../../app/(shell)/setup/predefined-replies/page');
 
     expect(page.default().type).toBe(PredefinedRepliesListPage);
-    expect(await page.generateMetadata()).toBeDefined();
+    expect(await page.generateMetadata()).toEqual({
+      title: 'predefined-replies.predefined_replies',
+    });
   });
 
-  it('renders the new reply form without an id', async () => {
+  it('renders the new reply form without an id and with the correct title', async () => {
     const page = await import('../../../../../app/(shell)/setup/predefined-replies/new/page');
 
     const element = page.default();
 
     expect(element.type).toBe(PredefinedRepliesPage);
     expect(element.props).toEqual({ id: null });
-    expect(await page.generateMetadata()).toBeDefined();
+    expect(await page.generateMetadata()).toEqual({
+      title: 'predefined-replies.new_predefined_reply',
+    });
   });
 
-  it('renders the edit form for an id', async () => {
+  it('renders the edit form for a valid id with the correct title', async () => {
     const page = await import('../../../../../app/(shell)/setup/predefined-replies/[id]/page');
 
     const element = await page.default(routeProps({ id: '123' }));
 
     expect(element.type).toBe(PredefinedRepliesPage);
     expect(element.props).toEqual({ id: '123' });
-    expect(await page.generateMetadata()).toBeDefined();
+    expect(await page.generateMetadata()).toEqual({
+      title: 'predefined-replies.predefined_reply',
+    });
   });
 
-  it.each(NOT_IDS)('passes id "%s" to the form route', async (id) => {
+  it.each(NOT_IDS)('calls notFound for invalid id "%s"', async (id) => {
     const page = await import('../../../../../app/(shell)/setup/predefined-replies/[id]/page');
 
-    const element = await page.default(routeProps({ id }));
-
-    expect(element.type).toBe(PredefinedRepliesPage);
-    expect(element.props).toEqual({ id });
+    await expect(page.default(routeProps({ id }))).rejects.toThrow('NEXT_NOT_FOUND');
   });
 });

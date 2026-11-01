@@ -1,6 +1,5 @@
 {
   "predefined-replies": {
-    "record_title": "Predefined Reply",
     "noun_predefined_reply": "predefined reply",
     "noun_predefined_replies": "predefined replies",
     "section_details": "Details",
@@ -26,7 +25,7 @@
     "predefined_replies": "Predefined Replies",
     "new_predefined_reply": "New Predefined Reply",
     "predefined_replies_dt_name": "Predefined Reply Name",
-    "ticket_form_message": "Message",
+    "predefined_reply_add_edit_content": "Reply Content",
     "predefined_reply_add_edit_name": "Predefined Reply Name"
   }
 }

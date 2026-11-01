@@ -4,7 +4,7 @@ import { PredefinedRepliesListPage } from '@/features/predefined-replies/pages/P
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('predefined-replies');
-  return { title: t('list_title') };
+  return { title: t('predefined_replies') };
 }
 
 // Request-time render: the list is the signed-in member's own view of the api, never baked in at

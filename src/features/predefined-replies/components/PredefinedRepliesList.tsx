@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState, type ReactElement } from 'react';
 import { toast } from 'sonner';
@@ -22,6 +23,7 @@ import { withAuth } from '@/hocs/withAuth';
 import { withPermission } from '@/hocs/withPermission';
 import { CLIENT_TIMINGS } from '@/lib/api/client-timings';
 import { revalidateLists, seedRow } from '@/lib/api/row-seed';
+import { recordListReturn } from '@/lib/hooks/use-return-to-list';
 
 const LIST_BASE = '/setup/predefined-replies';
 
@@ -31,6 +33,7 @@ const itemRoute = (row: PredefinedRepliesRow): string =>
 export function PredefinedRepliesList(): ReactElement {
   const t = useTranslations('predefined-replies');
   const tc = useTranslations('common');
+  const router = useRouter();
 
   const [deleting, setDeleting] = useState<{
     readonly row: PredefinedRepliesRow;
@@ -86,8 +89,9 @@ export function PredefinedRepliesList(): ReactElement {
             label: tc('edit'),
             ariaLabel: t('edit_action_named', { name: item.name }),
             onSelect: () => {
+              recordListReturn(LIST_BASE);
               seedRow(predefinedRepliesPath(item.id), item);
-              window.location.assign(itemRoute(item));
+              router.push(itemRoute(item));
             },
           },
           {
