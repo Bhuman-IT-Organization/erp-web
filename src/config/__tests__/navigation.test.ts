@@ -181,12 +181,12 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
     expect(nodeItems.map((item) => item.href)).toEqual([
       '/setup/cost-centers',
       '/setup/staff',
-      '/setup/lead-statuses',
       '/setup/customer-groups',
       '/setup/ticket-priorities',
       '/setup/ticket-statuses',
       '/setup/services',
       '/setup/lead-sources',
+      '/setup/lead-statuses',
       '/setup/taxes',
       '/setup/currencies',
       '/setup/payment-modes',
