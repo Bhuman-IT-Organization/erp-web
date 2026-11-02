@@ -9,6 +9,8 @@ export const LEAD_STATUSES_MESSAGE_KEYS = {
 
 const MAX_COLOR_LENGTH = 10;
 export const LEAD_STATUSES_NAME_MAX = 50;
+const MIN_STATUS_ORDER = -2147483648;
+const MAX_STATUS_ORDER = 2147483647;
 
 // eslint-disable-next-line no-restricted-syntax -- Perfex Lead Statuses uses this legacy database default color, not a UI theme token.
 export const DEFAULT_LEAD_STATUS_COLOR = '#28B8DA';
@@ -46,10 +48,18 @@ export const leadStatusesFormSchema = z.object({
     .max(LEAD_STATUSES_NAME_MAX, LEAD_STATUSES_MESSAGE_KEYS.nameTooLong),
 
   color: z.string().max(MAX_COLOR_LENGTH, LEAD_STATUSES_MESSAGE_KEYS.invalidColor),
-  statusorder: z.preprocess(
-    (value) => (value === '' ? null : value),
-    z.coerce.number<number>().int(LEAD_STATUSES_MESSAGE_KEYS.invalidOrder).nullable().optional(),
-  ),
+  statusorder: z
+    .string()
+    .trim()
+    .regex(/^-?\d*$/, LEAD_STATUSES_MESSAGE_KEYS.invalidOrder)
+    .refine(
+      (value) =>
+        value === '' ||
+        (Number.isInteger(Number(value)) &&
+          Number(value) >= MIN_STATUS_ORDER &&
+          Number(value) <= MAX_STATUS_ORDER),
+      LEAD_STATUSES_MESSAGE_KEYS.invalidOrder,
+    ),
 });
 
 export type LeadStatusesFormValues = z.infer<typeof leadStatusesFormSchema>;
@@ -57,15 +67,26 @@ export type LeadStatusesFormValues = z.infer<typeof leadStatusesFormSchema>;
 export const EMPTY_LEAD_STATUSES_FORM: LeadStatusesFormValues = {
   name: '',
   color: DEFAULT_LEAD_STATUS_COLOR,
+  statusorder: '',
 };
 
 export function toLeadStatusesForm(item: LeadStatuses): LeadStatusesFormValues {
   return {
     name: item.name,
     color: item.color ?? '',
-    ...(item.statusorder !== null ? { statusorder: item.statusorder } : {}),
+    statusorder: item.statusorder === null ? '' : String(item.statusorder),
   };
 }
+
+export function toLeadStatusesBody(
+  values: LeadStatusesFormValues,
+): Omit<LeadStatusesFormValues, 'statusorder'> & { statusorder: number | null } {
+  return {
+    ...values,
+    statusorder: values.statusorder === '' ? null : Number(values.statusorder),
+  };
+}
+export type LeadStatusesBody = ReturnType<typeof toLeadStatusesBody>;
 
 export function isLeadStatusProtected(item: LeadStatuses): boolean {
   return (

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState, type ReactElement } from 'react';
-import { useForm, type Resolver, type UseFormSetError } from 'react-hook-form';
+import { useForm, type UseFormSetError } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { InlineError } from '@/components/molecules/InlineError';
@@ -23,6 +23,7 @@ import { useSaveLeadStatuses } from '../hooks/use-save-lead-statuses';
 import {
   EMPTY_LEAD_STATUSES_FORM,
   leadStatusesFormSchema,
+  toLeadStatusesBody,
   toLeadStatusesForm,
   type LeadStatuses,
   type LeadStatusesFormValues,
@@ -186,8 +187,8 @@ function buildSummaryChanges(
     changes.push({
       type: 'changed',
       label: labels.order,
-      from: String(baseline.statusorder ?? ''),
-      to: String(pending.statusorder ?? ''),
+      from: baseline.statusorder,
+      to: pending.statusorder,
     });
   }
 
@@ -275,7 +276,7 @@ export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
   const mutation = id === null ? create : update;
 
   const form = useForm<LeadStatusesFormValues>({
-    resolver: zodResolver(leadStatusesFormSchema) as Resolver<LeadStatusesFormValues>,
+    resolver: zodResolver(leadStatusesFormSchema),
     defaultValues: EMPTY_LEAD_STATUSES_FORM,
     ...knownValues(item.data),
     resetOptions: { keepDirtyValues: true },
@@ -311,7 +312,7 @@ export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
   }
 
   async function save(values: LeadStatusesFormValues): Promise<ConfirmOutcome> {
-    const result = await mutation.trigger(values);
+    const result = await mutation.trigger(toLeadStatusesBody(values));
 
     if (result.ok) {
       await afterSave(result.data);

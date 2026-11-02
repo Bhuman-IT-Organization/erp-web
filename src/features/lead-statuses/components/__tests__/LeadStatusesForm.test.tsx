@@ -191,6 +191,7 @@ describe('LeadStatusesForm', () => {
     expect(post?.data).toEqual({
       name: 'New status',
       color: '#28B8DA',
+      statusorder: null,
     });
 
     await waitFor(() => {

@@ -6,6 +6,7 @@ import {
   isLeadStatusProtected,
   leadStatusesFormSchema,
   leadStatusesSchema,
+  toLeadStatusesBody,
   toLeadStatusesForm,
 } from '../lead-statuses.schema';
 
@@ -56,21 +57,18 @@ describe('Lead Statuses Schema', () => {
     ).toBe(false);
   });
 
-  it('converts string order values into numbers', () => {
-    const result = leadStatusesFormSchema.safeParse({
+  it('converts form order values into request body values', () => {
+    const baseValues = {
       name: 'Interested',
       color: '#28B8DA',
-      statusorder: '12',
-    });
+    };
 
-    expect(result.success).toBe(true);
-
-    if (result.success) {
-      expect(result.data.statusorder).toBe(12);
-    }
+    expect(toLeadStatusesBody({ ...baseValues, statusorder: '' }).statusorder).toBeNull();
+    expect(toLeadStatusesBody({ ...baseValues, statusorder: '3' }).statusorder).toBe(3);
+    expect(toLeadStatusesBody({ ...baseValues, statusorder: '-2' }).statusorder).toBe(-2);
   });
 
-  it('converts an empty order value to null', () => {
+  it('keeps an empty order value as an empty string', () => {
     const result = leadStatusesFormSchema.safeParse({
       name: 'Interested',
       color: '#28B8DA',
@@ -80,12 +78,12 @@ describe('Lead Statuses Schema', () => {
     expect(result.success).toBe(true);
 
     if (result.success) {
-      expect(result.data.statusorder).toBeNull();
+      expect(result.data.statusorder).toBe('');
     }
   });
 
   it('accepts zero and negative whole numbers for order', () => {
-    for (const statusorder of [0, -1, -10]) {
+    for (const statusorder of ['0', '-1', '-10']) {
       expect(
         leadStatusesFormSchema.safeParse({
           name: 'Interested',
@@ -102,6 +100,16 @@ describe('Lead Statuses Schema', () => {
         name: 'Interested',
         color: '#28B8DA',
         statusorder: '1.5',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects order values outside the 32-bit signed integer range', () => {
+    expect(
+      leadStatusesFormSchema.safeParse({
+        name: 'Interested',
+        color: '#28B8DA',
+        statusorder: '2147483648',
       }).success,
     ).toBe(false);
   });
@@ -123,7 +131,15 @@ describe('Lead Statuses Schema', () => {
     expect(toLeadStatusesForm(status)).toEqual({
       name: 'Interested',
       color: '#28B8DA',
-      statusorder: 1,
+      statusorder: '1',
+    });
+  });
+
+  it('converts a null API order to an empty form value', () => {
+    expect(toLeadStatusesForm({ ...status, statusorder: null })).toEqual({
+      name: 'Interested',
+      color: '#28B8DA',
+      statusorder: '',
     });
   });
 
