@@ -5,6 +5,20 @@ import { GuardedEstimateRequestStatusForm } from '@/features/estimate-request-st
 import { SHELL_MESSAGE_NAMESPACES } from '@/features/shell';
 import { pick } from '@/lib/i18n/pick';
 
+import { ESTIMATE_REQUEST_STATUS_ID_MAX } from '@/features/estimate-request-statuses/schemas/estimate-request-status.schema';
+import { SHELL_MESSAGE_NAMESPACES } from '@/features/shell';
+import { pick } from '@/lib/i18n/pick';
+
+export function isEstimateRequestStatusId(id: string): boolean {
+  const numericId = Number(id);
+  return (
+    /^\d+$/.test(id) &&
+    Number.isSafeInteger(numericId) &&
+    numericId > 0 &&
+    numericId <= ESTIMATE_REQUEST_STATUS_ID_MAX
+  );
+}
+
 interface EstimateRequestStatusFormPageProps {
   readonly id: string | null;
 }

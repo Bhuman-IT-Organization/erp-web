@@ -3,6 +3,7 @@ import {
   ESTIMATE_REQUEST_STATUSES_PATH,
   estimateRequestStatusesPath,
 } from '@/features/estimate-request-statuses/api/estimate-request-statuses.endpoints';
+import { useCommonMutation, type CommonMutation } from '@/lib/api/use-common-mutation';
 import {
   estimateRequestStatusSchema,
   type EstimateRequestStatus,
@@ -11,11 +12,14 @@ import {
 import { useCommonMutation, type CommonMutation } from '@/lib/api/use-common-mutation';
 
 export interface EstimateRequestStatusSave {
+
+export interface EstimateRequestStatusesSave {
   readonly create: CommonMutation<EstimateRequestStatusWriteValues, EstimateRequestStatus>;
   readonly update: CommonMutation<EstimateRequestStatusWriteValues, EstimateRequestStatus>;
 }
 
 export function useSaveEstimateRequestStatuses(id: string | null): EstimateRequestStatusSave {
+export function useSaveEstimateRequestStatuses(id: string | null): EstimateRequestStatusesSave {
   const create = useCommonMutation<EstimateRequestStatusWriteValues, EstimateRequestStatus>(
     ESTIMATE_REQUEST_STATUSES_PATH,
     {

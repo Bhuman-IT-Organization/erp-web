@@ -15,6 +15,8 @@ import {
 
 const STATUS = {
   id: '7',
+const ITEM = {
+  id: 'a 1',
   name: 'Approved',
   color: '#008000',
   statusorder: 2,
@@ -23,6 +25,7 @@ const STATUS = {
 };
 
 function ReadProbe({ id }: { readonly id: string | null }) {
+function RecordProbe({ id }: { readonly id: string | null }) {
   const { data, error } = useEstimateRequestStatuses(id);
   return (
     <output data-testid="record" data-code={error?.code ?? ''}>
@@ -33,12 +36,19 @@ function ReadProbe({ id }: { readonly id: string | null }) {
 
 function DeleteProbe() {
   const { trigger, result } = useDeleteEstimateRequestStatus('7');
+function DeleteProbe({ id }: { readonly id: string }) {
+  const { trigger, result } = useDeleteEstimateRequestStatus(id);
   return (
     <div>
       <button type="button" onClick={() => void trigger(undefined)}>
         delete
       </button>
       <output data-testid="delete" data-ok={result === undefined ? '' : String(result.ok)} />
+      <output
+        data-testid="delete"
+        data-ok={result === undefined ? '' : String(result.ok)}
+        data-code={result?.ok === false ? result.code : ''}
+      />
     </div>
   );
 }
@@ -46,6 +56,18 @@ function DeleteProbe() {
 const show = (child: ReactNode) =>
   renderWithProviders(
     <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>{child}</SWRConfig>,
+const show = (id: string | null) =>
+  renderWithProviders(
+    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+      <RecordProbe id={id} />
+    </SWRConfig>,
+  );
+
+const showDelete = (id: string) =>
+  renderWithProviders(
+    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+      <DeleteProbe id={id} />
+    </SWRConfig>,
   );
 
 beforeEach(() => {
@@ -66,6 +88,12 @@ describe('useEstimateRequestStatuses', () => {
     show(<ReadProbe id="a 1" />);
     expect(await screen.findByText('Approved')).toBeTruthy();
     expect(reads.calls.map(({ method, url }) => [method, url])).toEqual([
+  it('reads the detail path with an encoded id and parses the record', async () => {
+    const reads = fakeAdapter(200, ITEM);
+    http.defaults.adapter = reads.adapter;
+    show('a 1');
+    expect(await screen.findByText('Approved')).toBeTruthy();
+    expect(reads.calls.map((call) => [call.method, call.url])).toEqual([
       ['GET', '/api/v1/estimate-request-statuses/a%201'],
     ]);
   });
@@ -74,6 +102,10 @@ describe('useEstimateRequestStatuses', () => {
     const reads = fakeAdapter(200, STATUS);
     http.defaults.adapter = reads.adapter;
     show(<ReadProbe id={null} />);
+  it('does not request a record when the id is null', async () => {
+    const reads = fakeAdapter(200, ITEM);
+    http.defaults.adapter = reads.adapter;
+    show(null);
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(reads.calls).toEqual([]);
   });
@@ -82,6 +114,22 @@ describe('useEstimateRequestStatuses', () => {
     const writes = fakeAdapter(204);
     http.defaults.adapter = writes.adapter;
     show(<DeleteProbe />);
+  it('exposes a failed detail read as an error, not data', async () => {
+    http.defaults.adapter = fakeAdapter(404, problem(404, 'ERP-CORE-0004')).adapter;
+    show('7');
+    const output = await screen.findByTestId('record');
+    await waitFor(() => {
+      expect(output.getAttribute('data-code')).toBe('ERP-CORE-0004');
+    });
+    expect(output.textContent).toBe('');
+  });
+});
+
+describe('useDeleteEstimateRequestStatus', () => {
+  it('sends DELETE without a body and treats 204 as success', async () => {
+    const writes = fakeAdapter(204);
+    http.defaults.adapter = writes.adapter;
+    showDelete('a 1');
     await userEvent.click(screen.getByRole('button', { name: 'delete' }));
     await waitFor(() => {
       expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('true');
@@ -99,6 +147,22 @@ describe('useEstimateRequestStatuses', () => {
     await waitFor(() => {
       expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('false');
     });
+    expect(writes.calls.map((call) => [call.method, call.url, call.data])).toEqual([
+      ['DELETE', '/api/v1/estimate-request-statuses/a%201', undefined],
+    ]);
+  });
+
+  it('returns the in-use conflict once without retrying', async () => {
+    const writes = fakeAdapter(409, problem(409, 'ERP-ESTIMATEREQUESTSTATUSES-0001'));
+    http.defaults.adapter = writes.adapter;
+    showDelete('7');
+    await userEvent.click(screen.getByRole('button', { name: 'delete' }));
+    await waitFor(() => {
+      expect(screen.getByTestId('delete').getAttribute('data-code')).toBe(
+        'ERP-ESTIMATEREQUESTSTATUSES-0001',
+      );
+    });
+    expect(screen.getByTestId('delete').getAttribute('data-ok')).toBe('false');
     expect(writes.calls).toHaveLength(1);
   });
 });

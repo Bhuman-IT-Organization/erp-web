@@ -1,0 +1,28 @@
+{
+  "services": {
+    "services": "الخدمات",
+    "new_service": "خدمة جديدة",
+    "ticket_service_edit": "تعديل خدمة التذكرة",
+    "id": "المعرّف",
+    "services_dt_name": "اسم الخدمة",
+    "section_details": "التفاصيل",
+    "service_lowercase": "خدمة",
+    "noun_services": "خدمات",
+    "enter_name": "أدخل اسم الخدمة",
+    "name_too_long": "يمكن أن يحتوي الاسم على {max} حرفًا كحد أقصى",
+    "saved_toast": "تم حفظ الخدمة",
+    "deleted_toast": "تم حذف الخدمة",
+    "edit_action_named": "تعديل الخدمة {name}",
+    "delete_action_named": "حذف الخدمة {name}",
+    "delete_title": "حذف الخدمة {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "empty_heading": "لم يتم العثور على إدخالات",
+    "empty_body": "أضف خدمة لاستخدامها في التذاكر.",
+    "no_match_heading": "لا توجد خدمات تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض جميع الخدمات.",
+    "errors": {
+      "ERP-CORE-0004": "هذه الخدمة لم تعد موجودة.",
+      "ERP-SERVICES-0001": "هذه الخدمة مستخدمة في التذاكر ولا يمكن حذفها."
+    }
+  }
+}

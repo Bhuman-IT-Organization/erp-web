@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { cleanup } from '@testing-library/react';
+import { cleanup, waitFor } from '@testing-library/react';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { resetApiStatus } from '@/lib/api/api-status';
@@ -10,6 +11,10 @@ import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
 import { useSaveEstimateRequestStatuses } from '../use-save-estimate-request-statuses';
 
 const STATUS = {
+import { renderWithProviders, screen, userEvent } from '@/test/render';
+import { useSaveEstimateRequestStatuses } from '../use-save-estimate-request-statuses';
+
+const ITEM = {
   id: '7',
   name: 'Approved',
   color: '#008000',
@@ -22,6 +27,10 @@ const VALUES = { name: 'Approved', color: '#008000', statusorder: 2 };
 function SaveProbe({ id }: { readonly id: string | null }) {
   const { create, update } = useSaveEstimateRequestStatuses(id);
   const mutation = id === null ? create : update;
+function Probe({ id }: { readonly id: string | null }) {
+  const { create, update } = useSaveEstimateRequestStatuses(id);
+  const mutation = id === null ? create : update;
+  const { result } = mutation;
   return (
     <div>
       <button type="button" onClick={() => void mutation.trigger(VALUES)}>
@@ -32,6 +41,10 @@ function SaveProbe({ id }: { readonly id: string | null }) {
         data-ok={mutation.result === undefined ? '' : String(mutation.result.ok)}
       >
         {mutation.result?.ok === true ? mutation.result.data.name : ''}
+        data-ok={result === undefined ? '' : String(result.ok)}
+        data-code={result?.ok === false ? result.code : ''}
+      >
+        {result?.ok === true ? result.data.name : ''}
       </output>
     </div>
   );
@@ -41,6 +54,7 @@ const show = (id: string | null) =>
   renderWithProviders(
     <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
       <SaveProbe id={id} />
+      <Probe id={id} />
     </SWRConfig>,
   );
 
@@ -74,6 +88,27 @@ describe('useSaveEstimateRequestStatuses', () => {
         data,
       ]),
     ).toEqual([[method, url, VALUES]]);
+  it('creates with POST and returns the saved resource', async () => {
+    const writes = fakeAdapter(201, ITEM);
+    http.defaults.adapter = writes.adapter;
+    show(null);
+    await userEvent.click(screen.getByRole('button', { name: 'save' }));
+    expect(await screen.findByText('Approved')).toBeTruthy();
+    expect(writes.calls.map((call) => [call.method, call.url, call.data])).toEqual([
+      ['POST', '/api/v1/estimate-request-statuses', VALUES],
+    ]);
+  });
+
+  it('updates with PATCH and does not invalidate list pages', async () => {
+    const writes = fakeAdapter(200, ITEM);
+    http.defaults.adapter = writes.adapter;
+    show('7');
+    await userEvent.click(screen.getByRole('button', { name: 'save' }));
+    expect(await screen.findByText('Approved')).toBeTruthy();
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    expect(writes.calls.map((call) => [call.method, call.url, call.data])).toEqual([
+      ['PATCH', '/api/v1/estimate-request-statuses/7', VALUES],
+    ]);
   });
 
   it('does not retry a failed write', async () => {
@@ -83,6 +118,7 @@ describe('useSaveEstimateRequestStatuses', () => {
     await userEvent.click(screen.getByRole('button', { name: 'save' }));
     await waitFor(() => {
       expect(screen.getByTestId('save').getAttribute('data-ok')).toBe('false');
+      expect(screen.getByTestId('save').getAttribute('data-code')).toBe('ERP-UPSTREAM-0001');
     });
     expect(writes.calls).toHaveLength(1);
   });

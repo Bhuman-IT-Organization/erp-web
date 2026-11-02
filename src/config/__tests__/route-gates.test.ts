@@ -44,12 +44,18 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   it('is frozen and covers exactly the declared routes', () => {
     expect(Object.isFrozen(ROUTE_GATES)).toBe(true);
     expect(GATED_ROUTES).toEqual([
+      '/setup/contract-types',
+      '/setup/contract-types/:id',
+      '/setup/contract-types/new',
       '/setup/cost-centers',
       '/setup/cost-centers/:id',
       '/setup/cost-centers/new',
       '/setup/currencies',
       '/setup/currencies/:id',
       '/setup/currencies/new',
+      '/setup/customer-groups',
+      '/setup/customer-groups/:id',
+      '/setup/customer-groups/new',
       '/setup/email-status',
       '/setup/email-templates',
       '/setup/email-templates/:id',
@@ -70,12 +76,18 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/roles/new',
       '/setup/sent-emails',
       '/setup/sent-emails/:id',
+      '/setup/services',
+      '/setup/services/:id',
+      '/setup/services/new',
       '/setup/staff',
       '/setup/staff/:id',
       '/setup/staff/new',
       '/setup/taxes',
       '/setup/taxes/:id',
       '/setup/taxes/new',
+      '/setup/ticket-priorities',
+      '/setup/ticket-priorities/:id',
+      '/setup/ticket-priorities/new',
       '/setup/ticket-statuses',
       '/setup/ticket-statuses/:id',
       '/setup/ticket-statuses/new',
@@ -99,6 +111,13 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/estimate_request-statuses/12',
     ]) {
       expect(routeIsAdminOnly(route)).toBe(true);
+  it('protects all Estimate Request Statuses pages with the administrator gate', () => {
+    for (const route of [
+      '/setup/estimate_request-statuses',
+      '/setup/estimate_request-statuses/new',
+      '/setup/estimate_request-statuses/:id',
+    ]) {
+      expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
     }
   });
 

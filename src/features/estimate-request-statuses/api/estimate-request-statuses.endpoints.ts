@@ -3,6 +3,7 @@ import { createResourceHooks } from '@/lib/api/create-resource-hooks';
 import type { FeatureErrorCodes } from '@/lib/errors/error-messages';
 import {
   estimateRequestStatusSchema,
+  estimateRequestStatusesListResponseSchema,
   type EstimateRequestStatus,
   type EstimateRequestStatusWriteValues,
 } from '@/features/estimate-request-statuses/schemas/estimate-request-status.schema';
@@ -36,6 +37,8 @@ export const estimateRequestStatusesHooks = createResourceHooks<
   EstimateRequestStatusWriteValues,
   EstimateRequestStatusWriteValues
 >(ESTIMATE_REQUEST_STATUSES_PATH, estimateRequestStatusSchema);
+
+export const estimateRequestStatusesListSchema = estimateRequestStatusesListResponseSchema;
 
 export const VALIDATION_CODE = 'ERP-VALIDATION-0001';
 export const NOT_FOUND_CODE = 'ERP-CORE-0004';

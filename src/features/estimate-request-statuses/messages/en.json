@@ -27,6 +27,32 @@
       "ERP-CORE-0004": "This status no longer exists. It may have been removed.",
       "ERP-ESTIMATEREQUESTSTATUSES-0001": "This status is being used by estimate requests.",
       "ERP-ESTIMATEREQUESTSTATUSES-0002": "Default estimate request statuses cannot be deleted."
+    "title": "Estimate Request Statuses",
+    "new_status": "New Estimate Request Status",
+    "edit_status": "Edit Estimate Request Status",
+    "id": "ID",
+    "total_label": "Total",
+    "status_name": "Status Name",
+    "color": "Color",
+    "status_order": "Status Order",
+    "total_request_count": "Total {count}",
+    "noun_statuses": "estimate request statuses",
+    "noun_status": "estimate request status",
+    "section_details": "Details",
+    "empty_heading": "No estimate request statuses yet",
+    "empty_body": "Add an estimate request status to indicate the current state of requests.",
+    "no_match_heading": "No estimate request statuses match “{query}”",
+    "no_match_body": "Check the spelling or clear the search to see every status.",
+    "enter_name": "Enter an estimate request status name.",
+    "name_too_long": "Keep the status name to {max} characters or fewer.",
+    "enter_color": "Enter a color using up to 10 characters.",
+    "enter_order": "Enter a whole number for the status order.",
+    "saved_toast": "Estimate request status saved",
+    "edit_action_named": "Edit {name}",
+    "errors": {
+      "ERP-CORE-0004": "This estimate request status no longer exists.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0001": "This estimate request status is in use and cannot be deleted.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0002": "Built-in estimate request statuses cannot be deleted."
     }
   }
 }

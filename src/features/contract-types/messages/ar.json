@@ -1,0 +1,29 @@
+{
+  "contract-types": {
+    "contract_types": "أنواع العقود",
+    "new_contract_type": "نوع عقد جديد",
+    "contract_type_edit": "تعديل نوع العقد",
+    "contract_type_name": "الاسم",
+    "contracts": "العقود",
+    "noun_contract_type": "نوع عقد",
+    "noun_contract_types": "أنواع العقود",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد أنواع عقود بعد",
+    "empty_body": "أضف نوع عقد لتستخدمه العقود.",
+    "no_match_heading": "لا توجد أنواع عقود تطابق “{query}”",
+    "no_match_body": "تحقق من التهجئة أو امسح البحث لمشاهدة جميع أنواع العقود.",
+    "enter_name": "أدخل اسم نوع العقد.",
+    "saved_toast": "تم حفظ نوع العقد",
+    "deleted_toast": "تم حذف نوع العقد",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف نوع العقد {name}",
+    "delete_title": "حذف نوع العقد {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "in_use_contracts": "{count, plural, one {يستخدم عقد واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من العقود نوع العقد هذا.}}",
+    "in_use_goals": "{count, plural, one {يستخدم هدف واحد ({countN}) نوع العقد هذا.} other {تستخدم {countN} من الأهداف نوع العقد هذا.}}",
+    "errors": {
+      "ERP-CORE-0004": "نوع العقد هذا لم يعد موجوداً. ربما تمت إزالته.",
+      "ERP-CONTRACTTYPES-0001": "نوع العقد هذا ما زال مستخدماً، لذا لا يمكن حذفه. أزله أولاً من كل ما يستخدمه، ثم احذفه."
+    }
+  }
+}
