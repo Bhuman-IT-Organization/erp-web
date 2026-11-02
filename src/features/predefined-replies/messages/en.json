@@ -24,6 +24,7 @@
     },
     "predefined_replies": "Predefined Replies",
     "new_predefined_reply": "New Predefined Reply",
+    "predefined_reply": "Predefined Reply",
     "predefined_replies_dt_name": "Predefined Reply Name",
     "predefined_reply_add_edit_content": "Reply Content",
     "predefined_reply_add_edit_name": "Predefined Reply Name"

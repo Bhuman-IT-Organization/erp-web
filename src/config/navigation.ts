@@ -1744,7 +1744,7 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         adminOnly: true,
         legacy: true,
       },
-      // admin-only: the Perfex gate is is_admin() for this screen.
+      // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
         id: 'tickets-predefined-replies',
         labelKey: 'shell.acs_ticket_predefined_replies_submenu',
