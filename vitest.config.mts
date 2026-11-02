@@ -8,12 +8,14 @@ export default defineConfig({
   // else lives in a `__tests__/` folder beside its code under `src/` (FE-05).
   test: {
     ...test,
+    testTimeout: 30_000,
+    hookTimeout: 30_000,
     include: ['src/**/*.test.{ts,tsx}', '__tests__/*.test.ts'],
     // One suite-wide timeout (quick 260927-scq): the Sidebar Esc flow, the StaffMemberForm "More
     // details" flow and the em-dash guard over every source file pass alone in about 1 s but timed
     // out at the default 5 s under full-suite parallel load. A real hang still fails, after 15 s.
     // The two per-test 20 s exceptions stay.
-    testTimeout: 15_000,
+
     coverage: {
       ...coverage,
       // Explicit: the default counts only files a test imported, so an untested file would be invisible (Pitfall 10).

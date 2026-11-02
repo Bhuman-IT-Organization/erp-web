@@ -22,6 +22,7 @@ import staffAr from '@/features/staff/messages/ar.json';
 import staffEn from '@/features/staff/messages/en.json';
 import statusEn from '@/features/status/messages/en.json';
 import taxesAr from '@/features/taxes/messages/ar.json';
+import announcementsAr from '@/features/announcements/messages/ar.json';
 import taxesEn from '@/features/taxes/messages/en.json';
 import contractTypesAr from '@/features/contract-types/messages/ar.json';
 import contractTypesEn from '@/features/contract-types/messages/en.json';
@@ -29,6 +30,7 @@ import servicesAr from '@/features/services/messages/ar.json';
 import servicesEn from '@/features/services/messages/en.json';
 import leadsourcesAr from '@/features/lead-sources/messages/ar.json';
 import leadsourcesEn from '@/features/lead-sources/messages/en.json';
+import announcementsEn from '@/features/announcements/messages/en.json';
 import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
 import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
 
@@ -41,7 +43,7 @@ import commonEn from './common/en.json';
 
 /**
  * The static registry of message packs (FE-08). Turbopack has no `import.meta.glob`, so every
- * feature's `messages/<locale>.json` is imported here by hand — a new feature adds its import
+ * feature's `messages/<locale>.json` is imported here by hand â€” a new feature adds its import
  * lines and entries between the `registry` markers (imports, namespaces, en, ar). One top-level
  * namespace per file = the feature's folder name.
  */
@@ -56,6 +58,7 @@ export const NAMESPACES = [
   'expense-categories',
   'estimate-request-statuses',
   'taxes',
+  'announcements',
   'cost-centers',
   'mail',
   'payment-modes',
@@ -81,6 +84,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     expenseCategoriesEn,
     estimateRequestStatusesEn,
     taxesEn,
+    announcementsEn,
     costCentersEn,
     mailEn,
     paymentModesEn,
@@ -102,6 +106,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     expenseCategoriesAr,
     estimateRequestStatusesAr,
     taxesAr,
+    announcementsAr,
     costCentersAr,
     mailAr,
     paymentModesAr,

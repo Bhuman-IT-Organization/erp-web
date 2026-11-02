@@ -180,6 +180,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
     // Setup > Email's three Node screens (W2C) follow; the rest is still Perfex's.
     expect(nodeItems.map((item) => item.href)).toEqual([
       '/setup/cost-centers',
+      '/setup/announcements',
       '/setup/staff',
       '/setup/customer-groups',
       '/setup/ticket-priorities',

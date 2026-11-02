@@ -1,0 +1,33 @@
+{
+  "announcements": {
+    "announcements": "Announcements",
+    "new_announcement": "New Announcement",
+    "announcement_add_heading": "Add New Announcement",
+    "announcement_edit_heading": "Edit Announcement",
+    "announcement_name": "Subject",
+    "announcement_id": "ID",
+    "announcement_message": "Message",
+    "announcement_lowercase": "announcement",
+    "show_to_users": "Show to clients",
+    "show_to_staff": "Show to staff",
+    "show_name": "Show my name",
+    "date_added": "Date",
+    "section_details": "Details",
+    "empty_heading": "No announcements yet",
+    "empty_body": "Add an announcement to publish news to your staff and clients.",
+    "no_match_heading": "No announcements match “{query}”.",
+    "no_match_body": "Try a different search.",
+    "enter_name": "Enter the announcement name.",
+    "name_too_long": "{max, plural, one {The announcement name must not exceed {maxN} character.} other {The announcement name must not exceed {maxN} characters.}}",
+    "message_too_long": "{max, plural, one {The message must not exceed {maxN} character.} other {The message must not exceed {maxN} characters.}}",
+    "saved_toast": "Announcement saved",
+    "deleted_toast": "Announcement deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete announcement {name}",
+    "delete_title": "Delete announcement {name}?",
+    "delete_body": "This action cannot be undone.",
+    "errors": {
+      "ERP-CORE-0004": "This announcement no longer exists. It may have been removed."
+    }
+  }
+}

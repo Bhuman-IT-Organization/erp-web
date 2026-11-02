@@ -1,0 +1,33 @@
+{
+  "announcements": {
+    "announcements": "الإعلانات",
+    "new_announcement": "إعلان جديد",
+    "announcement_add_heading": "إضافة إعلان",
+    "announcement_edit_heading": "تعديل الإعلان",
+    "announcement_name": "الاسم",
+    "announcement_id": "المعرّف",
+    "announcement_message": "الرسالة",
+    "announcement_lowercase": "إعلان",
+    "show_to_users": "عرض للعملاء",
+    "show_to_staff": "عرض لأعضاء الفريق",
+    "show_name": "إظهار الاسم للعملاء",
+    "date_added": "تاريخ الإضافة",
+    "section_details": "التفاصيل",
+    "empty_heading": "لا توجد إعلانات بعد",
+    "empty_body": "أضف إعلاناً لنشر الأخبار لفريقك وعملائك.",
+    "no_match_heading": "لا توجد إعلانات تطابق “{query}”.",
+    "no_match_body": "جرّب بحثاً مختلفاً.",
+    "enter_name": "أدخل اسم الإعلان.",
+    "name_too_long": "{max, plural, one {يجب ألا يتجاوز اسم الإعلان حرفاً واحداً.} two {يجب ألا يتجاوز اسم الإعلان حرفين.} few {يجب ألا يتجاوز اسم الإعلان {maxN} أحرف.} many {يجب ألا يتجاوز اسم الإعلان {maxN} حرفاً.} other {يجب ألا يتجاوز اسم الإعلان {maxN} حرف.}}",
+    "message_too_long": "{max, plural, one {يجب ألا تتجاوز الرسالة حرفاً واحداً.} two {يجب ألا تتجاوز الرسالة حرفين.} few {يجب ألا تتجاوز الرسالة {maxN} أحرف.} many {يجب ألا تتجاوز الرسالة {maxN} حرفاً.} other {يجب ألا تتجاوز الرسالة {maxN} حرف.}}",
+    "saved_toast": "تم حفظ الإعلان",
+    "deleted_toast": "تم حذف الإعلان",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف الإعلان {name}",
+    "delete_title": "حذف الإعلان {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "errors": {
+      "ERP-CORE-0004": "هذا الإعلان لم يعد موجوداً. ربما تمت إزالته."
+    }
+  }
+}
