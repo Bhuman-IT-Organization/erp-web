@@ -187,6 +187,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/currencies',
       '/setup/payment-modes',
       '/setup/expense-categories',
+      '/setup/estimate_request-statuses',
       '/setup/email-templates',
       '/setup/sent-emails',
       '/setup/email-status',

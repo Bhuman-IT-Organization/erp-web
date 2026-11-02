@@ -168,6 +168,8 @@ const hasValue = (value: unknown): boolean =>
 
 /** A value the color chip may paint: `#` and six hex digits, any case (anything else is text only). */
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+// eslint-disable-next-line no-restricted-syntax -- Native picker fallback only, never displayed or persisted.
+const EMPTY_COLOR_PICKER_VALUE = '#000000';
 
 interface ColorFieldProps {
   readonly id: string;
@@ -198,8 +200,8 @@ interface ColorFieldProps {
  * A stored color is record data, never a token or a class: the chip is painted by an inline
  * `backgroundColor` only for a value matching `HEX_COLOR`; anything else (free text, markup)
  * shows the dashed "no color" chip and stays React text in the input. The native input needs a
- * value, so it is handed the text when valid and nothing otherwise (the browser then shows black);
- * that value is never submitted. Disabled or read-only disables both controls and dims the chip.
+ * value, so it is handed the text when valid and black otherwise; that value is never submitted.
+ * Disabled or read-only disables both controls and dims the chip.
  * Under `ar` the add-on stays at the inline end and the value left-to-right (`dir="ltr"`).
  */
 function ColorField({
@@ -259,7 +261,7 @@ function ColorField({
             <input
               type="color"
               aria-label={t('pick_color_named', { label })}
-              value={paintable ? text.toLowerCase() : ''}
+              value={paintable ? text.toLowerCase() : EMPTY_COLOR_PICKER_VALUE}
               disabled={disabled}
               className="absolute inset-0 size-full cursor-pointer opacity-0 disabled:cursor-not-allowed"
               onClick={(event) => {

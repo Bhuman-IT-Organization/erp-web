@@ -89,6 +89,12 @@ describe('proxy', () => {
     }
   });
 
+  it('redirects an anonymous visitor on the Estimate Request statuses Setup URL', () => {
+    const path = '/setup/estimate_request-statuses';
+    expect(doesMatch(path)).toBe(true);
+    expect(locationOf(proxy(at(path)))).toBe('/login?next=%2Fsetup%2Festimate_request-statuses');
+  });
+
   it('the matcher covers the shell path families, bare paths included', () => {
     expect(config.matcher).toEqual(['/setup/:path*']);
     for (const url of [
@@ -112,6 +118,7 @@ describe('proxy', () => {
       '/setup/currencies',
       '/setup/currencies/new',
       '/setup/currencies/7',
+      '/setup/estimate_request-statuses',
     ]) {
       expect(doesMatch(url), `${url} must be inside the matcher`).toBe(true);
     }
@@ -137,6 +144,8 @@ describe('proxy', () => {
       '/admin/tickets/priorities',
       '/admin/tickets/services',
       '/admin/tickets/predefined_replies',
+      '/admin/estimate_request/forms',
+      '/admin/estimate_request/statuses',
       '/admin/spam_filters/view/tickets',
       '/admin/spam_filters/view/leads',
       '/admin/leads/sources',

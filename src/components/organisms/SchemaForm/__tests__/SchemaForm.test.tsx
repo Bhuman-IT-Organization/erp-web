@@ -772,6 +772,13 @@ describe('SchemaForm color kind (D-15: a text value with a picker swatch, blank 
     expect(onValid.mock.calls[0]?.[0]).toEqual({ name: '', statusColor: '' });
   });
 
+  it('uses a valid native color value while the editable text value remains blank', () => {
+    renderWithProviders(<ColorHarness />);
+    expect(colorText().value).toBe('');
+    expect(swatch().value).toBe('#000000');
+    expect(chip().getAttribute('data-state')).toBe('empty');
+  });
+
   it('the text input carries the label, the id and dir ltr; the swatch is named "Pick a color for {label}" and comes after it', () => {
     renderWithProviders(<ColorHarness />);
     expect(colorText().id).toBe('status-statusColor');

@@ -1945,10 +1945,9 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'estimate-request-statuses',
         labelKey: 'shell.acs_estimate_request_statuses_submenu',
-        href: '/admin/estimate_request/statuses',
-        permission: PERMISSIONS.settings.general.view,
+        href: '/setup/estimate_request-statuses',
+        ...navGateOf('/setup/estimate_request-statuses'),
         module: 'sales',
-        legacy: true,
       },
     ],
   },

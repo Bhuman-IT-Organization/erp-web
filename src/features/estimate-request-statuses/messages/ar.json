@@ -1,0 +1,42 @@
+{
+  "estimate-request-statuses": {
+    "statuses": "حالات طلبات عروض الأسعار",
+    "new_status": "حالة جديدة",
+    "edit_status": "تعديل الحالة",
+    "status_name": "اسم الحالة",
+    "required_marker": "*",
+    "color": "اللون",
+    "pick_color": "اختر لون الحالة",
+    "status_order": "ترتيب الحالة",
+    "section_details": "التفاصيل",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "id": "المعرف",
+    "noun_status": "الحالة",
+    "noun_statuses": "الحالات",
+    "total_request": "إجمالي الطلبات: {countN}",
+    "total_request_export": "إجمالي الطلبات",
+    "empty_heading": "لم يتم العثور على حالات لطلبات عروض الأسعار",
+    "empty_body": "أضف حالة لعرض المرحلة الحالية لطلبات عروض الأسعار.",
+    "no_match_heading": "لا توجد حالات تطابق “{query}”",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث لعرض جميع الحالات.",
+    "enter_name": "أدخل اسم الحالة.",
+    "name_too_long": "يجب ألا يتجاوز اسم الحالة {max} حرفاً.",
+    "enter_colour": "أدخل لوناً لا يتجاوز 10 أحرف.",
+    "enter_order": "أدخل رقماً صحيحاً لترتيب الحالة.",
+    "saving": "جارٍ الحفظ…",
+    "saved_toast": "تم حفظ حالة طلب عرض السعر",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف {name}",
+    "delete_title": "حذف الحالة: {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "deleted_toast": "تم حذف حالة طلب عرض السعر",
+    "is_referenced": "تستخدم طلبات عروض الأسعار هذه الحالة.",
+    "cant_delete_default": "لا يمكن حذف حالات طلبات عروض الأسعار الافتراضية.",
+    "errors": {
+      "ERP-CORE-0004": "لم تعد هذه الحالة موجودة. ربما تمت إزالتها.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0001": "تستخدم طلبات عروض الأسعار هذه الحالة.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0002": "لا يمكن حذف حالات طلبات عروض الأسعار الافتراضية."
+    }
+  }
+}

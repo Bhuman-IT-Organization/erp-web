@@ -35,9 +35,7 @@ const REDIRECT_FOUND = 302;
 
 /**
  * The paths this gate covers. It grows with each migrated screen; `/login`, `/logout` and `/status` stay outside.
- * Paths follow the menu (plan 04.2-27): `/setup/:path*` covers Setup > Staff, Setup > Roles,
- * every Wave 2a list (W2A) and the Setup > Email screens once. The old paths are redirected by
- * Nginx; no rule here may match a Perfex path.
+ * Paths follow the menu: `/setup/:path*` covers Setup screens. Other Perfex paths remain outside this gate.
  */
 export const config = {
   matcher: ['/setup/:path*'],

@@ -33,6 +33,10 @@ describe('isNodePage', () => {
   it.each([
     ['/setup/staff?q=a', true],
     ['/setup', true],
+    ['/setup/estimate_request-statuses', true],
+    ['/setup/estimate_request-statuses?legacy=1', true],
+    ['/admin/estimate_request/statuses', false],
+    ['/admin/estimate_request/forms', false],
     ['/admin/invoices#top', false],
     ['/admin/invoice_items/12', false],
     ['/admin/hr_profile/organizational_chart', false],

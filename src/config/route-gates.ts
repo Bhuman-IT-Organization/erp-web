@@ -92,6 +92,9 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/lead-sources': ADMIN_GATE,
   '/setup/lead-sources/new': ADMIN_GATE,
   '/setup/lead-sources/:id': ADMIN_GATE,
+  '/setup/estimate_request-statuses': ADMIN_GATE,
+  '/setup/estimate_request-statuses/new': ADMIN_GATE,
+  '/setup/estimate_request-statuses/:id': ADMIN_GATE,
 
   '/setup/ticket-statuses': ADMIN_GATE,
   '/setup/ticket-statuses/new': ADMIN_GATE,
