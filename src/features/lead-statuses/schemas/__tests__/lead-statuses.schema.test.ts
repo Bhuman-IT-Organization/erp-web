@@ -70,6 +70,20 @@ describe('Lead Statuses Schema', () => {
     }
   });
 
+  it('converts an empty order value to null', () => {
+    const result = leadStatusesFormSchema.safeParse({
+      name: 'Interested',
+      color: '#28B8DA',
+      statusorder: '',
+    });
+
+    expect(result.success).toBe(true);
+
+    if (result.success) {
+      expect(result.data.statusorder).toBeNull();
+    }
+  });
+
   it('accepts zero and negative whole numbers for order', () => {
     for (const statusorder of [0, -1, -10]) {
       expect(
@@ -87,7 +101,7 @@ describe('Lead Statuses Schema', () => {
       leadStatusesFormSchema.safeParse({
         name: 'Interested',
         color: '#28B8DA',
-        statusorder: 1.5,
+        statusorder: '1.5',
       }).success,
     ).toBe(false);
   });

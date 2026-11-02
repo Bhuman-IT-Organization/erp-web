@@ -93,7 +93,7 @@ All user-facing feature labels and messages should use translations rather than 
 From the `erp-web` project directory, run:
 
 ```sh
-corepack yarn vitest run src/__tests__/feature-shape.test.ts
+corepack yarn test src/features/lead-statuses
 ```
 
 Run the frontend checks:
@@ -101,13 +101,3 @@ Run the frontend checks:
 ```sh
 corepack yarn check
 ```
-
-Verify the list, create, edit, delete, validation, permissions, and refusal cases in the browser.
-
-The frontend migration is implemented. Final verification includes reviewing Storybook states, confirming frontend and API routing, and running the required project checks.
-
-The frontend migration is implemented and is undergoing final verification.
-
-- Lead Statuses feature tests and TypeScript typecheck have passed locally.
-- Storybook includes loading, empty, error, loaded, mobile, and Arabic RTL list states, plus form states for create, edit, loading, pending, validation errors, server errors, mobile, and Arabic RTL.
-- Before final sign-off, verify the stories visually, confirm frontend and API routing, and run the required project checks.

@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState, type ReactElement } from 'react';
-import { useForm, type UseFormSetError } from 'react-hook-form';
+import { useForm, type Resolver, type UseFormSetError } from 'react-hook-form';
 import { toast } from 'sonner';
 
 import { InlineError } from '@/components/molecules/InlineError';
@@ -275,7 +275,7 @@ export function LeadStatusesForm({ id }: LeadStatusesFormProps): ReactElement {
   const mutation = id === null ? create : update;
 
   const form = useForm<LeadStatusesFormValues>({
-    resolver: zodResolver(leadStatusesFormSchema),
+    resolver: zodResolver(leadStatusesFormSchema) as Resolver<LeadStatusesFormValues>,
     defaultValues: EMPTY_LEAD_STATUSES_FORM,
     ...knownValues(item.data),
     resetOptions: { keepDirtyValues: true },

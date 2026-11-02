@@ -37,7 +37,7 @@
       "ERP-LEADSTATUSES-0001": "This status is still in use and cannot be deleted.",
       "ERP-LEADSTATUSES-0002": "The built-in status cannot be deleted.",
       "ERP-LEADSTATUSES-0003": "The default lead status cannot be deleted.",
-      "ERP-LEADSTATUSES-0004": "Invalid lead status order."
+      "ERP-LEADSTATUSES-0004": "This status's use could not be checked, so it was not deleted. Try again."
     }
   }
 }

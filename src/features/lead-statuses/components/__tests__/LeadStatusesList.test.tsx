@@ -172,6 +172,52 @@ describe('LeadStatusesList', () => {
     expect(add.getAttribute('href')).toBe('/setup/lead-statuses/new');
   });
 
+  it('shows a no-results state when search has no matches', async () => {
+    list = {
+      status: 200,
+      body: page([]),
+    };
+
+    show();
+
+    const search = await screen.findByRole('textbox', { name: 'Search' });
+    await userEvent.type(search, 'NoMatchingStatus');
+
+    const noResults = await screen.findByTestId('list-no-results');
+
+    expect(noResults.textContent).toContain('NoMatchingStatus');
+  });
+
+  it('shows an error and retries when the list request fails', async () => {
+    list = {
+      status: 503,
+      body: {
+        type: 'about:blank',
+        title: 'Service Unavailable',
+        status: 503,
+        detail: 'Upstream service unavailable',
+        code: 'ERP-UPSTREAM-0001',
+      },
+    };
+
+    show();
+
+    expect(await screen.findByTestId('list-error')).toBeTruthy();
+
+    list = {
+      status: 200,
+      body: page([UNUSED, BUILT_IN, DEFAULT, USED]),
+    };
+
+    const retry = screen.getByRole('button', {
+      name: /retry/i,
+    });
+
+    await userEvent.click(retry);
+
+    await screen.findByTestId('list-table');
+  });
+
   it('shows statuses and protects built-in and default statuses', async () => {
     show();
 
