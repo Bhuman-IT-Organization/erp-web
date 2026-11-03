@@ -29,6 +29,8 @@ import leadsourcesAr from '@/features/lead-sources/messages/ar.json';
 import leadsourcesEn from '@/features/lead-sources/messages/en.json';
 import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
 import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
+import knowledgeBaseAr from '@/features/knowledge-base/messages/ar.json';
+import knowledgeBaseEn from '@/features/knowledge-base/messages/en.json';
 
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
@@ -59,6 +61,7 @@ export const NAMESPACES = [
   'lead-sources',
   'ticket-statuses',
   'customer-groups',
+  'knowledge-base',
   // registry end: namespaces
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
@@ -83,6 +86,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     leadsourcesEn,
     ticketStatusesEn,
     customerGroupsEn,
+    knowledgeBaseEn,
     // registry end: en
   ],
   ar: [
@@ -102,6 +106,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     leadsourcesAr,
     ticketStatusesAr,
     customerGroupsAr,
+    knowledgeBaseAr,
     // registry end: ar
   ],
 };

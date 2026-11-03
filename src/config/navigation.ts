@@ -1566,11 +1566,11 @@ export const NAVIGATION: readonly NavItem[] = [
     id: 'knowledge-base',
     labelKey: 'shell.als_kb',
     icon: 'question-circle',
-    href: '/admin/knowledge_base',
-    permission: PERMISSIONS.knowledgeBase.articles.view,
+    href: '/setup/knowledge-base',
+    ...navGateOf('/setup/knowledge-base'),
     module: 'knowledgeBase',
-    legacy: true,
   },
+
   // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
   {
     id: 'utilities',
