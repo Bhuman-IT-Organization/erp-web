@@ -186,6 +186,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/ticket-statuses',
       '/setup/services',
       '/setup/lead-sources',
+      '/setup/lead-statuses',
       '/setup/taxes',
       '/setup/currencies',
       '/setup/payment-modes',
