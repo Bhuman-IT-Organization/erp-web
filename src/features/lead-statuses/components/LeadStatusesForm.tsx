@@ -158,7 +158,7 @@ interface DialogsProps {
 function buildSummaryChanges(
   initialValues: LeadStatusesFormValues | null,
   pending: LeadStatusesFormValues | null,
-  labels: { name: string; color: string; order: string },
+  labels: { name: string; color: string; order: string; none: string },
 ): SummaryChange[] {
   if (pending === null) return [];
 
@@ -183,12 +183,16 @@ function buildSummaryChanges(
     });
   }
 
-  if (baseline.statusorder !== pending.statusorder) {
+  // Compared as the numbers the api receives: `007` over `7` is no change.
+  const orderFrom = toLeadStatusesBody(baseline).statusorder;
+  const orderTo = toLeadStatusesBody(pending).statusorder;
+
+  if (orderFrom !== orderTo) {
     changes.push({
       type: 'changed',
       label: labels.order,
-      from: baseline.statusorder,
-      to: pending.statusorder,
+      from: orderFrom === null ? labels.none : String(orderFrom),
+      to: orderTo === null ? labels.none : String(orderTo),
     });
   }
 
@@ -213,6 +217,7 @@ function EditorDialogs({
     name: t('leads_status_table_name'),
     color: t('leads_status_color'),
     order: t('leads_status_add_edit_order'),
+    none: tc('none'),
   });
 
   const summaryTitle =

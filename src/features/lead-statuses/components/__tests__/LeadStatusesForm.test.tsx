@@ -215,6 +215,49 @@ describe('LeadStatusesForm', () => {
     ).toEqual(['/api/v1/lead-statuses/7']);
   });
 
+  describe('the save summary for the order', () => {
+    async function summaryAfter(typeOrder: (input: HTMLElement) => Promise<void>) {
+      show('7');
+      const user = userEvent.setup();
+      const name = await screen.findByRole('textbox', { name: EN.leads_status_table_name });
+      await waitFor(() => {
+        expect(name).toHaveProperty('value', 'Interested');
+      });
+      await user.type(name, ' now');
+      await typeOrder(screen.getByRole('spinbutton', { name: EN.leads_status_add_edit_order }));
+      await user.click(screen.getByRole('button', { name: 'Save lead status' }));
+      return screen.findByTestId('confirm-dialog');
+    }
+
+    it('does not name the order when the same number is retyped with leading zeros', async () => {
+      const user = userEvent.setup();
+      const dialog = await summaryAfter(async (input) => {
+        await user.clear(input);
+        await user.type(input, '002');
+      });
+
+      expect(dialog.textContent).not.toContain(EN.leads_status_add_edit_order);
+    });
+
+    it('shows None for an order that is cleared, and sends null', async () => {
+      const user = userEvent.setup();
+      const dialog = await summaryAfter(async (input) => {
+        await user.clear(input);
+      });
+
+      expect(dialog.textContent).toContain(EN.leads_status_add_edit_order);
+      expect(dialog.textContent).toContain('None');
+
+      await user.click(within(dialog).getByTestId('confirm-dialog-confirm'));
+
+      await waitFor(() => {
+        expect(requests.find((r) => r.method === 'PATCH')?.data).toMatchObject({
+          statusorder: null,
+        });
+      });
+    });
+  });
+
   it('shows the loading state while fetching a status', () => {
     record = 'pending';
 

@@ -104,6 +104,16 @@ describe('Lead Statuses Schema', () => {
     ).toBe(false);
   });
 
+  it('rejects an order that is only a minus sign', () => {
+    expect(
+      leadStatusesFormSchema.safeParse({
+        name: 'Interested',
+        color: '#28B8DA',
+        statusorder: '-',
+      }).success,
+    ).toBe(false);
+  });
+
   it('rejects order values outside the 32-bit signed integer range', () => {
     expect(
       leadStatusesFormSchema.safeParse({
