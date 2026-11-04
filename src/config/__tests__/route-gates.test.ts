@@ -178,7 +178,7 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   });
 
   it('carries the route-gates registry marker pair inside the ROUTE_GATES literal, after the entries (03.2-17)', () => {
-    // A new screen's three routes go between these markers, fail-closed on ADMIN_GATE
+    // A new screen's three routes go above these markers, fail-closed on ADMIN_GATE
     // (erp-docs `05-templates/frontend-feature/README.md`).
     const text = readFileSync(join(import.meta.dirname, '..', 'route-gates.ts'), 'utf8');
     const literal = text.slice(text.indexOf('Object.freeze({'), text.indexOf('});'));

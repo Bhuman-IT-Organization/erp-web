@@ -111,8 +111,9 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/ticket-priorities': ADMIN_GATE,
   '/setup/ticket-priorities/new': ADMIN_GATE,
   '/setup/ticket-priorities/:id': ADMIN_GATE,
-  // A new screen's three routes go between these markers, each on ADMIN_GATE: fail closed until the
-  // module declares its own view code here AND in @erp/contracts (kept in sync by hand).
+  // A new screen's three routes go here, above the markers, each on ADMIN_GATE: fail closed until the
+  // module declares its own view code here AND in @erp/contracts (kept in sync by hand). The markers
+  // stay last and empty: `route-gates.test.ts` refuses a route after the start marker.
   // registry start: route-gates
   // registry end: route-gates
 });
