@@ -1,6 +1,7 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { SWRConfig } from 'swr';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import type { ApiAdapter } from '@/lib/api/call-api';
 import { http } from '@/lib/api/http';
 import { setSession } from '@/lib/auth/session';
@@ -96,6 +97,42 @@ const LOADED: Answer = {
   },
 };
 
+const noResults: Answer = {
+  status: 200,
+  body: {
+    data: [],
+    meta: {
+      nextCursor: null,
+      prevCursor: null,
+      total: 0,
+      rangeStart: 0,
+      exportLimit: 500,
+      printLimit: 250,
+    },
+  },
+};
+
+/** The dialog portals to `<body>`, outside the story canvas. */
+const page = (canvasElement: HTMLElement) => within(canvasElement.ownerDocument.body);
+
+const DESKTOP = {
+  parameters: {
+    viewport: {
+      options: {
+        desktop1280: { name: 'Desktop 1280', styles: { width: '1280px', height: '800px' } },
+      },
+    },
+  },
+  globals: { viewport: { value: 'desktop1280', isRotated: false } },
+} as const;
+
+const openDelete = async (canvasElement: HTMLElement): Promise<HTMLElement> => {
+  await userEvent.click(
+    await within(canvasElement).findByRole('button', { name: 'Delete Waiting' }),
+  );
+  return page(canvasElement).findByTestId('confirm-dialog');
+};
+
 const meta = {
   title: 'Features/TicketStatuses/TicketStatusesList',
   component: TicketStatusesList,
@@ -119,6 +156,11 @@ export const Empty: Story = {
   decorators: [withApi(api({ status: 200, body: { data: [] } }))],
 };
 
+export const NoResults: Story = {
+  decorators: [withApi(api(noResults))],
+  parameters: { nuqs: { searchParams: '?q=zz' } },
+};
+
 export const Error: Story = {
   decorators: [
     withApi(
@@ -136,6 +178,18 @@ export const Error: Story = {
 };
 
 export const Loaded: Story = {};
+export const DeleteConfirm: Story = {
+  ...DESKTOP,
+  play: async ({ canvasElement }) => {
+    const dialog = await openDelete(canvasElement);
+    await waitFor(async () => {
+      await expect(within(dialog).getByRole('heading')).toHaveTextContent(
+        'Delete ticket status: Waiting?',
+      );
+    });
+    await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeEnabled();
+  },
+};
 export const BuiltInStatusHasNoDelete: Story = {
   play: async ({ canvasElement }) => {
     const { expect, within } = await import('storybook/test');

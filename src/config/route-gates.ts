@@ -72,6 +72,9 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/expense-categories': ADMIN_GATE,
   '/setup/expense-categories/new': ADMIN_GATE,
   '/setup/expense-categories/:id': ADMIN_GATE,
+  '/setup/estimate_request-statuses': ADMIN_GATE,
+  '/setup/estimate_request-statuses/new': ADMIN_GATE,
+  '/setup/estimate_request-statuses/:id': ADMIN_GATE,
   '/setup/email-templates': PERMISSIONS.settings.emailTemplates.view,
   '/setup/email-templates/:id': PERMISSIONS.settings.emailTemplates.view,
   '/setup/sent-emails': ADMIN_GATE,
@@ -109,6 +112,9 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/customer-groups': ADMIN_GATE,
   '/setup/customer-groups/new': ADMIN_GATE,
   '/setup/customer-groups/:id': ADMIN_GATE,
+  '/setup/ticket-priorities': ADMIN_GATE,
+  '/setup/ticket-priorities/new': ADMIN_GATE,
+  '/setup/ticket-priorities/:id': ADMIN_GATE,
   // A new screen's three routes go between these markers, each on ADMIN_GATE: fail closed until the
   // module declares its own view code here AND in @erp/contracts (kept in sync by hand).
   // registry start: route-gates

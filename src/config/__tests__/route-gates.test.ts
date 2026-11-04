@@ -59,6 +59,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/email-status',
       '/setup/email-templates',
       '/setup/email-templates/:id',
+      '/setup/estimate_request-statuses',
+      '/setup/estimate_request-statuses/:id',
+      '/setup/estimate_request-statuses/new',
       '/setup/expense-categories',
       '/setup/expense-categories/:id',
       '/setup/expense-categories/new',
@@ -86,6 +89,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/taxes',
       '/setup/taxes/:id',
       '/setup/taxes/new',
+      '/setup/ticket-priorities',
+      '/setup/ticket-priorities/:id',
+      '/setup/ticket-priorities/new',
       '/setup/ticket-statuses',
       '/setup/ticket-statuses/:id',
       '/setup/ticket-statuses/new',
@@ -97,6 +103,16 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/ticket-statuses',
       '/setup/ticket-statuses/new',
       '/setup/ticket-statuses/:id',
+    ]) {
+      expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
+    }
+  });
+
+  it('protects all Estimate Request Statuses pages with the administrator gate', () => {
+    for (const route of [
+      '/setup/estimate_request-statuses',
+      '/setup/estimate_request-statuses/new',
+      '/setup/estimate_request-statuses/:id',
     ]) {
       expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
     }

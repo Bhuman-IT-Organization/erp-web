@@ -10,6 +10,8 @@ import customerGroupsAr from '@/features/customer-groups/messages/ar.json';
 import customerGroupsEn from '@/features/customer-groups/messages/en.json';
 import expenseCategoriesAr from '@/features/expense-categories/messages/ar.json';
 import expenseCategoriesEn from '@/features/expense-categories/messages/en.json';
+import estimateRequestStatusesAr from '@/features/estimate-request-statuses/messages/ar.json';
+import estimateRequestStatusesEn from '@/features/estimate-request-statuses/messages/en.json';
 import mailAr from '@/features/mail/messages/ar.json';
 import mailEn from '@/features/mail/messages/en.json';
 import paymentModesAr from '@/features/payment-modes/messages/ar.json';
@@ -32,6 +34,8 @@ import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
 import knowledgeBaseAr from '@/features/knowledge-base/messages/ar.json';
 import knowledgeBaseEn from '@/features/knowledge-base/messages/en.json';
 
+import ticketPrioritiesAr from '@/features/ticket-priorities/messages/ar.json';
+import ticketPrioritiesEn from '@/features/ticket-priorities/messages/en.json';
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
@@ -52,6 +56,7 @@ export const NAMESPACES = [
   'status',
   'staff',
   'expense-categories',
+  'estimate-request-statuses',
   'taxes',
   'cost-centers',
   'mail',
@@ -62,6 +67,7 @@ export const NAMESPACES = [
   'ticket-statuses',
   'customer-groups',
   'knowledge-base',
+  'ticket-priorities',
   // registry end: namespaces
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
@@ -76,6 +82,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     statusEn,
     staffEn,
     expenseCategoriesEn,
+    estimateRequestStatusesEn,
     taxesEn,
     costCentersEn,
     mailEn,
@@ -87,6 +94,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     ticketStatusesEn,
     customerGroupsEn,
     knowledgeBaseEn,
+    ticketPrioritiesEn,
     // registry end: en
   ],
   ar: [
@@ -96,6 +104,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     shellAr,
     staffAr,
     expenseCategoriesAr,
+    estimateRequestStatusesAr,
     taxesAr,
     costCentersAr,
     mailAr,
@@ -107,6 +116,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     ticketStatusesAr,
     customerGroupsAr,
     knowledgeBaseAr,
+    ticketPrioritiesAr,
     // registry end: ar
   ],
 };
