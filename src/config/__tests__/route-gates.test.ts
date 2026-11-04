@@ -15,6 +15,7 @@ import {
   type RouteGate,
 } from '../route-gates';
 import { routeIsAdminOnly, routePermission } from '../routes';
+import { FIXED_EQUIPMENT_SETTINGS_CODES } from '../fixed-equipment-settings';
 
 /**
  * The erp-web half of the one-route-one-gate fix (migration-lead decision 2026-09-24).
@@ -65,6 +66,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/expense-categories',
       '/setup/expense-categories/:id',
       '/setup/expense-categories/new',
+      '/setup/fixed-equipment-depreciations',
+      '/setup/fixed-equipment-depreciations/:id',
+      '/setup/fixed-equipment-depreciations/new',
       '/setup/lead-sources',
       '/setup/lead-sources/:id',
       '/setup/lead-sources/new',
@@ -141,6 +145,33 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       PERMISSIONS.settings.emailTemplates.view,
     );
     expect(routeIsAdminOnly('/setup/email-templates')).toBe(false);
+  });
+
+  it('gates the Fixed Equipment Depreciations list, /new and /:id on any read code of the tab’s five groups: those admit, nothing else does', () => {
+    const codes = FIXED_EQUIPMENT_SETTINGS_CODES.depreciation;
+    const gate = [...codes.read.all, ...codes.read.own];
+    for (const route of [
+      '/setup/fixed-equipment-depreciations',
+      '/setup/fixed-equipment-depreciations/new',
+      '/setup/fixed-equipment-depreciations/:id',
+    ]) {
+      expect(ROUTE_GATES[route], route).toEqual(gate);
+    }
+    expect(routePermission('/setup/fixed-equipment-depreciations/4')).toEqual(gate);
+    expect(routeIsAdminOnly('/setup/fixed-equipment-depreciations')).toBe(false);
+
+    const declared = ROUTE_GATES['/setup/fixed-equipment-depreciations'];
+    const admits = (code: string): boolean =>
+      declared !== undefined && isAnyOfGate(declared) && declared.includes(code);
+    const fe = PERMISSIONS.fixedEquipment;
+    // Allowed: the depreciation group's reads, and an item group's.
+    expect(admits(fe.settingDepreciation.view)).toBe(true);
+    expect(admits(fe.settingDepreciation.viewOwn)).toBe(true);
+    expect(admits(fe.assets.view)).toBe(true);
+    expect(admits(fe.consumables.viewOwn)).toBe(true);
+    // Denied: a write code alone, and another settings tab's view code.
+    expect(admits(fe.settingDepreciation.create)).toBe(false);
+    expect(admits(fe.settingCategory.view)).toBe(false);
   });
 
   it('gates the sent-email log, its entries and the email status on the administrator flag (04.3 D-02, D-05, D-09)', () => {

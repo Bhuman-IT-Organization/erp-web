@@ -2,7 +2,7 @@ import { existsSync, readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { flattenNavigation, NAVIGATION, SETUP_NAVIGATION, type NavItem } from '../navigation';
-import { PERMISSION_CODES } from '../permissions';
+import { PERMISSION_CODES, PERMISSIONS } from '../permissions';
 import { navGateOf } from '../route-gates';
 import { activeTrailOf, breadcrumbsFor } from '../routes';
 
@@ -217,6 +217,30 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
     expect(roles?.adminOnly).toBe(true);
   });
 
+  it('opens Fixed Equipment > Settings on Suppliers, covers the Depreciations screen, and gates it on the view and view own of all eleven groups Perfex checks', () => {
+    const settings = flattenNavigation().find((item) => item.id === 'fixed_equipment_settings');
+    const fe = PERMISSIONS.fixedEquipment;
+    // `fixed_equipment.php:445-468`: the seven settings groups, then the four item groups.
+    const groups = [
+      fe.settingModel,
+      fe.settingManufacturer,
+      fe.settingDepreciation,
+      fe.settingCategory,
+      fe.settingStatusLabel,
+      fe.settingCustomField,
+      fe.settingSupplier,
+      fe.assets,
+      fe.licenses,
+      fe.accessories,
+      fe.consumables,
+    ];
+    expect(groups).toHaveLength(11);
+    expect(settings?.permission).toEqual(groups.flatMap((group) => [group.view, group.viewOwn]));
+    expect(settings?.href).toBe('/admin/fixed_equipment/settings?tab=suppliers');
+    expect(settings?.covers).toEqual(['/setup/fixed-equipment-depreciations']);
+    expect(settings?.legacy).toBe(true);
+  });
+
   it("puts Setup > Email where Email Templates was: Node's list, Perfex's list, Sent emails and Email status (04.3 UI-SPEC § Sidebar)", () => {
     const ids = SETUP_NAVIGATION.map((item) => item.id);
     expect(ids).not.toContain('email-templates');
@@ -243,6 +267,22 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
     expect(status?.adminOnly).toBe(true);
     expect(navGateOf('/setup/sent-emails')).toEqual({ adminOnly: true });
     expect(navGateOf('/setup/email-status')).toEqual({ adminOnly: true });
+  });
+
+  it('gives the three depreciation routes the Fixed Equipment › Settings trail they are covered by', () => {
+    for (const path of [
+      '/setup/fixed-equipment-depreciations',
+      '/setup/fixed-equipment-depreciations/new',
+      '/setup/fixed-equipment-depreciations/7',
+    ]) {
+      expect(breadcrumbsFor(path).at(-1), path).toEqual({ labelKey: 'shell.fe_settings' });
+      // When the page adds its own crumbs, Settings becomes a link to the menu row's href.
+      expect(breadcrumbsFor(path, { linkLast: true }).at(-1), path).toEqual({
+        labelKey: 'shell.fe_settings',
+        href: '/admin/fixed_equipment/settings?tab=suppliers',
+      });
+      expect(activeTrailOf(path).at(-1)?.id, path).toBe('fixed_equipment_settings');
+    }
   });
 
   it('names every Email page in the breadcrumb: Email, then the page, then the record', () => {
