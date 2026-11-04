@@ -4,7 +4,7 @@ import { EstimateRequestStatusesListPage } from '@/features/estimate-request-sta
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('estimate-request-statuses');
-  return { title: t('title') };
+  return { title: t('statuses') };
 }
 
 export const dynamic = 'force-dynamic';

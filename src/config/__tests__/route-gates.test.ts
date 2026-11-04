@@ -59,9 +59,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/email-status',
       '/setup/email-templates',
       '/setup/email-templates/:id',
-      '/setup/estimate_request-statuses',
-      '/setup/estimate_request-statuses/:id',
-      '/setup/estimate_request-statuses/new',
+      '/setup/estimate-request-statuses',
+      '/setup/estimate-request-statuses/:id',
+      '/setup/estimate-request-statuses/new',
       '/setup/expense-categories',
       '/setup/expense-categories/:id',
       '/setup/expense-categories/new',
@@ -94,6 +94,13 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
     ]);
   });
 
+  it('declares each route exactly once in the source map', () => {
+    const text = readFileSync(join(import.meta.dirname, '..', 'route-gates.ts'), 'utf8');
+    const literal = text.slice(text.indexOf('Object.freeze({'), text.indexOf('});'));
+    const sourceRoutes = [...literal.matchAll(/^\s*'([^']+)':/gm)].map(([, route]) => route);
+    expect(sourceRoutes.sort()).toEqual(GATED_ROUTES);
+  });
+
   it('protects all Ticket Statuses pages with the administrator gate', () => {
     for (const route of [
       '/setup/ticket-statuses',
@@ -106,9 +113,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
 
   it('protects all Estimate Request Statuses pages with the administrator gate', () => {
     for (const route of [
-      '/setup/estimate_request-statuses',
-      '/setup/estimate_request-statuses/new',
-      '/setup/estimate_request-statuses/:id',
+      '/setup/estimate-request-statuses',
+      '/setup/estimate-request-statuses/new',
+      '/setup/estimate-request-statuses/:id',
     ]) {
       expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
     }

@@ -5,7 +5,7 @@ import { expect, userEvent, waitFor, within } from 'storybook/test';
 import type { ApiAdapter } from '@/lib/api/call-api';
 import { http } from '@/lib/api/http';
 import { setSession } from '@/lib/auth/session';
-import { EstimateRequestStatusForm } from './EstimateRequestStatusForm';
+import { EstimateRequestStatusesForm } from './EstimateRequestStatusesForm';
 
 const HTTP_OK = 200;
 const HTTP_CREATED = 201;
@@ -75,13 +75,13 @@ function withApi(save: Answer = { status: HTTP_CREATED, body: RECORD }): Decorat
 }
 
 const meta = {
-  title: 'Features/EstimateRequestStatuses/EstimateRequestStatusForm',
-  component: EstimateRequestStatusForm,
+  title: 'Features/EstimateRequestStatuses/EstimateRequestStatusesForm',
+  component: EstimateRequestStatusesForm,
   args: { id: null },
   parameters: {
     nextjs: {
       appDirectory: true,
-      navigation: { pathname: '/setup/estimate_request-statuses/new' },
+      navigation: { pathname: '/setup/estimate-request-statuses/new' },
     },
   },
   decorators: [
@@ -91,7 +91,7 @@ const meta = {
       </div>
     ),
   ],
-} satisfies Meta<typeof EstimateRequestStatusForm>;
+} satisfies Meta<typeof EstimateRequestStatusesForm>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;

@@ -60,7 +60,7 @@ const meta = {
   parameters: {
     nextjs: {
       appDirectory: true,
-      navigation: { pathname: '/setup/estimate_request-statuses' },
+      navigation: { pathname: '/setup/estimate-request-statuses' },
     },
   },
 } satisfies Meta<typeof EstimateRequestStatusesList>;

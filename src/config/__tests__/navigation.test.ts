@@ -191,7 +191,7 @@ describe('NAVIGATION and SETUP_NAVIGATION', () => {
       '/setup/payment-modes',
       '/setup/expense-categories',
       '/setup/contract-types',
-      '/setup/estimate_request-statuses',
+      '/setup/estimate-request-statuses',
       '/setup/email-templates',
       '/setup/sent-emails',
       '/setup/email-status',

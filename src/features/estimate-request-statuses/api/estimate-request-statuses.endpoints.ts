@@ -3,10 +3,9 @@ import { createResourceHooks } from '@/lib/api/create-resource-hooks';
 import type { FeatureErrorCodes } from '@/lib/errors/error-messages';
 import {
   estimateRequestStatusSchema,
-  estimateRequestStatusesListResponseSchema,
   type EstimateRequestStatus,
   type EstimateRequestStatusWriteValues,
-} from '@/features/estimate-request-statuses/schemas/estimate-request-status.schema';
+} from '@/features/estimate-request-statuses/schemas/estimate-request-statuses.schema';
 
 export const ESTIMATE_REQUEST_STATUSES_ENDPOINTS = {
   list: { method: 'GET', path: '/api/v1/estimate-request-statuses' },
@@ -22,6 +21,8 @@ export const ESTIMATE_REQUEST_STATUSES_PATH = ESTIMATE_REQUEST_STATUSES_ENDPOINT
 export const ESTIMATE_REQUEST_STATUSES_EXPORT_PATH = ESTIMATE_REQUEST_STATUSES_ENDPOINTS.export
   .path satisfies ApiPath;
 export const ESTIMATE_REQUEST_STATUSES_EXPORT_COLUMNS = ['id', 'name', 'total_request'] as const;
+export type EstimateRequestStatusesExportColumn =
+  (typeof ESTIMATE_REQUEST_STATUSES_EXPORT_COLUMNS)[number];
 
 export function estimateRequestStatusesPath(id: string): ApiPath {
   return ESTIMATE_REQUEST_STATUSES_ENDPOINTS.detail.path.replace(
@@ -35,8 +36,6 @@ export const estimateRequestStatusesHooks = createResourceHooks<
   EstimateRequestStatusWriteValues,
   EstimateRequestStatusWriteValues
 >(ESTIMATE_REQUEST_STATUSES_PATH, estimateRequestStatusSchema);
-
-export const estimateRequestStatusesListSchema = estimateRequestStatusesListResponseSchema;
 
 export const VALIDATION_CODE = 'ERP-VALIDATION-0001';
 export const NOT_FOUND_CODE = 'ERP-CORE-0004';
