@@ -1,4 +1,5 @@
 import { PERMISSIONS, type PermissionCode } from './permissions';
+import { FIXED_EQUIPMENT_SETTINGS_CODES } from './fixed-equipment-settings';
 
 /**
  * Mirrors `@erp/contracts`' `ROUTE_GATES` — erp-api `packages/contracts/src/route-gates.ts` — the
@@ -111,6 +112,18 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   // A new screen's three routes go here, above the markers, each on ADMIN_GATE: fail closed until the
   // module declares its own view code here AND in @erp/contracts (kept in sync by hand). The markers
   // stay last and empty: `route-gates.test.ts` refuses a route after the start marker.
+  '/setup/fixed-equipment-depreciations': [
+    ...FIXED_EQUIPMENT_SETTINGS_CODES.depreciation.read.all,
+    ...FIXED_EQUIPMENT_SETTINGS_CODES.depreciation.read.own,
+  ],
+  '/setup/fixed-equipment-depreciations/new': [
+    ...FIXED_EQUIPMENT_SETTINGS_CODES.depreciation.read.all,
+    ...FIXED_EQUIPMENT_SETTINGS_CODES.depreciation.read.own,
+  ],
+  '/setup/fixed-equipment-depreciations/:id': [
+    ...FIXED_EQUIPMENT_SETTINGS_CODES.depreciation.read.all,
+    ...FIXED_EQUIPMENT_SETTINGS_CODES.depreciation.read.own,
+  ],
   // registry start: route-gates
   // registry end: route-gates
 });

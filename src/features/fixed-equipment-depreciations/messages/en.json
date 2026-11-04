@@ -1,0 +1,38 @@
+{
+  "fixed-equipment-depreciations": {
+    "id": "ID",
+    "add": "Add",
+    "fe_depreciations": "Depreciations",
+    "fe_add_depreciations": "Add Depreciations",
+    "fe_edit_depreciations": "Edit Depreciations",
+    "fe_name": "Name",
+    "fe_term": "Term",
+    "fe_depreciation_name": "Depreciation Name",
+    "fe_number_of_months": "Number of Months",
+    "term_months": "{count, plural, one {{countN} month} other {{countN} months}}",
+    "depreciation_lowercase": "depreciation",
+    "noun_depreciations": "depreciations",
+    "section_details": "Details",
+    "no_depreciations_found": "No depreciations found",
+    "empty_body": "Add a depreciation so assets can be depreciated over a number of months.",
+    "empty_body_readonly": "No depreciations have been added yet.",
+    "no_match_heading": "No depreciations match “{query}”.",
+    "no_match_body": "Check the spelling or clear the search.",
+    "enter_name": "Enter a depreciation name.",
+    "name_too_long": "Keep the depreciation name to {maxN} characters or fewer.",
+    "enter_months": "Enter the number of months.",
+    "months_whole": "Enter a whole number of months greater than 0.",
+    "months_too_large": "Enter a smaller number of months.",
+    "saved_toast": "Depreciation saved",
+    "deleted_toast": "Depreciation deleted",
+    "edit_action_named": "Edit {name}",
+    "delete_action_named": "Delete depreciation {name}",
+    "delete_title": "Delete depreciation {name}?",
+    "delete_body": "This can’t be undone.",
+    "errors": {
+      "ERP-CORE-0004": "This depreciation no longer exists. It may have been removed.",
+      "ERP-FIXEDEQUIPMENTDEPRECIATIONS-0001": "This depreciation is still used by asset models or assets, so it can’t be deleted. Change them to another depreciation first.",
+      "ERP-FIXEDEQUIPMENTDEPRECIATIONS-0002": "We couldn’t check whether this depreciation is in use, so it wasn’t deleted. Close this and try again."
+    }
+  }
+}

@@ -32,6 +32,8 @@ import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
 
 import ticketPrioritiesAr from '@/features/ticket-priorities/messages/ar.json';
 import ticketPrioritiesEn from '@/features/ticket-priorities/messages/en.json';
+import fixedEquipmentDepreciationsAr from '@/features/fixed-equipment-depreciations/messages/ar.json';
+import fixedEquipmentDepreciationsEn from '@/features/fixed-equipment-depreciations/messages/en.json';
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
@@ -62,6 +64,7 @@ export const NAMESPACES = [
   'ticket-statuses',
   'customer-groups',
   'ticket-priorities',
+  'fixed-equipment-depreciations',
   // registry end: namespaces
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
@@ -87,6 +90,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     ticketStatusesEn,
     customerGroupsEn,
     ticketPrioritiesEn,
+    fixedEquipmentDepreciationsEn,
     // registry end: en
   ],
   ar: [
@@ -107,6 +111,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     ticketStatusesAr,
     customerGroupsAr,
     ticketPrioritiesAr,
+    fixedEquipmentDepreciationsAr,
     // registry end: ar
   ],
 };

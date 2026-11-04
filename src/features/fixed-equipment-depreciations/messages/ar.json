@@ -1,0 +1,38 @@
+{
+  "fixed-equipment-depreciations": {
+    "id": "المعرّف",
+    "add": "إضافة",
+    "fe_depreciations": "الإهلاكات",
+    "fe_add_depreciations": "إضافة إهلاك",
+    "fe_edit_depreciations": "تعديل الإهلاك",
+    "fe_name": "الاسم",
+    "fe_term": "المدة",
+    "fe_depreciation_name": "اسم الإهلاك",
+    "fe_number_of_months": "عدد الأشهر",
+    "term_months": "{count, plural, zero {{countN} شهر} one {شهر واحد} two {شهران} few {{countN} أشهر} many {{countN} شهرًا} other {{countN} شهر}}",
+    "depreciation_lowercase": "إهلاك",
+    "noun_depreciations": "الإهلاكات",
+    "section_details": "التفاصيل",
+    "no_depreciations_found": "لم يتم العثور على إهلاكات",
+    "empty_body": "أضف إهلاكًا ليتم إهلاك الأصول على عدد من الأشهر.",
+    "empty_body_readonly": "لم تتم إضافة أي إهلاكات بعد.",
+    "no_match_heading": "لا توجد إهلاكات تطابق “{query}”.",
+    "no_match_body": "تحقق من الإملاء أو امسح البحث.",
+    "enter_name": "أدخل اسم الإهلاك.",
+    "name_too_long": "اجعل اسم الإهلاك لا يتجاوز {max, plural, zero {{maxN} حرف} one {حرفًا واحدًا} two {حرفين} few {{maxN} أحرف} many {{maxN} حرفًا} other {{maxN} حرف}}.",
+    "enter_months": "أدخل عدد الأشهر.",
+    "months_whole": "أدخل عددًا صحيحًا من الأشهر أكبر من 0.",
+    "months_too_large": "أدخل عددًا أصغر من الأشهر.",
+    "saved_toast": "تم حفظ الإهلاك",
+    "deleted_toast": "تم حذف الإهلاك",
+    "edit_action_named": "تعديل {name}",
+    "delete_action_named": "حذف الإهلاك {name}",
+    "delete_title": "حذف الإهلاك {name}؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "errors": {
+      "ERP-CORE-0004": "هذا الإهلاك لم يعد موجودًا. ربما تمت إزالته.",
+      "ERP-FIXEDEQUIPMENTDEPRECIATIONS-0001": "ما زالت نماذج الأصول أو الأصول تستخدم هذا الإهلاك، لذا لا يمكن حذفه. غيّرها إلى إهلاك آخر أولاً.",
+      "ERP-FIXEDEQUIPMENTDEPRECIATIONS-0002": "تعذّر التحقق مما إذا كان هذا الإهلاك قيد الاستخدام، لذا لم يُحذف. أغلق هذه النافذة وحاول مرة أخرى."
+    }
+  }
+}
