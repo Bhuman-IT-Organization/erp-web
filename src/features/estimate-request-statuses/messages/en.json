@@ -7,7 +7,6 @@
     "color": "Color",
     "status_order": "Status Order",
     "section_details": "Details",
-    "save": "Save",
     "id": "ID",
     "noun_status": "status",
     "noun_statuses": "statuses",
@@ -18,8 +17,8 @@
     "no_match_heading": "No statuses match “{query}”",
     "no_match_body": "Check the spelling or clear the search to see every status.",
     "enter_name": "Enter a status name.",
-    "name_too_long": "Keep the status name to {max} characters or fewer.",
-    "enter_colour": "Enter a color using up to 10 characters.",
+    "name_too_long": "Keep the status name to {maxN} {max, plural, one {character} other {characters}} or fewer.",
+    "enter_color": "Enter a color using up to 10 characters.",
     "enter_order": "Enter a whole number for the status order.",
     "saved_toast": "Estimate Request status saved",
     "deleted_toast": "Estimate Request status deleted",
@@ -29,7 +28,7 @@
     "delete_body": "This action cannot be undone.",
     "errors": {
       "ERP-CORE-0004": "This status no longer exists. It may have been removed.",
-      "ERP-ESTIMATEREQUESTSTATUSES-0001": "This status is being used by estimate requests.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0001": "This status is used by estimate requests or forms, or its use could not be checked.",
       "ERP-ESTIMATEREQUESTSTATUSES-0002": "Default estimate request statuses cannot be deleted."
     }
   }

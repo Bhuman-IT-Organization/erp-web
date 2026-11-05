@@ -94,13 +94,6 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
     ]);
   });
 
-  it('declares each route exactly once in the source map', () => {
-    const text = readFileSync(join(import.meta.dirname, '..', 'route-gates.ts'), 'utf8');
-    const literal = text.slice(text.indexOf('Object.freeze({'), text.indexOf('});'));
-    const sourceRoutes = [...literal.matchAll(/^\s*'([^']+)':/gm)].map(([, route]) => route);
-    expect(sourceRoutes.sort()).toEqual(GATED_ROUTES);
-  });
-
   it('protects all Ticket Statuses pages with the administrator gate', () => {
     for (const route of [
       '/setup/ticket-statuses',

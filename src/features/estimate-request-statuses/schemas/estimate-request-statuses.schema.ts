@@ -6,7 +6,7 @@ export const ESTIMATE_REQUEST_STATUS_COLOR_MAX = 10;
 export const ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS = {
   name: 'enter_name',
   nameTooLong: 'name_too_long',
-  color: 'enter_colour',
+  color: 'enter_color',
   statusorder: 'enter_order',
 } as const;
 
@@ -37,7 +37,10 @@ export const estimateRequestStatusFormSchema = z.object({
   statusorder: z.union([
     z.literal(''),
     z.number().int(ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder),
-    z.string().regex(/^-?\d+$/, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder),
+    z
+      .string()
+      .regex(/^-?\d+$/, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
+      .transform((value) => String(Number(value))),
   ]),
 });
 

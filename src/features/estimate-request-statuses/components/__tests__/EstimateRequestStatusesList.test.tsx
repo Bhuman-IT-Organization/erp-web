@@ -1,17 +1,51 @@
 // @vitest-environment happy-dom
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
 import { AxiosError, AxiosHeaders, type AxiosResponse } from 'axios';
+import type { AnchorHTMLAttributes, ReactElement } from 'react';
 import { SWRConfig } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderWithProviders, screen, userEvent, waitFor, within } from '@/test/render';
+import {
+  physicalClassesIn,
+  renderWithProviders,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test/render';
 import { http } from '@/lib/api/http';
 import { resetApiStatus } from '@/lib/api/api-status';
 import { clearSession, setSession } from '@/lib/auth/session';
 import { EstimateRequestStatusesList } from '@/features/estimate-request-statuses/components/EstimateRequestStatusesList';
+import { GuardedEstimateRequestStatusesList } from '@/features/estimate-request-statuses/components/EstimateRequestStatusesList';
+import { estimateRequestStatusesPath } from '@/features/estimate-request-statuses/api/estimate-request-statuses.endpoints';
+import {
+  estimateRequestStatusRowSchema,
+  type EstimateRequestStatusRow,
+} from '@/features/estimate-request-statuses/schemas/estimate-request-statuses.schema';
+import { useRowSeed } from '@/lib/api/row-seed';
+import en from '@/features/estimate-request-statuses/messages/en.json';
+import ar from '@/features/estimate-request-statuses/messages/ar.json';
 
 const push = vi.fn<(href: string) => void>();
 vi.mock('next/navigation', () => ({
+  usePathname: () => '/setup/estimate-request-statuses',
   useRouter: () => ({ push, replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
+}));
+vi.mock('next/link', () => ({
+  default: ({
+    href,
+    onClick,
+    ...props
+  }: AnchorHTMLAttributes<HTMLAnchorElement> & { readonly href: string }) => (
+    <a
+      href={href}
+      {...props}
+      onClick={(event) => {
+        onClick?.(event);
+        event.preventDefault();
+      }}
+    />
+  ),
 }));
 
 const initialStatuses = [
@@ -40,6 +74,8 @@ const initialStatuses = [
     total_request: 0,
   },
 ];
+const EN = en['estimate-request-statuses'];
+const AR = ar['estimate-request-statuses'];
 
 const problem = (status: number, code: string) => ({
   type: 'about:blank',
@@ -51,6 +87,7 @@ const problem = (status: number, code: string) => ({
 let remove: { readonly status: number; readonly body?: unknown };
 let list: { readonly status: number; readonly body?: unknown } | 'pending';
 let exported: { readonly status: number; readonly body?: unknown };
+let meReply: { readonly status: number; readonly body?: unknown };
 let requests: { readonly method: string; readonly url: string }[];
 let exportRequests: URL[];
 
@@ -71,11 +108,13 @@ function adapter(): AxiosAdapter {
       },
     };
     const reply =
-      method === 'DELETE'
-        ? remove
-        : url.pathname === '/api/v1/estimate-request-statuses/export'
-          ? exported
-          : list;
+      url.pathname === '/api/v1/auth/me'
+        ? meReply
+        : method === 'DELETE'
+          ? remove
+          : url.pathname === '/api/v1/estimate-request-statuses/export'
+            ? exported
+            : list;
     if (reply === 'pending') return new Promise<never>(() => undefined);
     if (url.pathname === '/api/v1/estimate-request-statuses/export') exportRequests.push(url);
     const response: AxiosResponse<unknown> = {
@@ -99,6 +138,27 @@ function adapter(): AxiosAdapter {
   };
 }
 
+function me(isAdmin: boolean) {
+  return {
+    staffId: 1,
+    email: 'someone@example.invalid',
+    firstName: 'Some',
+    lastName: 'One',
+    isAdmin,
+    roleId: null,
+    permissions: [],
+    locale: null,
+  };
+}
+
+function SeedProbe(): ReactElement {
+  const row = useRowSeed<EstimateRequestStatusRow>(
+    estimateRequestStatusesPath('2'),
+    estimateRequestStatusRowSchema,
+  );
+  return <output data-testid="seed-probe">{row?.name ?? ''}</output>;
+}
+
 describe('Estimate Request Statuses list', () => {
   beforeEach(() => {
     setSession({ accessToken: 'test-only', csrfToken: 'test-only' });
@@ -107,6 +167,7 @@ describe('Estimate Request Statuses list', () => {
     remove = { status: 204 };
     list = { status: 200 };
     exported = { status: 200, body: new Blob(['id,name,total_request\r\n']) };
+    meReply = { status: 200, body: me(true) };
     requests = [];
     exportRequests = [];
   });
@@ -227,6 +288,96 @@ describe('Estimate Request Statuses list', () => {
     expect(within(noResults).getByRole('button', { name: /clear search/i })).toBeTruthy();
   });
 
+  it('shows names containing markup as plain text', async () => {
+    const name = '<img src=x onerror=alert(1)>';
+    list = {
+      status: 200,
+      body: {
+        data: [{ ...initialStatuses[2], name }],
+        meta: {
+          nextCursor: null,
+          prevCursor: null,
+          total: 1,
+          rangeStart: 1,
+          exportLimit: 500,
+          printLimit: 250,
+        },
+      },
+    };
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <EstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    expect(await screen.findByText(name)).toBeTruthy();
+    expect(document.querySelector('img')).toBeNull();
+  });
+
+  it('shows a retryable error when the list request answers 503', async () => {
+    list = { status: 503, body: problem(503, 'ERP-UPSTREAM-0001') };
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <EstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    const error = await screen.findByTestId('list-error');
+    expect(error.textContent).toContain("couldn't load statuses");
+    expect(within(error).getByRole('button', { name: 'Retry' })).toBeTruthy();
+  });
+
+  it('seeds a row when opened from its list link', async () => {
+    const user = userEvent.setup();
+    const { container } = renderWithProviders(
+      <SWRConfig value={{ shouldRetryOnError: false }}>
+        <EstimateRequestStatusesList />
+        <SeedProbe />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    await screen.findByRole('button', { name: 'Edit Processing' });
+    const link = container.querySelector<HTMLAnchorElement>(
+      'a[href="/setup/estimate-request-statuses/2"]',
+    );
+    expect(link).not.toBeNull();
+    if (link === null) throw new Error('estimate request status row link missing');
+    await user.click(link);
+    await waitFor(() => {
+      expect(screen.getByTestId('seed-probe').textContent).toBe('Processing');
+    });
+    expect(link.getAttribute('href')).toBe('/setup/estimate-request-statuses/2');
+  });
+
+  it('shows an Arabic row in RTL layout', async () => {
+    const arabicName = 'قيد المعالجة';
+    list = {
+      status: 200,
+      body: {
+        data: [{ ...initialStatuses[2], name: arabicName }],
+        meta: {
+          nextCursor: null,
+          prevCursor: null,
+          total: 1,
+          rangeStart: 1,
+          exportLimit: 500,
+          printLimit: 250,
+        },
+      },
+    };
+    const { container } = renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <EstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true, locale: 'ar' },
+    );
+    expect(await screen.findByText(arabicName)).toBeTruthy();
+    expect(screen.getByText(AR.status_name)).toBeTruthy();
+    expect(document.documentElement.dir).toBe('rtl');
+    expect(physicalClassesIn(container)).toEqual([]);
+    expect(EN.status_name).toBe('Status Name');
+  });
+
   it('shows a plain-language error and retry action when loading fails', async () => {
     list = {
       status: 503,
@@ -315,11 +466,35 @@ describe('Estimate Request Statuses list', () => {
     await user.click(within(dialog).getByTestId('confirm-dialog-confirm'));
     await waitFor(() => {
       expect(within(dialog).getByTestId('confirm-dialog-error').textContent).toContain(
-        'being used by estimate requests',
+        'used by estimate requests or forms',
       );
     });
     expect(within(dialog).getByTestId('confirm-dialog-error').textContent).not.toContain(
       'Something went wrong',
+    );
+  });
+
+  it('Guarded: an administrator sees the list', async () => {
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <GuardedEstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    expect(await screen.findByTestId('list-table')).toBeTruthy();
+  });
+
+  it('Guarded: a non-administrator is refused before the list is requested', async () => {
+    meReply = { status: 200, body: me(false) };
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <GuardedEstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    expect(await screen.findByTestId('permission-refused')).toBeTruthy();
+    expect(requests.filter(({ url }) => url === '/api/v1/estimate-request-statuses')).toHaveLength(
+      0,
     );
   });
 });

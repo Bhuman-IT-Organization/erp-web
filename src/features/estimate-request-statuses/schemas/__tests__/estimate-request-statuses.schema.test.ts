@@ -50,6 +50,16 @@ describe('Estimate Request Status schema', () => {
     });
   });
 
+  it('normalizes numeric order strings before building the save summary', () => {
+    const values = estimateRequestStatusFormSchema.parse({
+      name: 'Ready',
+      color: '#757575',
+      statusorder: '007',
+    });
+    expect(values.statusorder).toBe('7');
+    expect(toEstimateRequestStatusWriteValues(values).statusorder).toBe(7);
+  });
+
   it('rejects a name longer than 50 characters', () => {
     expect(() =>
       estimateRequestStatusFormSchema.parse({

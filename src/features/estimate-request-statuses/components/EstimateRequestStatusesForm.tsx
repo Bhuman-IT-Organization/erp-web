@@ -88,6 +88,19 @@ function retryableFailure(
   return result !== undefined && !result.ok && isRetryableCode(result.code) ? result : null;
 }
 
+function breadcrumbLabel(
+  id: string | null,
+  record: EstimateRequestStatus | undefined,
+  item: RecordRead,
+): string | null | undefined {
+  if (id === null) return undefined;
+  const failureShown =
+    item.data === undefined &&
+    item.error !== undefined &&
+    (record === undefined || !item.error.retryable);
+  return failureShown ? null : record?.name;
+}
+
 async function afterStatusSave({
   id,
   saved,
@@ -341,7 +354,7 @@ export function EstimateRequestStatusesForm({
     });
   }
 
-  useBreadcrumbLabel(chooseStatusValue(id, undefined, record?.name));
+  useBreadcrumbLabel(breadcrumbLabel(id, record, item));
 
   if (waitsForRecord(id, item, seed)) {
     return <RecordState item={item} errorText={errorText} />;
@@ -381,7 +394,12 @@ export function EstimateRequestStatusesForm({
           },
         ]}
         onValid={setPending}
-        translateError={(key) => t(key, { max: f.number(ESTIMATE_REQUEST_STATUS_NAME_MAX) })}
+        translateError={(key) =>
+          t(key, {
+            max: ESTIMATE_REQUEST_STATUS_NAME_MAX,
+            maxN: f.number(ESTIMATE_REQUEST_STATUS_NAME_MAX),
+          })
+        }
         submitLabel={submitLabel}
         pendingLabel={pendingLabel}
         isPending={mutation.isMutating}

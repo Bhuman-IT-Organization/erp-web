@@ -1,18 +1,48 @@
 // @vitest-environment happy-dom
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
 import { AxiosError, AxiosHeaders, type AxiosResponse } from 'axios';
-import { SWRConfig } from 'swr';
+import { SWRConfig, type Cache } from 'swr';
+import type { AnchorHTMLAttributes } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { renderWithProviders, screen, userEvent, waitFor, within } from '@/test/render';
+import {
+  physicalClassesIn,
+  renderWithProviders,
+  screen,
+  userEvent,
+  waitFor,
+  within,
+} from '@/test/render';
 import { http } from '@/lib/api/http';
 import { resetApiStatus } from '@/lib/api/api-status';
+import { seedRow } from '@/lib/api/row-seed';
 import { clearSession, setSession } from '@/lib/auth/session';
 import { EstimateRequestStatusesForm } from '@/features/estimate-request-statuses/components/EstimateRequestStatusesForm';
+import { estimateRequestStatusesPath } from '@/features/estimate-request-statuses/api/estimate-request-statuses.endpoints';
+import { GuardedEstimateRequestStatusesForm } from '@/features/estimate-request-statuses/components/EstimateRequestStatusesForm';
+import en from '@/features/estimate-request-statuses/messages/en.json';
+import ar from '@/features/estimate-request-statuses/messages/ar.json';
+import { BreadcrumbLabelContext } from '@/lib/hooks/use-breadcrumb-label';
 
 const push = vi.fn<(href: string, options?: { readonly scroll: boolean }) => void>();
 vi.mock('next/navigation', () => ({
   usePathname: () => '/setup/estimate-request-statuses/new',
   useRouter: () => ({ push, replace: vi.fn(), prefetch: vi.fn(), back: vi.fn() }),
+}));
+vi.mock('next/link', () => ({
+  default: ({
+    href,
+    onClick,
+    ...props
+  }: AnchorHTMLAttributes<HTMLAnchorElement> & { readonly href: string }) => (
+    <a
+      href={href}
+      {...props}
+      onClick={(event) => {
+        onClick?.(event);
+        event.preventDefault();
+      }}
+    />
+  ),
 }));
 
 const processing = {
@@ -23,6 +53,14 @@ const processing = {
   flag: 'processing',
   total_request: 1,
 };
+const EN = en['estimate-request-statuses'];
+const AR = ar['estimate-request-statuses'];
+const ISOLATED = {
+  provider: () => new Map() as Cache,
+  shouldRetryOnError: false,
+  dedupingInterval: 0,
+};
+const GLOBAL = { shouldRetryOnError: false, dedupingInterval: 0 };
 
 const problem = (status: number, code: string, issues?: unknown) => ({
   type: 'about:blank',
@@ -36,6 +74,7 @@ type Reply = { readonly status: number; readonly body?: unknown } | 'pending';
 
 let recordReply: Reply | null;
 let saveReply: Reply | null;
+let meReply: Reply;
 const requests: { method: string; path: string; body: unknown }[] = [];
 
 function adapter(): AxiosAdapter {
@@ -57,22 +96,24 @@ function adapter(): AxiosAdapter {
             total_request: 0,
           },
         })
-      : url.pathname === '/api/v1/estimate-request-statuses/2'
-        ? (recordReply ?? { status: 200, body: processing })
-        : {
-            status: 200,
-            body: {
-              data: [processing],
-              meta: {
-                nextCursor: null,
-                prevCursor: null,
-                total: 3,
-                rangeStart: 1,
-                exportLimit: 500,
-                printLimit: 250,
+      : url.pathname === '/api/v1/auth/me'
+        ? meReply
+        : /^\/api\/v1\/estimate-request-statuses\/[^/]+$/.test(url.pathname)
+          ? (recordReply ?? { status: 200, body: processing })
+          : {
+              status: 200,
+              body: {
+                data: [processing],
+                meta: {
+                  nextCursor: null,
+                  prevCursor: null,
+                  total: 3,
+                  rangeStart: 1,
+                  exportLimit: 500,
+                  printLimit: 250,
+                },
               },
-            },
-          };
+            };
     if (reply === 'pending') return new Promise<never>(() => undefined);
     const response: AxiosResponse<unknown> = {
       data: reply.body,
@@ -88,14 +129,25 @@ function adapter(): AxiosAdapter {
   };
 }
 
-function show(id: string | null) {
+function show(id: string | null, swr: typeof GLOBAL = ISOLATED, locale?: 'ar') {
   return renderWithProviders(
-    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+    <SWRConfig value={swr}>
       <EstimateRequestStatusesForm id={id} />
     </SWRConfig>,
-    { hasMemory: true },
+    { hasMemory: true, ...(locale === undefined ? {} : { locale }) },
   );
 }
+
+const me = (isAdmin: boolean) => ({
+  staffId: 1,
+  email: 'someone@example.invalid',
+  firstName: 'Some',
+  lastName: 'One',
+  isAdmin,
+  roleId: null,
+  permissions: [],
+  locale: null,
+});
 
 beforeEach(() => {
   setSession({ accessToken: 'test-only', csrfToken: 'test-only' });
@@ -103,6 +155,7 @@ beforeEach(() => {
   requests.length = 0;
   recordReply = null;
   saveReply = null;
+  meReply = { status: 200, body: me(true) };
   push.mockClear();
   http.defaults.adapter = adapter();
 });
@@ -247,6 +300,57 @@ describe('Estimate Request Status form', () => {
     );
   });
 
+  it('publishes a null breadcrumb when a seeded list row answers 404', async () => {
+    const published = vi.fn<(label: string | null | undefined) => void>();
+    recordReply = { status: 404, body: problem(404, 'ERP-CORE-0004') };
+    seedRow(estimateRequestStatusesPath('2'), processing);
+    renderWithProviders(
+      <SWRConfig value={GLOBAL}>
+        <BreadcrumbLabelContext.Provider value={published}>
+          <EstimateRequestStatusesForm id="2" />
+        </BreadcrumbLabelContext.Provider>
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    await screen.findByTestId('inline-error');
+    await waitFor(() => {
+      expect(published).toHaveBeenLastCalledWith(null);
+    });
+  });
+
+  it('publishes a null breadcrumb when a permalink answers 404', async () => {
+    const published = vi.fn<(label: string | null | undefined) => void>();
+    recordReply = { status: 404, body: problem(404, 'ERP-CORE-0004') };
+    renderWithProviders(
+      <SWRConfig value={ISOLATED}>
+        <BreadcrumbLabelContext.Provider value={published}>
+          <EstimateRequestStatusesForm id="missing" />
+        </BreadcrumbLabelContext.Provider>
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    await screen.findByTestId('inline-error');
+    await waitFor(() => {
+      expect(published).toHaveBeenLastCalledWith(null);
+    });
+  });
+
+  it('shows the seeded record and retry action when its read answers 503', async () => {
+    recordReply = { status: 503, body: problem(503, 'ERP-UPSTREAM-0001') };
+    show('2');
+    const error = await screen.findByTestId('inline-error');
+    expect(within(error).getByRole('button', { name: 'Retry' })).toBeTruthy();
+    expect(screen.queryByRole('textbox', { name: 'Status Name' })).toBeNull();
+  });
+
+  it('renders markup in a record name as text', async () => {
+    const name = '<img src=x onerror=alert(1)>';
+    recordReply = { status: 200, body: { ...processing, name } };
+    show('2');
+    expect(await screen.findByRole('heading', { name })).toBeTruthy();
+    expect(document.querySelector('img')).toBeNull();
+  });
+
   it('asks before discarding dirty edits and navigates only after confirmation', async () => {
     const user = userEvent.setup();
     show('2');
@@ -288,4 +392,50 @@ describe('Estimate Request Status form', () => {
       statusorder: null,
     });
   });
+
+  it('treats a zero-padded numeric order as unchanged in the save summary', async () => {
+    const user = userEvent.setup();
+    recordReply = { status: 200, body: { ...processing, statusorder: 7 } };
+    show('2');
+    const order = await screen.findByRole<HTMLInputElement>('spinbutton', {
+      name: 'Status Order',
+    });
+    await user.clear(order);
+    await user.type(order, '007');
+    await user.click(screen.getByRole('button', { name: 'Save status' }));
+    const summary = await screen.findByTestId('confirm-dialog');
+    expect(within(summary).queryByTestId('confirm-dialog-changes')).toBeNull();
+  });
+
+  describe('Guarded Estimate Request Status form and Arabic', () => {
+    it('allows an administrator to see the form', async () => {
+      showGuardedForm();
+      expect(await screen.findByRole('heading', { name: EN.new_status })).toBeTruthy();
+    });
+
+    it('refuses a non-administrator before requesting estimate request status data', async () => {
+      meReply = { status: 200, body: me(false) };
+      showGuardedForm();
+      expect(await screen.findByTestId('permission-refused')).toBeTruthy();
+      expect(
+        requests.filter(({ path }) => path.startsWith('/api/v1/estimate-request-statuses')),
+      ).toHaveLength(0);
+    });
+
+    it('renders Arabic labels and direction', async () => {
+      const { container } = show(null, ISOLATED, 'ar');
+      expect(await screen.findByRole('textbox', { name: AR.status_name })).toBeTruthy();
+      expect(document.documentElement.dir).toBe('rtl');
+      expect(physicalClassesIn(container)).toEqual([]);
+    });
+  });
+
+  function showGuardedForm(): void {
+    renderWithProviders(
+      <SWRConfig value={ISOLATED}>
+        <GuardedEstimateRequestStatusesForm id={null} />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+  }
 });

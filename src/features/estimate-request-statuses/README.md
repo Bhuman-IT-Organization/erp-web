@@ -26,8 +26,6 @@ Delete is offered only for statuses without a flag and requires confirmation.
   status-name validation contract.
 - **Difference:** A blank order is saved as `null`. **Reason:** An empty field represents no
   explicit order rather than the numeric value zero.
-- **Difference:** Delete is hidden for flagged statuses and asks for confirmation otherwise.
-  **Reason:** Flagged statuses are built-in and cannot be deleted.
 
 ## Routes
 
@@ -46,9 +44,6 @@ The web screen expects status rows with `id`, `name`, `color`, `statusorder`, `f
 `total_request`; the request count is for estimate requests that use that status. The form accepts
 colors up to 10 characters. A blank color is sent blank by the form and the API saves it as
 `#757575`. Order accepts a whole number or a blank value, which is saved as `null`.
-
-The backend API module and its endpoints, including deletion, are not yet available. The web
-feature's API client integration must not be taken as confirmation that those backend routes exist.
 
 ## Messages
 
