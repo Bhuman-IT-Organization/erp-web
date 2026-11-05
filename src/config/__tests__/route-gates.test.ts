@@ -46,6 +46,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   it('is frozen and covers exactly the declared routes', () => {
     expect(Object.isFrozen(ROUTE_GATES)).toBe(true);
     expect(GATED_ROUTES).toEqual([
+      '/setup/contract-types',
+      '/setup/contract-types/:id',
+      '/setup/contract-types/new',
       '/setup/cost-centers',
       '/setup/cost-centers/:id',
       '/setup/cost-centers/new',
@@ -58,6 +61,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/email-status',
       '/setup/email-templates',
       '/setup/email-templates/:id',
+      '/setup/estimate-request-statuses',
+      '/setup/estimate-request-statuses/:id',
+      '/setup/estimate-request-statuses/new',
       '/setup/expense-categories',
       '/setup/expense-categories/:id',
       '/setup/expense-categories/new',
@@ -81,6 +87,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/taxes',
       '/setup/taxes/:id',
       '/setup/taxes/new',
+      '/setup/ticket-priorities',
+      '/setup/ticket-priorities/:id',
+      '/setup/ticket-priorities/new',
       '/setup/ticket-statuses',
       '/setup/ticket-statuses/:id',
       '/setup/ticket-statuses/new',
@@ -110,6 +119,17 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   });
 
   it('declares every value as a catalogue code, a list of distinct codes or a special gate, never a loose string', () => {
+  it('protects all Estimate Request Statuses pages with the administrator gate', () => {
+    for (const route of [
+      '/setup/estimate-request-statuses',
+      '/setup/estimate-request-statuses/new',
+      '/setup/estimate-request-statuses/:id',
+    ]) {
+      expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
+    }
+  });
+
+  it('declares every value as a catalogue code, a list of distinct codes or the administrator flag, never a loose string', () => {
     for (const route of GATED_ROUTES) {
       const gate: RouteGate | undefined = ROUTE_GATES[route];
       expect(gate, `${route} has no gate`).toBeDefined();
@@ -174,7 +194,7 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   });
 
   it('carries the route-gates registry marker pair inside the ROUTE_GATES literal, after the entries (03.2-17)', () => {
-    // A new screen's three routes go between these markers, fail-closed on ADMIN_GATE
+    // A new screen's three routes go above these markers, fail-closed on ADMIN_GATE
     // (erp-docs `05-templates/frontend-feature/README.md`).
     const text = readFileSync(join(import.meta.dirname, '..', 'route-gates.ts'), 'utf8');
     const literal = text.slice(text.indexOf('Object.freeze({'), text.indexOf('});'));

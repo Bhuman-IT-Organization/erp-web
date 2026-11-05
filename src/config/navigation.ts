@@ -1755,9 +1755,8 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'tickets-priorities',
         labelKey: 'shell.acs_ticket_priority_submenu',
-        href: '/admin/tickets/priorities',
-        adminOnly: true,
-        legacy: true,
+        href: '/setup/ticket-priorities',
+        ...navGateOf('/setup/ticket-priorities'),
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
@@ -1882,10 +1881,9 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'contracts-types',
         labelKey: 'shell.acs_contract_types',
-        href: '/admin/contracts/types',
-        adminOnly: true,
+        href: '/setup/contract-types',
+        ...navGateOf('/setup/contract-types'),
         module: 'sales',
-        legacy: true,
       },
     ],
   },
@@ -1942,10 +1940,9 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
       {
         id: 'estimate-request-statuses',
         labelKey: 'shell.acs_estimate_request_statuses_submenu',
-        href: '/admin/estimate_request/statuses',
-        permission: PERMISSIONS.settings.general.view,
+        href: '/setup/estimate-request-statuses',
+        ...navGateOf('/setup/estimate-request-statuses'),
         module: 'sales',
-        legacy: true,
       },
     ],
   },
