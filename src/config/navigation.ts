@@ -1795,7 +1795,6 @@ export const SETUP_NAVIGATION: readonly NavItem[] = [
         id: 'leads-sources',
         labelKey: 'shell.acs_leads_sources_submenu',
         href: '/setup/lead-sources',
-
         module: 'crm',
         ...navGateOf('/setup/lead-sources'),
       },

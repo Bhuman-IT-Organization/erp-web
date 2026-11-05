@@ -1,6 +1,6 @@
 import { flattenNavigation, type NavItem } from './navigation';
 import type { PermissionCode } from './permissions';
-import { isAdminGate, routeGateOf } from './route-gates';
+import { isAdminGate, isAuthenticatedGate, routeGateOf } from './route-gates';
 
 /**
  * Breadcrumbs and route guards, both DERIVED from `navigation.ts` — never hand-written per page
@@ -167,7 +167,9 @@ export function routePermission(
   pathname: string,
 ): PermissionCode | readonly PermissionCode[] | undefined {
   const gate = routeGateOf(pathname);
-  if (gate !== undefined) return isAdminGate(gate) ? undefined : gate;
+  if (gate !== undefined) {
+    return isAdminGate(gate) || isAuthenticatedGate(gate) ? undefined : gate;
+  }
   return coveringItem(pathname)?.permission;
 }
 

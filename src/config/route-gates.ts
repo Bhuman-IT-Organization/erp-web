@@ -42,19 +42,21 @@ import { PERMISSIONS, type PermissionCode } from './permissions';
  * code can be handed out by the mechanism it protects.
  */
 export const ADMIN_GATE = 'admin';
+export const AUTHENTICATED_GATE = 'authenticated';
 
 /**
- * What a route may be gated on: one clean permission code, an any-of list of codes, or the
- * administrator flag.
+ * What a route may be gated on:
+ * - one permission code;
+ * - an any-of list of permission codes;
+ * - the administrator flag;
+ * - an authenticated-user gate (staff or admin).
  *
- * `PermissionCode` widens to `string` (the catalogue's leaves are `as const` values, not a closed
- * type), so the second constituent adds nothing the compiler can use — it is written anyway because
- * it is the whole point of the map: a reader must see that `'admin'` is an admitted value and not a
- * typo, and `isAdminGate` is the narrowing every caller switches on. The api's copy carries the same
- * type and the same disable.
+ * `PermissionCode` widens to `string`, so the special gate values are documented
+ * explicitly. The type guards below identify those special values.
  */
 // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- `'admin'` is documentation the compiler cannot express while PermissionCode is `string`, and the array form is the any-of gate; see the docblock above.
-export type RouteGate = PermissionCode | readonly PermissionCode[] | typeof ADMIN_GATE;
+export type RouteGate =
+  PermissionCode | readonly PermissionCode[] | typeof ADMIN_GATE | typeof AUTHENTICATED_GATE;
 
 /**
  * Route → gate, frozen, byte-equal to the api's map. Keys are erp-web route paths; a key's dynamic
@@ -102,6 +104,9 @@ export const ROUTE_GATES: Readonly<Record<string, RouteGate>> = Object.freeze({
   '/setup/customer-groups': ADMIN_GATE,
   '/setup/customer-groups/new': ADMIN_GATE,
   '/setup/customer-groups/:id': ADMIN_GATE,
+  '/setup/todo': AUTHENTICATED_GATE,
+  '/setup/todo/new': AUTHENTICATED_GATE,
+  '/setup/todo/:id': AUTHENTICATED_GATE,
   // A new screen's three routes go between these markers, each on ADMIN_GATE: fail closed until the
   // module declares its own view code here AND in @erp/contracts (kept in sync by hand).
   // registry start: route-gates
@@ -114,6 +119,10 @@ export const GATED_ROUTES: readonly string[] = Object.keys(ROUTE_GATES).sort();
 /** True when the route is gated on the administrator flag rather than on a permission code. */
 export function isAdminGate(gate: RouteGate): gate is typeof ADMIN_GATE {
   return gate === ADMIN_GATE;
+}
+
+export function isAuthenticatedGate(gate: RouteGate): gate is typeof AUTHENTICATED_GATE {
+  return gate === AUTHENTICATED_GATE;
 }
 
 /** True when the route admits a member holding any one of a list of codes (plan 04.2-02). */
@@ -155,16 +164,18 @@ export function routeGateOf(pathname: string): RouteGate | undefined {
 }
 
 /**
- * The menu fields a Node route's declared gate produces — spread into the `NavItem` so the flag and
- * the code are never typed twice. An absent property is deliberate (`exactOptionalPropertyTypes`):
- * a route gated on the flag carries no `permission`, and one gated on a code carries no `adminOnly`.
- * An any-of gate returns the same array as `permission`, which `canAny` reads as "any one of".
+ * The menu fields a Node route's declared gate produces — spread into the `NavItem`.
+ *
+ * - Admin gate: returns `adminOnly: true`.
+ * - Permission gate: returns `permission`.
+ * - Authenticated gate: returns `{}`, allowing both staff and admins.
+ * - Undefined gate: returns `{}`.
  */
 export function navGateOf(route: string): {
   readonly permission?: PermissionCode | readonly PermissionCode[];
   readonly adminOnly?: true;
 } {
   const gate = routeGateOf(route);
-  if (gate === undefined) return {};
+  if (gate === undefined || isAuthenticatedGate(gate)) return {};
   return isAdminGate(gate) ? { adminOnly: true } : { permission: gate };
 }

@@ -1,4 +1,4 @@
-import type { AbstractIntlMessages } from 'next-intl';
+﻿import type { AbstractIntlMessages } from 'next-intl';
 // registry start: imports
 import authAr from '@/features/auth/messages/ar.json';
 import authEn from '@/features/auth/messages/en.json';
@@ -27,15 +27,16 @@ import leadsourcesAr from '@/features/lead-sources/messages/ar.json';
 import leadsourcesEn from '@/features/lead-sources/messages/en.json';
 import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
 import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
+import todosAr from '@/features/todo/messages/ar.json';
+import todosEn from '@/features/todo/messages/en.json';
 
 // registry end: imports
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
 import commonEn from './common/en.json';
-
 /**
  * The static registry of message packs (FE-08). Turbopack has no `import.meta.glob`, so every
- * feature's `messages/<locale>.json` is imported here by hand — a new feature adds its import
+ * feature's `messages/<locale>.json` is imported here by hand â€” a new feature adds its import
  * lines and entries between the `registry` markers (imports, namespaces, en, ar). One top-level
  * namespace per file = the feature's folder name.
  */
@@ -56,6 +57,7 @@ export const NAMESPACES = [
   'lead-sources',
   'ticket-statuses',
   'customer-groups',
+  'todo',
   // registry end: namespaces
 ] as const;
 export type Namespace = (typeof NAMESPACES)[number];
@@ -79,6 +81,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     leadsourcesEn,
     ticketStatusesEn,
     customerGroupsEn,
+    todosEn,
     // registry end: en
   ],
   ar: [
@@ -97,6 +100,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     leadsourcesAr,
     ticketStatusesAr,
     customerGroupsAr,
+    todosAr,
     // registry end: ar
   ],
 };

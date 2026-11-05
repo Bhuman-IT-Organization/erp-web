@@ -1,0 +1,29 @@
+{
+  "todo": {
+    "todos": "المهام",
+    "unfinished": "المهام غير المكتملة",
+    "finished": "أحدث المهام المكتملة",
+    "empty_unfinished": "لم يتم العثور على مهام غير مكتملة.",
+    "empty_finished": "لم يتم العثور على مهام مكتملة.",
+    "load_more": "تحميل المزيد",
+    "new_todo": "مهمة جديدة",
+    "edit_todo": "تعديل المهمة",
+    "description": "الوصف",
+    "section_details": "التفاصيل",
+    "noun_todo": "مهمة",
+    "enter_description": "أدخل وصف المهمة",
+    "mark_finished": "تحديد كمكتملة",
+    "mark_unfinished": "تحديد كغير مكتملة",
+    "added_on": "تاريخ الإضافة: {date}",
+    "finished_on": "تاريخ الإكمال: {date}",
+    "edit_action_named": "تعديل المهمة {name}",
+    "delete_action_named": "حذف المهمة {name}",
+    "delete_title": "حذف هذه المهمة؟",
+    "delete_body": "لا يمكن التراجع عن هذا الإجراء.",
+    "saved_toast": "تم حفظ المهمة",
+    "deleted_toast": "تم حذف المهمة",
+    "errors": {
+      "ERP-CORE-0004": "هذه المهمة لم تعد موجودة."
+    }
+  }
+}
