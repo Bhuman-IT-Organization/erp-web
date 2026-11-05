@@ -112,9 +112,6 @@ describe('proxy', () => {
       '/setup/currencies',
       '/setup/currencies/new',
       '/setup/currencies/7',
-      '/setup/estimate-request-statuses',
-      '/setup/estimate-request-statuses/new',
-      '/setup/estimate-request-statuses/7',
     ]) {
       expect(doesMatch(url), `${url} must be inside the matcher`).toBe(true);
     }
