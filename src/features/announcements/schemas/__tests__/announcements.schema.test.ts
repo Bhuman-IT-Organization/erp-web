@@ -44,13 +44,24 @@ describe('announcements.schema', () => {
     });
   });
 
+  it('accepts an old long message, over the former 65,535 characters', () => {
+    const FORMER_LIMIT = 65_535;
+    const switches = { showtousers: false, showtostaff: true, showname: false };
+    expect(
+      announcementsFormSchema.safeParse({
+        name: 'ok',
+        message: 'b'.repeat(FORMER_LIMIT + 1),
+        ...switches,
+      }).success,
+    ).toBe(true);
+  });
   it('rejects an empty name and maps a null wire message to an empty form field', () => {
     expect(announcementsFormSchema.safeParse({ name: '', message: '' }).success).toBe(false);
   });
 
   it('rejects names and messages over the API limits and accepts the limits', () => {
     expect(ANNOUNCEMENTS_NAME_MAX).toBe(191);
-    expect(ANNOUNCEMENTS_MESSAGE_MAX).toBe(65_535);
+    expect(ANNOUNCEMENTS_MESSAGE_MAX).toBe(16_777_215);
     const switches = { showtousers: false, showtostaff: true, showname: false };
     expect(
       announcementsFormSchema.safeParse({

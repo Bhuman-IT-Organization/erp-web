@@ -7,7 +7,7 @@
     "announcement_name": "Subject",
     "announcement_id": "ID",
     "announcement_message": "Message",
-    "message_max_length": "Message cannot exceed 65,535 characters.",
+    "message_max_length": "Message cannot exceed 16,777,215 characters.",
     "announcement_lowercase": "announcement",
     "show_to_users": "Show to clients",
     "show_to_staff": "Show to staff",

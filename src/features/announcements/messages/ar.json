@@ -7,7 +7,7 @@
     "announcement_name": "اسم الإعلان",
     "announcement_id": "المعرّف",
     "announcement_message": "الرسالة",
-    "message_max_length": "Message cannot exceed 65,535 characters.",
+    "message_max_length": "Message cannot exceed 16,777,215 characters.",
     "announcement_lowercase": "إعلان",
     "show_to_users": "عرض للعملاء",
     "show_to_staff": "عرض لأعضاء الفريق",
