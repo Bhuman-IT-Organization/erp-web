@@ -32,6 +32,7 @@ beforeEach(() => {
 describe('isNodePage', () => {
   it.each([
     ['/setup/staff?q=a', true],
+    ['/setup/estimate-request-statuses/7', true],
     ['/setup', true],
     ['/admin/invoices#top', false],
     ['/admin/invoice_items/12', false],
