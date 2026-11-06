@@ -16,6 +16,25 @@ export interface AnnouncementsSave {
   readonly update: CommonMutation<AnnouncementsFormValues, Announcements>;
 }
 
+/** The API uses camelCase visibility fields; the form keeps the table's field names. */
+interface AnnouncementsRequest {
+  readonly name: string;
+  readonly message: string;
+  readonly showToUsers: boolean;
+  readonly showToStaff: boolean;
+  readonly showName: boolean;
+}
+
+function toRequest(values: AnnouncementsFormValues): AnnouncementsRequest {
+  return {
+    name: values.name,
+    message: values.message,
+    showToUsers: values.showtousers,
+    showToStaff: values.showtostaff,
+    showName: values.showname,
+  };
+}
+
 /**
  * The writes (FE-03): `ANNOUNCEMENTS_ENDPOINTS.create` and `.update`, each with the body
  * `{ name, message, showToUsers, showToStaff, showName }`, NEVER retried automatically
@@ -24,12 +43,12 @@ export interface AnnouncementsSave {
  * is never triggered.
  */
 export function useSaveAnnouncements(id: string | null): AnnouncementsSave {
-  const create = useCommonMutation<AnnouncementsFormValues, Announcements>(ANNOUNCEMENTS_PATH, {
+  const create = useCommonMutation<AnnouncementsRequest, Announcements>(ANNOUNCEMENTS_PATH, {
     method: ANNOUNCEMENTS_ENDPOINTS.create.method,
     schema: announcementsSchema,
     invalidate: [],
   });
-  const update = useCommonMutation<AnnouncementsFormValues, Announcements>(
+  const update = useCommonMutation<AnnouncementsRequest, Announcements>(
     id === null ? ANNOUNCEMENTS_PATH : announcementsPath(id),
     {
       method: ANNOUNCEMENTS_ENDPOINTS.update.method,
@@ -37,5 +56,8 @@ export function useSaveAnnouncements(id: string | null): AnnouncementsSave {
       invalidate: [],
     },
   );
-  return { create, update };
+  return {
+    create: { ...create, trigger: (values) => create.trigger(toRequest(values)) },
+    update: { ...update, trigger: (values) => update.trigger(toRequest(values)) },
+  };
 }

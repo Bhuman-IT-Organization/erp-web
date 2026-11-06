@@ -18,19 +18,26 @@ const ITEM = {
   showToStaff: false,
   showName: true,
 };
-const BODY = {
+const FORM_VALUES = {
   name: 'Downtime',
   message: 'The system is down tonight.',
   showtousers: true,
   showtostaff: false,
   showname: true,
 };
+const BODY = {
+  name: 'Downtime',
+  message: 'The system is down tonight.',
+  showToUsers: true,
+  showToStaff: false,
+  showName: true,
+};
 function Probe({ id }: { readonly id: string | null }) {
   const { create, update } = useSaveAnnouncements(id);
   const mutation = id === null ? create : update;
   return (
     <>
-      <button type="button" onClick={() => void mutation.trigger(BODY)}>
+      <button type="button" onClick={() => void mutation.trigger(FORM_VALUES)}>
         save
       </button>
       <output
