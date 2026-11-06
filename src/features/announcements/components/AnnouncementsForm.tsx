@@ -111,10 +111,12 @@ function summaryChanges(
   labels: {
     readonly name: string;
     readonly message: string;
+    readonly messageMaxLength: string;
     readonly showtousers: string;
     readonly showtostaff: string;
     readonly showname: string;
   },
+  yesNo: { readonly yes: string; readonly no: string },
 ): readonly SummaryChange[] {
   if (pending === null || record === undefined) return [];
   const changes: SummaryChange[] = [];
@@ -123,20 +125,15 @@ function summaryChanges(
     changes.push({ type: 'changed', label: labels.name, from: stored.name, to: pending.name });
   }
   if (pending.message !== stored.message) {
-    changes.push({
-      type: 'changed',
-      label: labels.message,
-      from: stored.message,
-      to: pending.message,
-    });
+    changes.push({ type: 'updated', label: labels.message });
   }
   for (const key of ['showtousers', 'showtostaff', 'showname'] as const) {
     if (pending[key] !== stored[key]) {
       changes.push({
         type: 'changed',
         label: labels[key],
-        from: String(stored[key]),
-        to: String(pending[key]),
+        from: stored[key] ? yesNo.yes : yesNo.no,
+        to: pending[key] ? yesNo.yes : yesNo.no,
       });
     }
   }
@@ -272,13 +269,22 @@ export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement 
   const noun = t('announcement_lowercase');
   const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
   const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
-  const changes = summaryChanges(pending, record, {
-    name: t('announcement_name'),
-    message: t('announcement_message'),
-    showtousers: t('show_to_users'),
-    showtostaff: t('show_to_staff'),
-    showname: t('show_name'),
-  });
+  const changes = summaryChanges(
+    pending,
+    record,
+    {
+      name: t('announcement_name'),
+      message: t('announcement_message'),
+      showtousers: t('show_to_users'),
+      showtostaff: t('show_to_staff'),
+      showname: t('show_name'),
+      messageMaxLength: t('message_max_length'),
+    },
+    {
+      yes: t('settings_yes'),
+      no: t('settings_no'),
+    },
+  );
 
   /** The save summary's title: the new record's name, or the saved record's. */
   function summaryTitle(): string {

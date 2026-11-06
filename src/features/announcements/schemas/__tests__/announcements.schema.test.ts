@@ -18,15 +18,15 @@ describe('announcements.schema', () => {
       id: '1',
       name: 'Downtime',
       message: 'The system is down tonight.',
-      dateadded: '2026-10-31T09:00:00.000Z',
-      showtousers: 1,
-      showtostaff: 0,
-      showname: 1,
+      dateAdded: '2026-10-31T09:00:00.000Z',
+      showToUsers: true,
+      showToStaff: false,
+      showName: true,
     };
     expect(announcementsSchema.parse(valid)).toEqual(valid);
   });
 
-  it('trims and validates valid form values', () => {
+  it('trims and validates valid form values (wire switches remain booleans)', () => {
     const input = {
       name: '  Downtime  ',
       message: '  The system is down tonight.  ',
@@ -44,7 +44,7 @@ describe('announcements.schema', () => {
     });
   });
 
-  it('rejects an empty name and accepts a null message as an empty field', () => {
+  it('rejects an empty name and maps a null wire message to an empty form field', () => {
     expect(announcementsFormSchema.safeParse({ name: '', message: '' }).success).toBe(false);
   });
 
@@ -72,15 +72,15 @@ describe('announcements.schema', () => {
     ).toBe(false);
   });
 
-  it('converts the record to form values: NULL message to empty, 0/1 to a switch', () => {
+  it('converts the record to form values: NULL message to empty, boolean switches stay boolean', () => {
     const record = {
       id: '5',
       name: 'Maintenance',
       message: null,
-      dateadded: '2026-10-31T09:00:00.000Z',
-      showtousers: 1,
-      showtostaff: 0,
-      showname: 1,
+      dateAdded: '2026-10-31T09:00:00.000Z',
+      showToUsers: true,
+      showToStaff: false,
+      showName: true,
     };
     expect(toAnnouncementsForm(record)).toEqual({
       name: 'Maintenance',

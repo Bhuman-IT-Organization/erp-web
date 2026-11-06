@@ -1,3 +1,4 @@
+const MAX_ANNOUNCEMENT_MESSAGE_LENGTH = 65535;
 import { z } from 'zod';
 
 export const ANNOUNCEMENTS_MESSAGE_KEYS = {
@@ -12,15 +13,15 @@ export const ANNOUNCEMENTS_NAME_MAX = 191;
 /** The longest message the api's body takes. */
 export const ANNOUNCEMENTS_MESSAGE_MAX = 65_535;
 
-/** One announcement: the id as text, the stored fields, the switches as Perfex's 0/1. */
+/** One announcement on the wire: camelCase fields and boolean visibility switches. */
 export const announcementsSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  message: z.string().nullable(),
-  dateadded: z.string(),
-  showtousers: z.number().int(),
-  showtostaff: z.number().int(),
-  showname: z.number().int(),
+  id: z.string().max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH),
+  name: z.string().max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH),
+  message: z.string().max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH).nullable(),
+  dateAdded: z.string().max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH),
+  showToUsers: z.boolean(),
+  showToStaff: z.boolean(),
+  showName: z.boolean(),
 });
 export type Announcements = z.infer<typeof announcementsSchema>;
 
@@ -30,11 +31,13 @@ export type AnnouncementsRow = z.infer<typeof announcementsRowSchema>;
 export const announcementsFormSchema = z.object({
   name: z
     .string()
+    .max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH)
     .trim()
     .min(1, ANNOUNCEMENTS_MESSAGE_KEYS.name)
     .max(ANNOUNCEMENTS_NAME_MAX, ANNOUNCEMENTS_MESSAGE_KEYS.nameTooLong),
   message: z
     .string()
+    .max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH)
     .trim()
     .max(ANNOUNCEMENTS_MESSAGE_MAX, ANNOUNCEMENTS_MESSAGE_KEYS.messageTooLong),
   showtousers: z.boolean(),
@@ -51,14 +54,14 @@ export const EMPTY_ANNOUNCEMENTS_FORM: AnnouncementsFormValues = {
   showname: false,
 };
 
-/** The record's values for the form: a NULL message is an empty field, 0/1 a switch's state. */
+/** The record's values for the form: a NULL message is empty; boolean wire switches remain boolean. */
 export function toAnnouncementsForm(item: Announcements): AnnouncementsFormValues {
   return {
     name: item.name,
     message: item.message ?? '',
-    showtousers: item.showtousers !== 0,
-    showtostaff: item.showtostaff !== 0,
-    showname: item.showname !== 0,
+    showtousers: item.showToUsers,
+    showtostaff: item.showToStaff,
+    showname: item.showName,
   };
 }
 
@@ -71,8 +74,8 @@ export function isAnnouncementsField(value: unknown): value is AnnouncementsFiel
 
 export const validationIssuesSchema = z.array(
   z.object({
-    path: z.array(z.union([z.string(), z.number()])),
-    message: z.string(),
+    path: z.array(z.union([z.string().max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH), z.number()])),
+    message: z.string().max(MAX_ANNOUNCEMENT_MESSAGE_LENGTH),
   }),
 );
 export type ValidationIssue = z.infer<typeof validationIssuesSchema>[number];

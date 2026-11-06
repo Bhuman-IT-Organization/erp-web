@@ -13,10 +13,10 @@ const ITEM = {
   id: 'a1',
   name: 'Downtime',
   message: 'The system is down tonight.',
-  dateadded: '2026-10-31T09:00:00.000Z',
-  showtousers: 1,
-  showtostaff: 0,
-  showname: 1,
+  dateAdded: '2026-10-31T09:00:00.000Z',
+  showToUsers: true,
+  showToStaff: false,
+  showName: true,
 };
 const BODY = {
   name: 'Downtime',

@@ -18,7 +18,7 @@ export interface AnnouncementsSave {
 
 /**
  * The writes (FE-03): `ANNOUNCEMENTS_ENDPOINTS.create` and `.update`, each with the body
- * `{ name, message, showtousers, showtostaff, showname }`, NEVER retried automatically
+ * `{ name, message, showToUsers, showToStaff, showName }`, NEVER retried automatically
  * (ADR-0031 §5). They invalidate nothing: the screen swaps the saved row into the cached list
  * pages after an edit and revalidates them after a create. With no id (the create screen) `update`
  * is never triggered.

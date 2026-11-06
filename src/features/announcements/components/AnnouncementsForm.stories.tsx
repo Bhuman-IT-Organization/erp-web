@@ -15,8 +15,8 @@ import { AnnouncementsForm } from './AnnouncementsForm';
 
 // Texts the stories look for. If a story fails with "unable to find an element", compare these
 // with src/features/announcements/messages/en.json and fix them here, in one place.
-const NAME_FIELD = /^Name/;
-const NAME_FIELD_TITLE = 'Name';
+const SUBJECT_FIELD = new RegExp('^' + en.announcements.announcement_name);
+const SUBJECT_FIELD_TITLE = en.announcements.announcement_name;
 const CREATE_BUTTON = 'Create announcement';
 const SAVE_BUTTON = 'Save announcement';
 const CREATING_BUTTON = 'Creating announcement…';
@@ -32,10 +32,10 @@ const RECORD = {
   id: 'a1',
   name: 'Alpha',
   message: 'A message.',
-  dateadded: '2026-01-15T09:00:00.000Z',
-  showtousers: 0,
-  showtostaff: 1,
-  showname: 0,
+  dateAdded: '2026-01-15T09:00:00.000Z',
+  showToUsers: false,
+  showToStaff: true,
+  showName: false,
 };
 
 type Answer = { readonly status: number; readonly body?: unknown } | 'pending';
@@ -98,7 +98,7 @@ type Story = StoryObj<typeof meta>;
 /** Types a name and asks to save, as a member does; the summary opens. */
 async function typeAndSubmit(root: HTMLElement, submit = CREATE_BUTTON): Promise<void> {
   const canvas = within(root);
-  await userEvent.type(await canvas.findByRole('textbox', { name: NAME_FIELD }), 'Beta');
+  await userEvent.type(await canvas.findByRole('textbox', { name: SUBJECT_FIELD }), 'Beta');
   await userEvent.click(canvas.getByRole('button', { name: submit }));
 }
 
@@ -113,7 +113,7 @@ async function confirmSummary(): Promise<void> {
 }
 
 /**
- * `/setup/announcements/new`: "Add New Announcement", the Name field (required), the message
+ * `/setup/announcements/new`: "Add New Announcement", the Subject field (required), the message
  * textarea and the three Show switches; "Create announcement" disabled until something is typed.
  */
 export const Default: Story = { decorators: [withApi()] };
@@ -126,13 +126,13 @@ const EDIT = {
 /** `/setup/announcements/:id`: the record's name as the title, the fields filled, "Save announcement". */
 export const Edit: Story = { ...EDIT, decorators: [withApi()] };
 
-/** Every save is confirmed by what it does: on `/:id`, "Name: Alpha → Beta". */
+/** Every save is confirmed by what it does: on `/:id`, "Subject: Alpha → Beta". */
 export const SaveSummary: Story = {
   ...EDIT,
   decorators: [withApi()],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    const name = await canvas.findByRole('textbox', { name: NAME_FIELD });
+    const name = await canvas.findByRole('textbox', { name: SUBJECT_FIELD });
     await waitFor(async () => {
       await expect(name).toHaveValue('Alpha');
     });
@@ -145,7 +145,7 @@ export const SaveSummary: Story = {
       await expect(dialog).toBeVisible();
     });
     const changes = within(dialog).getByTestId('confirm-dialog-changes');
-    await expect(changes).toHaveTextContent(`${NAME_FIELD_TITLE}: Alpha → Beta`);
+    await expect(changes).toHaveTextContent(`${SUBJECT_FIELD_TITLE}: Alpha → Beta`);
   },
 };
 
@@ -183,7 +183,7 @@ export const Pending: Story = {
   },
 };
 
-/** `FieldErrors`: a 400 whose issue lands under Name and in the summary, focused. */
+/** `FieldErrors`: a 400 whose issue lands under Subject and in the summary, focused. */
 export const FieldErrors: Story = {
   decorators: [
     withApi(
@@ -249,7 +249,7 @@ export const EditFromList: Story = {
     nextjs: { navigation: { pathname: '/setup/announcements/a1' } },
   },
   play: async ({ canvasElement }) => {
-    const box = await within(canvasElement).findByRole('textbox', { name: NAME_FIELD });
+    const box = await within(canvasElement).findByRole('textbox', { name: SUBJECT_FIELD });
     await expect(box).toHaveValue('Alpha');
   },
 };

@@ -33,10 +33,10 @@ const ROW = {
   id: '7',
   name: 'Retail',
   message: 'A message.',
-  dateadded: '2026-01-15T09:00:00.000Z',
-  showtousers: 0,
-  showtostaff: 1,
-  showname: 0,
+  dateAdded: '2026-01-15T09:00:00.000Z',
+  showToUsers: false,
+  showToStaff: true,
+  showName: false,
 };
 const page = {
   data: [ROW],

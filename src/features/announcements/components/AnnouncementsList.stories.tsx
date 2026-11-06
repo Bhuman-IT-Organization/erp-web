@@ -40,10 +40,10 @@ const rows = (count: number): AnnouncementsRow[] =>
     id: String(TOTAL - i),
     name: i < NAMES.length ? (NAMES[i] ?? 'Spare') : `Announcement ${String(TOTAL - i)}`,
     message: 'A message.',
-    dateadded: '2026-01-15T09:00:00.000Z',
-    showtousers: 0,
-    showtostaff: 1,
-    showname: 0,
+    dateAdded: '2026-01-15T09:00:00.000Z',
+    showToUsers: false,
+    showToStaff: true,
+    showName: false,
   }));
 
 const listPage = (data: readonly AnnouncementsRow[], total = data.length) => ({
@@ -149,9 +149,9 @@ const MOBILE = {
   globals: { viewport: { value: 'mobile375', isRotated: false } },
 } as const;
 
-const UNUSED_NAME = 'Spare';
+const DELETE_NAME = 'Maintenance'; // unique in NAMES ("Benefits" appears twice)
 
-const openDelete = async (canvasElement: HTMLElement, name = UNUSED_NAME): Promise<HTMLElement> => {
+const openDelete = async (canvasElement: HTMLElement, name = DELETE_NAME): Promise<HTMLElement> => {
   const canvas = within(canvasElement);
   await userEvent.click(await canvas.findByRole('button', { name: `Delete announcement ${name}` }));
   return page(canvasElement).findByTestId('confirm-dialog');
@@ -199,14 +199,14 @@ export const Error: Story = {
  */
 export const Loaded: Story = {};
 
-/** "Delete announcement Spare?", Keep / Delete in red. */
+/** "Delete announcement Maintenance?", Keep / Delete in red. */
 export const DeleteConfirm: Story = {
   ...DESKTOP,
   play: async ({ canvasElement }) => {
     const dialog = await openDelete(canvasElement);
     await waitFor(async () => {
       await expect(within(dialog).getByRole('heading')).toHaveTextContent(
-        'Delete announcement Spare?',
+        `Delete announcement ${DELETE_NAME}?`,
       );
     });
     await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeEnabled();

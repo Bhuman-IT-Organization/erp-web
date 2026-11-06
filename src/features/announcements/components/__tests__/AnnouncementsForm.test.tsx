@@ -37,10 +37,10 @@ const RECORD = {
   id: '7',
   name: 'Downtime',
   message: 'The system is down tonight.',
-  dateadded: '2026-10-31T09:00:00.000Z',
-  showtousers: 1,
-  showtostaff: 0,
-  showname: 1,
+  dateAdded: '2026-10-31T09:00:00.000Z',
+  showToUsers: true,
+  showToStaff: false,
+  showName: true,
 };
 const ME = {
   staffId: 1,
@@ -194,15 +194,28 @@ describe('AnnouncementsForm', () => {
     await userEvent.click(screen.getByRole('checkbox', { name: L.show_name }));
     await userEvent.click(screen.getByRole('button', { name: /save announcement/i }));
     const dialog = await screen.findByTestId('confirm-dialog');
-    for (const label of [
-      L.announcement_name,
-      L.announcement_message,
-      L.show_to_users,
-      L.show_to_staff,
-      L.show_name,
-    ]) {
-      expect(dialog.textContent, label).toContain(label);
-    }
+    const text = dialog.textContent.replace(/\s+/g, ' ');
+    expect(text).toContain(L.announcement_name);
+    expect(text).toContain(`${L.show_to_users}: ${L.settings_yes} \u2192 ${L.settings_no}`);
+    expect(text).toContain(`${L.show_to_staff}: ${L.settings_no} \u2192 ${L.settings_yes}`);
+    expect(text).toContain(`${L.show_name}: ${L.settings_yes} \u2192 ${L.settings_no}`);
+    expect(text).not.toMatch(/\b(true|false)\b/);
+    // The message line says only that it changed: neither the old nor the new text is printed.
+    expect(text).toContain(L.announcement_message);
+    expect(text).not.toContain(RECORD.message);
+    expect(text).not.toContain('Back at noon.');
+  });
+
+  it('reads Yes and No from the Arabic messages in the save summary', async () => {
+    const A = ar.announcements;
+    show('7', 'ar');
+    await userEvent.click(await screen.findByRole('checkbox', { name: A.show_to_users }));
+    // Under Arabic the button reads "Save <noun>" with the Arabic noun, so match its start only.
+    await userEvent.click(screen.getByRole('button', { name: /^Save/ }));
+    const dialog = await screen.findByTestId('confirm-dialog');
+    const text = dialog.textContent.replace(/\s+/g, ' ');
+    expect(text).toContain(`${A.show_to_users}: ${A.settings_yes} \u2190 ${A.settings_no}`);
+    expect(text).not.toMatch(/\b(true|false)\b/);
   });
 
   it('puts a 400 field problem under the field and leaves the form open', async () => {

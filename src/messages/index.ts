@@ -43,7 +43,7 @@ import commonEn from './common/en.json';
 
 /**
  * The static registry of message packs (FE-08). Turbopack has no `import.meta.glob`, so every
- * feature's `messages/<locale>.json` is imported here by hand â€” a new feature adds its import
+ * feature's `messages/<locale>.json` is imported here by hand — a new feature adds its import
  * lines and entries between the `registry` markers (imports, namespaces, en, ar). One top-level
  * namespace per file = the feature's folder name.
  */

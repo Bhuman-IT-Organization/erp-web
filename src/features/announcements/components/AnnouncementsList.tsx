@@ -36,7 +36,7 @@ const STALE_LIST_CODES: readonly string[] = [NOT_FOUND_CODE];
 /**
  * The Announcements list on the kit's `ListPageTemplate`: the template owns the URL state, the
  * search, the sort, the pager and every state (loading, empty, no results, error, loaded); this
- * screen owns Perfex's Name and Date columns, the labelled Edit and Delete and the delete dialog.
+ * screen owns Perfex's Subject and Date columns, the labelled Edit and Delete and the delete dialog.
  * Every visible string is a key, and a name is rendered as React text only, never markup.
  */
 export function AnnouncementsList(): ReactElement {
@@ -82,7 +82,7 @@ export function AnnouncementsList(): ReactElement {
       id: 'dateadded',
       header: t('date_added'),
       sortField: 'dateadded',
-      cell: (one) => f.date(one.dateadded),
+      cell: (one) => <time dateTime={one.dateAdded}>{f.dateTime(one.dateAdded)}</time>,
     },
   ];
 

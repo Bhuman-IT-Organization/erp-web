@@ -14,8 +14,8 @@ by the application shell.
 
 `application/views/admin/announcements/manage.php`
 
-**Administrators only** (in Perfex only the menu item, the form and delete are admin-only; `index()` has no admin check, so this is a Difference, listed under Legacy parity). The three routes are
-`ADMIN_GATE` in `src/config/route-gates.ts`, the mirror of `@erp/contracts`' `ROUTE_GATES`, the
+**Administrators only** (in Perfex only the menu item, the form and delete are admin-only; `index()` has no admin check, so this is a Difference, listed under Legacy parity). The three routes use
+the `'admin'` gate in `@erp/contracts`' `ROUTE_GATES`; the
 menu item reads the same gate through `navGateOf`, and both screens sit behind
 `withAuth(withPermission(...))`: a non-administrator sees the kit's "no access" state once `/me`
 has answered, and the screen asks the api for nothing. The page gate is presentation only: the api
@@ -40,6 +40,8 @@ Show switches, an edit of the same fields, a delete with confirmation, and an ex
 - **Difference.** Search covers the name and the id, not the date. _Why:_ the api searches those two columns; a typed number finds the record.
 - **Difference.** A save returns to the list, not to the view page. _Why:_ the view page stays on Perfex, so the Node screen has nothing to return to but the list.
 - **Difference.** The activity log line is replaced by the event and log line. _Why:_ the module publishes a domain event and writes one log line instead of Perfex's activity-log row.
+- **Difference.** Perfex's delete also removes matching dismissal rows; Node's delete does not. _Why:_ `tbldismissed_announcements` remains owned by perfex-core.
+- **Difference.** The message is trimmed before it is stored. _Why:_ the API body schema trims message text to its character limit.
 
 ## Dropped on purpose
 
@@ -49,8 +51,7 @@ Show switches, an edit of the same fields, a delete with confirmation, and an ex
 
 ## Routes
 
-All three live in the shell's route group, so they get the sidebar and the topbar, and each is
-`ADMIN_GATE` in `src/config/route-gates.ts`, declared above the `registry` marker block.
+All three live in the shell's route group, so they get the sidebar and the topbar, and each uses the `'admin'` gate declared in `@erp/contracts`' `ROUTE_GATES`.
 
 - `/setup/announcements` (`app/(shell)/setup/announcements/page.tsx`, `force-dynamic`):
   `pages/AnnouncementsListPage.tsx`; the search, sort and page live in the URL (FE-15);
@@ -69,14 +70,14 @@ All three live in the shell's route group, so they get the sidebar and the topba
 
 | call                                                           | used by                              | note                                                                                                   |
 | -------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------ |
-| `GET /api/v1/announcements?q&sort&limit&cursor`                | `ListPageTemplate`                   | Server list state; rows contain `{ id, name, message, dateadded, showtousers, showtostaff, showname }` |
+| `GET /api/v1/announcements?q&sort&limit&cursor`                | `ListPageTemplate`                   | Server list state; rows contain `{ id, name, message, dateAdded, showToUsers, showToStaff, showName }` |
 | `GET /api/v1/announcements/export?format&q&sort&column&header` | `ListPageTemplate` (the Export menu) | CSV, Excel, PDF or Print of the translated Id, Name and Date Added columns                             |
 | `GET /api/v1/announcements/:id`                                | `useAnnouncements`                   | the record; a row opened from the list seeds it (D-35)                                                 |
-| `POST /api/v1/announcements`                                   | `useSaveAnnouncements().create`      | the four saved fields; never retried                                                                   |
-| `PATCH /api/v1/announcements/:id`                              | `useSaveAnnouncements().update`      | the same fields; 404 `ERP-CORE-0004` when it was deleted meanwhile; never retried                      |
-| `DELETE /api/v1/announcements/:id`                             | `useDeleteAnnouncement`              | 204; 404 `ERP-CORE-0004`; never retried                                                                |
+| `POST /api/v1/announcements`                                   | `useSaveAnnouncements().create`      | the five saved fields; never retried                                                                   |
+| `PATCH /api/v1/announcements/:id`                              | `useSaveAnnouncements().update`      | the same five fields, including required message; 404 `ERP-CORE-0004` when deleted; never retried      |
+| `DELETE /api/v1/announcements/:id`                             | `useDeleteAnnouncement`              | 204; 404 `ERP-CORE-0004`; never retried; dismissal rows remain                                         |
 
-- The switches travel as Perfex's 0/1 integers; the form reads them as booleans.
+- The switches are booleans on the wire; the API maps them to Perfex's 0/1 integers in storage.
 - After an edit opened from the list, the saved record is swapped into the cached list pages (no
   list request, D-36); after a create, or an edit of a permalink, the list pages ask again.
 - A 400 `ERP-VALIDATION-0001` carries `issues`, zod-parsed before `setError`; the api's text is
