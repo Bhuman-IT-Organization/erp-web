@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -140,7 +140,7 @@ export function AnnouncementsList(): ReactElement {
           noResultsHeading: (query) => t('no_match_heading', { query }),
           noResultsBody: t('no_match_body'),
         }}
-        recordsNoun={t('announcement_lowercase')}
+        recordsNoun={t('announcements_lowercase')}
         featureErrors={ANNOUNCEMENTS_ERRORS}
       />
       <ConfirmDialog

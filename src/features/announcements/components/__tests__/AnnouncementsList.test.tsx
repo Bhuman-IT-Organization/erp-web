@@ -6,7 +6,7 @@ import {
   type AxiosResponse,
   type InternalAxiosRequestConfig,
 } from 'axios';
-import { SWRConfig } from 'swr';
+import { SWRConfig, type SWRConfiguration } from 'swr';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Toaster } from '@/components/ui/sonner';
 import type { Locale } from '@/i18n/locales';
@@ -22,6 +22,7 @@ import {
   within,
 } from '@/test/render';
 import ar from '../../messages/ar.json';
+import en from '../../messages/en.json';
 import { AnnouncementsList, GuardedAnnouncementsList } from '../AnnouncementsList';
 
 const push = vi.fn();
@@ -30,6 +31,7 @@ vi.mock('next/navigation', () => ({
   usePathname: () => '/setup/announcements',
 }));
 const ROW = {
+  hasOtherFormatting: false,
   id: '7',
   name: 'Retail',
   message: 'A message.',
@@ -73,11 +75,11 @@ type ListReply = Reply | 'pending';
 let me: typeof ME = ME;
 let remove: Reply = { status: 204 };
 let list: ListReply = { status: 200, body: page };
-let requests: { method: string; url: string }[] = [];
+let requests: { method: string; url: string; search: string }[] = [];
 function adapter(config: InternalAxiosRequestConfig) {
   const method = (config.method ?? 'get').toUpperCase();
   const url = new URL(http.getUri(config), 'http://erp.invalid');
-  requests.push({ method, url: url.pathname });
+  requests.push({ method, url: url.pathname, search: url.search });
   if (url.pathname === '/api/v1/auth/me') {
     return Promise.resolve({
       data: me,
@@ -111,9 +113,17 @@ function adapter(config: InternalAxiosRequestConfig) {
         }),
       );
 }
-const show = (searchParams = '', locale: Locale = 'en') =>
+const ISOLATED: SWRConfiguration = { provider: () => new Map(), shouldRetryOnError: false };
+/**
+ * The app's ONE cache: `revalidateLists` (the refresh after a 404) writes through the global cache,
+ * as the app's `SwrProvider` has it, so a test of it renders here with a `q` no other test uses.
+ */
+const GLOBAL: SWRConfiguration = { shouldRetryOnError: false, dedupingInterval: 0 };
+const listReads = () =>
+  requests.filter((r) => r.method === 'GET' && r.url === '/api/v1/announcements');
+const show = (searchParams = '', locale: Locale = 'en', swr: SWRConfiguration = ISOLATED) =>
   renderWithProviders(
-    <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+    <SWRConfig value={swr}>
       <AnnouncementsList />
       <Toaster />
     </SWRConfig>,
@@ -171,11 +181,11 @@ describe('AnnouncementsList', () => {
     expect(noResults.textContent).toContain('No announcements match');
     expect(within(noResults).getByRole('button', { name: /clear search/i })).toBeTruthy();
   });
-  it('shows a plain-language error and retry action when the list fails', async () => {
+  it('uses the singular record noun in its list error and offers retry', async () => {
     list = { status: 503, body: problem(503, 'ERP-UPSTREAM-0001') };
     show();
     const error = await screen.findByTestId('list-error');
-    expect(error.textContent).toContain("couldn't load announcement");
+    expect(error.textContent).toContain("couldn't load announcements. Try again in a moment.");
     expect(error.textContent).not.toContain('ERP-UPSTREAM-0001');
     expect(within(error).getByRole('button', { name: /retry/i })).toBeTruthy();
   });
@@ -198,15 +208,24 @@ describe('AnnouncementsList', () => {
     const tr = row.closest('tr') as HTMLElement;
     await userEvent.click(within(tr).getByRole('button', { name: 'Delete announcement Retail' }));
     const dialog = await screen.findByTestId('confirm-dialog');
+    const beforeReads = listReads().length;
     await userEvent.click(within(dialog).getByTestId('confirm-dialog-confirm'));
     await waitFor(() => {
-      expect(requests).toContainEqual({ method: 'DELETE', url: '/api/v1/announcements/7' });
+      expect(requests).toContainEqual(
+        expect.objectContaining({ method: 'DELETE', url: '/api/v1/announcements/7' }),
+      );
     });
+    expect(await screen.findByText('Announcement deleted')).toBeTruthy();
+    await waitFor(() => {
+      expect(screen.queryByTestId('confirm-dialog')).toBeNull();
+    });
+    expect(listReads().length).toBeLessThanOrEqual(beforeReads + 1);
   });
   it('asks the list pages again when a delete hits a row already gone', async () => {
     remove = { status: 404, body: problem(404, 'ERP-CORE-0004') };
-    show();
+    show('?q=gone-404', 'en', GLOBAL);
     const row = await screen.findByRole('link', { name: 'Retail' });
+    const before = listReads().length;
     await userEvent.click(
       within(row.closest('tr') as HTMLElement).getByRole('button', {
         name: 'Delete announcement Retail',
@@ -222,8 +241,46 @@ describe('AnnouncementsList', () => {
     expect(within(dialog).getByTestId('confirm-dialog-error').textContent).not.toContain(
       'Something went wrong',
     );
+    await waitFor(() => {
+      expect(listReads().length).toBeGreaterThan(before);
+    });
   });
 
+  it('sorts by the Subject and Date headers through the list request', async () => {
+    show();
+    const table = await screen.findByTestId('list-table');
+    expect(listReads()[0]?.search ?? '').not.toContain('sort=');
+    const [subject, date] = within(table).getAllByRole('columnheader');
+    if (subject === undefined || date === undefined) throw new Error('no headers');
+    await userEvent.click(within(subject).getByRole('button'));
+    await waitFor(() => {
+      expect(listReads().at(-1)?.search).toContain('sort=name');
+    });
+    await userEvent.click(within(date).getByRole('button'));
+    await waitFor(() => {
+      expect(listReads().at(-1)?.search).toContain('sort=dateadded');
+    });
+  });
+  it('opens the edit form from the Edit row action', async () => {
+    show();
+    const link = await screen.findByRole('link', { name: 'Retail' });
+    const tr = link.closest('tr') as HTMLElement;
+    await userEvent.click(within(tr).getByRole('button', { name: 'Edit Retail' }));
+    expect(push).toHaveBeenCalledWith('/setup/announcements/7');
+  });
+  it('names the export columns ID, Subject and Date', async () => {
+    show();
+    await screen.findByTestId('list-table');
+    await userEvent.click(screen.getByTestId('list-export'));
+    const menu = await screen.findByRole('menu');
+    expect(within(menu).getByTestId('list-export-csv')).toBeTruthy();
+    expect(within(menu).getByTestId('list-export-xlsx')).toBeTruthy();
+    expect(within(menu).getByTestId('list-export-pdf')).toBeTruthy();
+    expect(within(menu).getByTestId('list-export-print')).toBeTruthy();
+    expect(en.announcements.announcement_id).toBe('ID');
+    expect(en.announcements.announcement_name).toBe('Subject');
+    expect(en.announcements.date_added).toBe('Date');
+  });
   it('shows a name with markup as plain text, never as an element', async () => {
     list = {
       status: 200,

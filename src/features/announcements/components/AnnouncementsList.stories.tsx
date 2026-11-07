@@ -38,6 +38,7 @@ const NAMES = [
 const rows = (count: number): AnnouncementsRow[] =>
   Array.from({ length: count }, (_, i) => ({
     id: String(TOTAL - i),
+    hasOtherFormatting: false,
     name: i < NAMES.length ? (NAMES[i] ?? 'Spare') : `Announcement ${String(TOTAL - i)}`,
     message: 'A message.',
     dateAdded: '2026-01-15T09:00:00.000Z',

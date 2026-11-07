@@ -41,6 +41,7 @@ const RECORD = {
   showToUsers: true,
   showToStaff: false,
   showName: true,
+  hasOtherFormatting: false,
 };
 const ME = {
   staffId: 1,
@@ -59,7 +60,7 @@ interface Reply {
 let me: typeof ME = ME;
 let read: Reply = { status: 200, body: RECORD };
 let save: Reply = { status: 201, body: RECORD };
-let requests: { method: string; url: string }[] = [];
+let requests: { method: string; url: string; data?: unknown }[] = [];
 const problem = (status: number, code: string, issues?: unknown) => ({
   type: 'about:blank',
   status,
@@ -82,7 +83,11 @@ function answer(config: InternalAxiosRequestConfig, reply: Reply) {
 function adapter(config: InternalAxiosRequestConfig) {
   const method = (config.method ?? 'get').toUpperCase();
   const url = new URL(http.getUri(config), 'http://erp.invalid');
-  requests.push({ method, url: url.pathname });
+  requests.push({
+    method,
+    url: url.pathname,
+    data: typeof config.data === 'string' ? JSON.parse(config.data) : config.data,
+  });
   if (url.pathname === '/api/v1/auth/me') return answer(config, { status: 200, body: me });
   return answer(config, method === 'GET' ? read : save);
 }
@@ -136,9 +141,7 @@ describe('AnnouncementsForm', () => {
     expect(box.getAttribute('aria-required')).toBe('true');
     await userEvent.type(box, '   ');
     await userEvent.click(screen.getByRole('button', { name: /create announcement/i }));
-    expect((await screen.findByTestId('error-summary')).textContent).toContain(
-      'Enter the announcement name.',
-    );
+    expect((await screen.findByTestId('error-summary')).textContent).toContain(L.enter_name);
   });
   it('confirms and POSTs a trimmed name, then returns to the list', async () => {
     show(null);
@@ -151,8 +154,14 @@ describe('AnnouncementsForm', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith('/setup/announcements', { scroll: false });
     });
+    expect(writes()).toHaveLength(1);
+    expect(writes()[0]).toMatchObject({
+      method: 'POST',
+      url: '/api/v1/announcements',
+      data: { name: 'Downtime', showToUsers: false, showToStaff: true, showName: false },
+    });
   });
-  it('loads an edit record and PATCHes the changed name', async () => {
+  it('loads an edit record and PATCHes the changed name without replacing its message', async () => {
     show('7');
     expect(await screen.findByRole('heading', { name: 'Downtime' })).toBeTruthy();
     const box = await nameBox();
@@ -164,7 +173,44 @@ describe('AnnouncementsForm', () => {
     await waitFor(() => {
       expect(push).toHaveBeenCalled();
     });
+    expect(writes()).toHaveLength(1);
+    expect(writes()[0]).toMatchObject({
+      method: 'PATCH',
+      url: '/api/v1/announcements/7',
+      data: { name: 'Maintenance', showToUsers: true, showToStaff: false, showName: true },
+    });
+    expect(writes()[0]?.data).not.toHaveProperty('message');
   });
+
+  it('sends the edited message when only its text changes', async () => {
+    show('7');
+    const message = await screen.findByRole('textbox', { name: L.announcement_message });
+    await userEvent.clear(message);
+    await userEvent.type(message, 'Back at noon.');
+    await userEvent.click(screen.getByRole('button', { name: /save announcement/i }));
+    const dialog = await screen.findByTestId('confirm-dialog');
+    await userEvent.click(within(dialog).getByTestId('confirm-dialog-confirm'));
+    await waitFor(() => {
+      expect(writes()).toHaveLength(1);
+    });
+    expect(writes()[0]).toMatchObject({
+      method: 'PATCH',
+      url: '/api/v1/announcements/7',
+      data: { name: 'Downtime', message: 'Back at noon.' },
+    });
+  });
+
+  it('warns only when the stored message has Perfex formatting', async () => {
+    read = { status: 200, body: { ...RECORD, hasOtherFormatting: true } };
+    show('7');
+    expect(await screen.findByText(L.announcement_formatting_warning)).toBeTruthy();
+    cleanup();
+    read = { status: 200, body: RECORD };
+    show('7');
+    await screen.findByRole('textbox', { name: L.announcement_message });
+    expect(screen.queryByText(L.announcement_formatting_warning)).toBeNull();
+  });
+
   it('keeps a 404 save refusal in the confirmation dialog', async () => {
     save = { status: 404, body: problem(404, 'ERP-CORE-0004') };
     const dialog = await sendEdit();
@@ -215,6 +261,10 @@ describe('AnnouncementsForm', () => {
     const dialog = await screen.findByTestId('confirm-dialog');
     const text = dialog.textContent.replace(/\s+/g, ' ');
     expect(text).toContain(`${A.show_to_users}: ${A.settings_yes} \u2190 ${A.settings_no}`);
+    // The summary reads the Arabic words: never the English ones, never the raw booleans.
+    expect(A.settings_yes).not.toBe('Yes');
+    expect(A.settings_no).not.toBe('No');
+    expect(text).not.toContain('Yes');
     expect(text).not.toMatch(/\b(true|false)\b/);
   });
 
@@ -259,6 +309,28 @@ describe('AnnouncementsForm', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('confirm-dialog')).toBeNull();
     });
+    await waitFor(() => {
+      expect(push).toHaveBeenCalled();
+    });
+    expect(push).toHaveBeenCalledWith('/setup/announcements');
+    expect(push).toHaveBeenCalledTimes(1);
+  });
+  it('puts a 400 message problem under the message field and leaves the form open', async () => {
+    save = {
+      status: 400,
+      body: problem(400, VALIDATION_CODE, [{ path: ['message'], code: 'too_big', message: 'x' }]),
+    };
+
+    await sendEdit();
+
+    const message = screen.getByRole('textbox', {
+      name: L.announcement_message,
+    });
+
+    expect(message.getAttribute('aria-invalid')).toBe('true');
+    expect(message.getAttribute('aria-describedby')).toContain('error');
+    expect(screen.getByTestId('error-summary').textContent).toContain(L.announcement_message);
+    expect(push).not.toHaveBeenCalled();
   });
   it('shows why a record that is gone cannot be edited, and no form', async () => {
     read = { status: 404, body: problem(404, 'ERP-CORE-0004') };

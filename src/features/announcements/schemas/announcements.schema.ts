@@ -1,4 +1,4 @@
-import { z } from 'zod';
+﻿import { z } from 'zod';
 
 export const ANNOUNCEMENTS_MESSAGE_KEYS = {
   name: 'enter_name',
@@ -14,6 +14,7 @@ export const ANNOUNCEMENTS_MESSAGE_MAX = 16_777_215;
 
 /** One announcement on the wire: camelCase fields and boolean visibility switches. */
 export const announcementsSchema = z.object({
+  hasOtherFormatting: z.boolean().default(false),
   id: z.string(),
   name: z.string(),
   message: z.string().nullable(),
@@ -28,6 +29,7 @@ export const announcementsRowSchema = announcementsSchema.extend({});
 export type AnnouncementsRow = z.infer<typeof announcementsRowSchema>;
 
 export const announcementsFormSchema = z.object({
+  hasOtherFormatting: z.boolean().optional(),
   name: z
     .string()
     .trim()
@@ -54,6 +56,7 @@ export const EMPTY_ANNOUNCEMENTS_FORM: AnnouncementsFormValues = {
 /** The record's values for the form: a NULL message is empty; boolean wire switches remain boolean. */
 export function toAnnouncementsForm(item: Announcements): AnnouncementsFormValues {
   return {
+    hasOtherFormatting: item.hasOtherFormatting,
     name: item.name,
     message: item.message ?? '',
     showtousers: item.showToUsers,

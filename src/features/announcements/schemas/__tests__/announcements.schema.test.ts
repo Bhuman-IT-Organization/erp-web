@@ -15,6 +15,7 @@ import en from '../../messages/en.json';
 describe('announcements.schema', () => {
   it('validates the announcement entity schema', () => {
     const valid = {
+      hasOtherFormatting: false,
       id: '1',
       name: 'Downtime',
       message: 'The system is down tonight.',
@@ -24,6 +25,18 @@ describe('announcements.schema', () => {
       showName: true,
     };
     expect(announcementsSchema.parse(valid)).toEqual(valid);
+  });
+
+  it('parses a valid form with an empty message', () => {
+    expect(
+      announcementsFormSchema.safeParse({
+        name: 'Downtime',
+        message: '',
+        showtousers: false,
+        showtostaff: true,
+        showname: false,
+      }).success,
+    ).toBe(true);
   });
 
   it('trims and validates valid form values (wire switches remain booleans)', () => {
@@ -57,6 +70,26 @@ describe('announcements.schema', () => {
   });
   it('rejects an empty name and maps a null wire message to an empty form field', () => {
     expect(announcementsFormSchema.safeParse({ name: '', message: '' }).success).toBe(false);
+    const valid = {
+      name: 'ok',
+      message: '',
+      showtousers: false,
+      showtostaff: true,
+      showname: false,
+    };
+    expect(announcementsFormSchema.safeParse(valid).success).toBe(true);
+    expect(
+      toAnnouncementsForm({
+        id: '1',
+        hasOtherFormatting: false,
+        name: 'ok',
+        message: null,
+        dateAdded: '2026-01-15T09:00:00.000Z',
+        showToUsers: false,
+        showToStaff: true,
+        showName: false,
+      }).message,
+    ).toBe('');
   });
 
   it('rejects names and messages over the API limits and accepts the limits', () => {
@@ -85,6 +118,7 @@ describe('announcements.schema', () => {
 
   it('converts the record to form values: NULL message to empty, boolean switches stay boolean', () => {
     const record = {
+      hasOtherFormatting: false,
       id: '5',
       name: 'Maintenance',
       message: null,
@@ -94,6 +128,7 @@ describe('announcements.schema', () => {
       showName: true,
     };
     expect(toAnnouncementsForm(record)).toEqual({
+      hasOtherFormatting: false,
       name: 'Maintenance',
       message: '',
       showtousers: true,

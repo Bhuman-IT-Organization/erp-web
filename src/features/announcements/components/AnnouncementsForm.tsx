@@ -27,7 +27,6 @@ import { useSaveAnnouncements } from '@/features/announcements/hooks/use-save-an
 import {
   EMPTY_ANNOUNCEMENTS_FORM,
   ANNOUNCEMENTS_MESSAGE_KEYS,
-  ANNOUNCEMENTS_MESSAGE_MAX,
   ANNOUNCEMENTS_NAME_MAX,
   announcementsFormSchema,
   announcementsRowSchema,
@@ -49,7 +48,6 @@ import { useErrorText } from '@/lib/errors/use-error-text';
 import { useBreadcrumbLabel } from '@/lib/hooks/use-breadcrumb-label';
 import { readListReturn } from '@/lib/hooks/use-return-to-list';
 import { useUnsavedChanges } from '@/lib/hooks/use-unsaved-changes';
-import { useFormat } from '@/lib/i18n/format';
 
 const LIST_BASE = '/setup/announcements';
 const FORM_ID = 'announcements';
@@ -111,7 +109,6 @@ function summaryChanges(
   labels: {
     readonly name: string;
     readonly message: string;
-    readonly messageMaxLength: string;
     readonly showtousers: string;
     readonly showtostaff: string;
     readonly showname: string;
@@ -127,7 +124,7 @@ function summaryChanges(
   if (pending.message !== stored.message) {
     changes.push({ type: 'updated', label: labels.message });
   }
-  for (const key of ['showtousers', 'showtostaff', 'showname'] as const) {
+  for (const key of ['showtostaff', 'showtousers', 'showname'] as const) {
     if (pending[key] !== stored[key]) {
       changes.push({
         type: 'changed',
@@ -183,11 +180,25 @@ function RecordState({
  * with Retry; anything else (an announcement deleted meanwhile) stays inside the dialog in the
  * feature's words. A dirty form asks before leaving. Names render as React text only.
  */
+function selectMutation<T>(id: string | null, create: T, update: T): T {
+  return id === null ? create : update;
+}
+
+function announcementActionLabels(
+  id: string | null,
+  tc: ReturnType<typeof useTranslations>,
+  noun: string,
+): { submitLabel: string; pendingLabel: string } {
+  const creating = id === null;
+  return {
+    submitLabel: tc(creating ? 'create_noun' : 'save_noun', { noun }),
+    pendingLabel: tc(creating ? 'creating_noun' : 'saving_noun', { noun }),
+  };
+}
 export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement {
   const t = useTranslations('announcements');
   const tc = useTranslations('common');
   const router = useRouter();
-  const f = useFormat();
   const errorText = useErrorText(ANNOUNCEMENTS_ERRORS);
   const copy = useConfirmCopy();
   const seed = useRowSeed(recordPath(id), announcementsRowSchema);
@@ -200,7 +211,7 @@ export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement 
     resetOptions: { keepDirtyValues: true },
   });
   const { create, update } = useSaveAnnouncements(id);
-  const mutation = id === null ? create : update;
+  const mutation = selectMutation(id, create, update);
   const guard = useUnsavedChanges(form.formState.isDirty && !mutation.isMutating);
   // The last values sent: Retry re-sends exactly them, without asking again.
   const lastSent = useRef<AnnouncementsFormValues | null>(null);
@@ -228,7 +239,12 @@ export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement 
   /** One save and where its outcome shows; `{ ok: true }` tells the dialog its part is done. */
   async function send(values: AnnouncementsFormValues): Promise<ConfirmOutcome> {
     lastSent.current = values;
-    const outcome = await mutation.trigger(values);
+    const { message, ...valuesWithoutMessage } = values;
+    const request =
+      id !== null && record !== undefined && message === (record.message ?? '')
+        ? valuesWithoutMessage
+        : values;
+    const outcome = await mutation.trigger(request);
     if (outcome.ok) {
       await afterSave(outcome.data);
       return { ok: true };
@@ -267,8 +283,7 @@ export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement 
 
   const failure = retryableFailure(mutation.result);
   const noun = t('announcement_lowercase');
-  const submitLabel = tc(id === null ? 'create_noun' : 'save_noun', { noun });
-  const pendingLabel = tc(id === null ? 'creating_noun' : 'saving_noun', { noun });
+  const { submitLabel, pendingLabel } = announcementActionLabels(id, tc, noun);
   const changes = summaryChanges(
     pending,
     record,
@@ -278,7 +293,6 @@ export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement 
       showtousers: t('show_to_users'),
       showtostaff: t('show_to_staff'),
       showname: t('show_name'),
-      messageMaxLength: t('message_max_length'),
     },
     {
       yes: t('settings_yes'),
@@ -305,18 +319,23 @@ export function AnnouncementsForm({ id }: AnnouncementsFormProps): ReactElement 
             title: t('section_details'),
             fields: [
               { name: 'name', label: t('announcement_name'), kind: 'text', required: true },
-              { name: 'message', label: t('announcement_message'), kind: 'textarea' },
-              { name: 'showtousers', label: t('show_to_users'), kind: 'checkbox' },
               { name: 'showtostaff', label: t('show_to_staff'), kind: 'checkbox' },
+              { name: 'showtousers', label: t('show_to_users'), kind: 'checkbox' },
               { name: 'showname', label: t('show_name'), kind: 'checkbox' },
+              {
+                name: 'message',
+                label: t('announcement_message'),
+                kind: 'textarea',
+                ...(record?.hasOtherFormatting === true
+                  ? { helper: t('announcement_formatting_warning') }
+                  : {}),
+              },
             ],
           },
         ]}
         onValid={setPending}
         translateError={(key) =>
-          key === ANNOUNCEMENTS_MESSAGE_KEYS.messageTooLong
-            ? t(key, { max: ANNOUNCEMENTS_MESSAGE_MAX, maxN: f.number(ANNOUNCEMENTS_MESSAGE_MAX) })
-            : t(key, { max: ANNOUNCEMENTS_NAME_MAX, maxN: f.number(ANNOUNCEMENTS_NAME_MAX) })
+          t(key, { max: ANNOUNCEMENTS_NAME_MAX, maxN: String(ANNOUNCEMENTS_NAME_MAX) })
         }
         submitLabel={submitLabel}
         pendingLabel={pendingLabel}

@@ -10,6 +10,7 @@ import { renderWithProviders, screen, userEvent, waitFor } from '@/test/render';
 import { useSaveAnnouncements } from '../use-save-announcements';
 
 const ITEM = {
+  hasOtherFormatting: false,
   id: 'a1',
   name: 'Downtime',
   message: 'The system is down tonight.',
@@ -86,6 +87,7 @@ describe('useSaveAnnouncements', () => {
     expect(writes.calls.map((c) => [c.method, c.url, c.data])).toEqual([
       ['PATCH', '/api/v1/announcements/a1', BODY],
     ]);
+    expect(writes.calls.filter((call) => call.method === 'GET')).toEqual([]);
   });
   it('does not retry a server failure', async () => {
     const writes = fakeAdapter(503, problem(503, 'ERP-UPSTREAM-0001'));
