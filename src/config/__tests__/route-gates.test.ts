@@ -5,8 +5,10 @@ import { flattenNavigation, NAVIGATION, SETUP_NAVIGATION, type NavItem } from '.
 import { PERMISSION_CODES, PERMISSIONS } from '../permissions';
 import {
   ADMIN_GATE,
+  AUTHENTICATED_GATE,
   GATED_ROUTES,
   isAdminGate,
+  isAuthenticatedGate,
   isAnyOfGate,
   navGateOf,
   ROUTE_GATES,
@@ -92,6 +94,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/ticket-statuses',
       '/setup/ticket-statuses/:id',
       '/setup/ticket-statuses/new',
+      '/setup/todo',
+      '/setup/todo/:id',
+      '/setup/todo/new',
     ]);
   });
 
@@ -104,6 +109,15 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       expect(ROUTE_GATES[route]).toBe(ADMIN_GATE);
     }
   });
+  it('allows both staff and administrators on Todo pages', () => {
+    for (const route of ['/setup/todo', '/setup/todo/new', '/setup/todo/:id']) {
+      expect(ROUTE_GATES[route]).toBe(AUTHENTICATED_GATE);
+    }
+
+    expect(isAuthenticatedGate(AUTHENTICATED_GATE)).toBe(true);
+    expect(isAuthenticatedGate(ADMIN_GATE)).toBe(false);
+    expect(isAuthenticatedGate(PERMISSIONS.staff.members.view)).toBe(false);
+  });
 
   it('declares every value as a catalogue code, a list of distinct codes or the administrator flag, never a loose string', () => {
     for (const route of GATED_ROUTES) {
@@ -115,7 +129,7 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
           ? gate.length > 0 &&
             new Set(gate).size === gate.length &&
             gate.every((code) => PERMISSION_CODES.includes(code))
-          : gate === ADMIN_GATE || PERMISSION_CODES.includes(gate));
+          : gate === ADMIN_GATE || gate === AUTHENTICATED_GATE || PERMISSION_CODES.includes(gate));
       expect(
         declared,
         `${route}: ${String(gate)} is neither 'admin', a catalogue code nor a list of distinct codes`,
@@ -170,10 +184,11 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
     expect(routeIsAdminOnly('/setup/email-status')).toBe(true);
   });
 
-  it('isAnyOfGate is true for an array and false for a code or the administrator flag', () => {
+  it('isAnyOfGate is true for an array and false for a code or special gate', () => {
     expect(isAnyOfGate([PERMISSIONS.staff.roles.view, PERMISSIONS.staff.members.view])).toBe(true);
     expect(isAnyOfGate(PERMISSIONS.staff.members.view)).toBe(false);
     expect(isAnyOfGate(ADMIN_GATE)).toBe(false);
+    expect(isAnyOfGate(AUTHENTICATED_GATE)).toBe(false);
   });
 
   it('answers the administrator routes through routeIsAdminOnly', () => {
@@ -211,6 +226,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   it('turns a gate into the menu fields, one or the other and never both', () => {
     expect(navGateOf('/setup/roles')).toEqual({ adminOnly: true });
     expect(navGateOf('/setup/staff')).toEqual({ permission: ROUTE_GATES['/setup/staff'] });
+    expect(navGateOf('/setup/todo')).toEqual({});
+    expect(navGateOf('/setup/todo/new')).toEqual({});
+    expect(navGateOf('/setup/todo/12')).toEqual({});
     expect(navGateOf('/admin/clients')).toEqual({});
   });
 });
@@ -266,6 +284,11 @@ describe('navigation.ts agrees with ROUTE_GATES', () => {
         ).toBeUndefined();
         return;
       }
+      if (gate !== undefined && isAuthenticatedGate(gate)) {
+        expect(item?.permission).toBeUndefined();
+        expect(item?.adminOnly).toBeUndefined();
+        return;
+      }
       expect(item?.permission, `${route} must carry ${String(gate)}`).toBe(gate);
       expect(item?.adminOnly).toBeUndefined();
     },
@@ -279,6 +302,11 @@ describe('routePermission and routeIsAdminOnly answer what ROUTE_GATES declares'
     if (gate !== undefined && isAdminGate(gate)) {
       expect(routeIsAdminOnly(path), `${path} is administrator-only`).toBe(true);
       // The flag is not a permission code (ADR-0034 d.2), so this answers nothing.
+      expect(routePermission(path)).toBeUndefined();
+      return;
+    }
+    if (gate !== undefined && isAuthenticatedGate(gate)) {
+      expect(routeIsAdminOnly(path)).toBe(false);
       expect(routePermission(path)).toBeUndefined();
       return;
     }

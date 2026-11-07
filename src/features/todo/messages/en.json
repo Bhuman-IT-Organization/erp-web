@@ -1,0 +1,29 @@
+{
+  "todo": {
+    "todos": "To Do's",
+    "unfinished": "Unfinished to do's",
+    "finished": "Latest finished to do's",
+    "empty_unfinished": "No unfinished todos found",
+    "empty_finished": "No finished todos found",
+    "load_more": "Load more",
+    "new_todo": "New To Do",
+    "edit_todo": "Edit To Do",
+    "description": "Description",
+    "section_details": "Details",
+    "noun_todo": "to do",
+    "enter_description": "Enter a description",
+    "mark_finished": "Mark as finished",
+    "mark_unfinished": "Mark as unfinished",
+    "added_on": "Added {date}",
+    "finished_on": "Finished {date}",
+    "edit_action_named": "Edit to do {name}",
+    "delete_action_named": "Delete to do {name}",
+    "delete_title": "Delete this to do?",
+    "delete_body": "This cannot be undone.",
+    "saved_toast": "To do saved",
+    "deleted_toast": "To do deleted",
+    "errors": {
+      "ERP-CORE-0004": "This to do no longer exists."
+    }
+  }
+}

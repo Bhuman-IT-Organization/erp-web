@@ -1,4 +1,4 @@
-import type { AbstractIntlMessages } from 'next-intl';
+﻿import type { AbstractIntlMessages } from 'next-intl';
 // registry start: imports
 import authAr from '@/features/auth/messages/ar.json';
 import authEn from '@/features/auth/messages/en.json';
@@ -29,6 +29,8 @@ import leadsourcesAr from '@/features/lead-sources/messages/ar.json';
 import leadsourcesEn from '@/features/lead-sources/messages/en.json';
 import ticketStatusesAr from '@/features/ticket-statuses/messages/ar.json';
 import ticketStatusesEn from '@/features/ticket-statuses/messages/en.json';
+import todosAr from '@/features/todo/messages/ar.json';
+import todosEn from '@/features/todo/messages/en.json';
 
 import ticketPrioritiesAr from '@/features/ticket-priorities/messages/ar.json';
 import ticketPrioritiesEn from '@/features/ticket-priorities/messages/en.json';
@@ -38,10 +40,9 @@ import fixedEquipmentDepreciationsEn from '@/features/fixed-equipment-depreciati
 import type { Locale } from '@/i18n/locales';
 import commonAr from './common/ar.json';
 import commonEn from './common/en.json';
-
 /**
  * The static registry of message packs (FE-08). Turbopack has no `import.meta.glob`, so every
- * feature's `messages/<locale>.json` is imported here by hand — a new feature adds its import
+ * feature's `messages/<locale>.json` is imported here by hand â€” a new feature adds its import
  * lines and entries between the `registry` markers (imports, namespaces, en, ar). One top-level
  * namespace per file = the feature's folder name.
  */
@@ -63,6 +64,7 @@ export const NAMESPACES = [
   'lead-sources',
   'ticket-statuses',
   'customer-groups',
+  'todo',
   'ticket-priorities',
   'fixed-equipment-depreciations',
   // registry end: namespaces
@@ -89,6 +91,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     leadsourcesEn,
     ticketStatusesEn,
     customerGroupsEn,
+    todosEn,
     ticketPrioritiesEn,
     fixedEquipmentDepreciationsEn,
     // registry end: en
@@ -110,6 +113,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     leadsourcesAr,
     ticketStatusesAr,
     customerGroupsAr,
+    todosAr,
     ticketPrioritiesAr,
     fixedEquipmentDepreciationsAr,
     // registry end: ar
