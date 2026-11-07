@@ -50,13 +50,8 @@ export const AUTHENTICATED_GATE = 'authenticated';
  * - an any-of list of permission codes;
  * - the administrator flag;
  * - an authenticated-user gate (staff or admin).
- *
- * `PermissionCode` widens to `string`, so the special gate values are documented
- * explicitly. The type guards below identify those special values.
  */
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- `'admin'` is documentation the compiler cannot express while PermissionCode is `string`, and the array form is the any-of gate; see the docblock above.
-export type RouteGate =
-  PermissionCode | readonly PermissionCode[] | typeof ADMIN_GATE | typeof AUTHENTICATED_GATE;
+export type RouteGate = PermissionCode | readonly PermissionCode[];
 
 /**
  * Route → gate, frozen, byte-equal to the api's map. Keys are erp-web route paths; a key's dynamic

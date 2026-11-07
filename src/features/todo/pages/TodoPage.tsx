@@ -12,7 +12,7 @@ interface TodosPageProps {
 export async function TodosPage({ id }: TodosPageProps): Promise<ReactElement> {
   const messages = await getMessages();
   return (
-    <NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'todos'])}>
+    <NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'todo'])}>
       <GuardedTodosForm id={id} />
     </NextIntlClientProvider>
   );

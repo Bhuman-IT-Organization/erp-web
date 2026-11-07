@@ -118,7 +118,6 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
     expect(isAuthenticatedGate(PERMISSIONS.staff.members.view)).toBe(false);
   });
 
-  it('declares every value as a catalogue code, a list of distinct codes or a special gate, never a loose string', () => {
   it('protects all Estimate Request Statuses pages with the administrator gate', () => {
     for (const route of [
       '/setup/estimate-request-statuses',

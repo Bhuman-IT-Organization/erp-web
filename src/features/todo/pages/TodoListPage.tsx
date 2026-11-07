@@ -8,7 +8,7 @@ import { pick } from '@/lib/i18n/pick';
 export async function TodosListPage(): Promise<ReactElement> {
   const messages = await getMessages();
   return (
-    <NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'todos'])}>
+    <NextIntlClientProvider messages={pick(messages, [...SHELL_MESSAGE_NAMESPACES, 'todo'])}>
       <GuardedTodosList />
     </NextIntlClientProvider>
   );
