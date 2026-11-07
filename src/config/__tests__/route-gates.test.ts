@@ -66,6 +66,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
       '/setup/fixed-equipment-depreciations',
       '/setup/fixed-equipment-depreciations/:id',
       '/setup/fixed-equipment-depreciations/new',
+      '/setup/knowledge-base-groups',
+      '/setup/knowledge-base-groups/:id',
+      '/setup/knowledge-base-groups/new',
       '/setup/lead-sources',
       '/setup/lead-sources/:id',
       '/setup/lead-sources/new',
@@ -159,6 +162,16 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
     // Denied: a write code alone, and another settings tab's view code.
     expect(admits(fe.settingDepreciation.create)).toBe(false);
     expect(admits(fe.settingCategory.view)).toBe(false);
+  });
+
+  it('gates knowledge base groups pages on knowledgeBase.articles.view', () => {
+    for (const route of [
+      '/setup/knowledge-base-groups',
+      '/setup/knowledge-base-groups/new',
+      '/setup/knowledge-base-groups/:id',
+    ]) {
+      expect(ROUTE_GATES[route]).toBe(PERMISSIONS.knowledgeBase.articles.view);
+    }
   });
 
   it('gates the sent-email log, its entries and the email status on the administrator flag (04.3 D-02, D-05, D-09)', () => {
