@@ -45,6 +45,9 @@ describe('ROUTE_GATES (the mirror of @erp/contracts)', () => {
   it('is frozen and covers exactly the declared routes', () => {
     expect(Object.isFrozen(ROUTE_GATES)).toBe(true);
     expect(GATED_ROUTES).toEqual([
+      '/setup/announcements',
+      '/setup/announcements/:id',
+      '/setup/announcements/new',
       '/setup/contract-types',
       '/setup/contract-types/:id',
       '/setup/contract-types/new',

@@ -1624,13 +1624,12 @@ export const NAVIGATION: readonly NavItem[] = [
         href: '/admin/utilities/calendar',
         legacy: true,
       },
-      // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
+      // The gate comes from ROUTE_GATES (`navGateOf`), never from a second declaration here.
       {
         id: 'announcements',
         labelKey: 'shell.als_announcements_submenu',
-        href: '/admin/announcements',
-        adminOnly: true,
-        legacy: true,
+        href: '/setup/announcements',
+        ...navGateOf('/setup/announcements'),
       },
       // admin-only: the Perfex gate is `is_admin()`, which no permission code can express (ADR-0034 d.2)
       {
