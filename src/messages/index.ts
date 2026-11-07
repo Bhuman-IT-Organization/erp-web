@@ -10,6 +10,8 @@ import customerGroupsAr from '@/features/customer-groups/messages/ar.json';
 import customerGroupsEn from '@/features/customer-groups/messages/en.json';
 import expenseCategoriesAr from '@/features/expense-categories/messages/ar.json';
 import expenseCategoriesEn from '@/features/expense-categories/messages/en.json';
+import estimateRequestStatusesAr from '@/features/estimate-request-statuses/messages/ar.json';
+import estimateRequestStatusesEn from '@/features/estimate-request-statuses/messages/en.json';
 import mailAr from '@/features/mail/messages/ar.json';
 import mailEn from '@/features/mail/messages/en.json';
 import paymentModesAr from '@/features/payment-modes/messages/ar.json';
@@ -54,6 +56,7 @@ export const NAMESPACES = [
   'status',
   'staff',
   'expense-categories',
+  'estimate-request-statuses',
   'taxes',
   'cost-centers',
   'mail',
@@ -79,6 +82,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     statusEn,
     staffEn,
     expenseCategoriesEn,
+    estimateRequestStatusesEn,
     taxesEn,
     costCentersEn,
     mailEn,
@@ -100,6 +104,7 @@ const PACKS: Record<Locale, readonly AbstractIntlMessages[]> = {
     shellAr,
     staffAr,
     expenseCategoriesAr,
+    estimateRequestStatusesAr,
     taxesAr,
     costCentersAr,
     mailAr,
