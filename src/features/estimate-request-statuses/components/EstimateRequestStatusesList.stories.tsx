@@ -1,7 +1,7 @@
 import type { Decorator, Meta, StoryObj } from '@storybook/nextjs-vite';
 import { AxiosError, AxiosHeaders, type InternalAxiosRequestConfig } from 'axios';
 import { SWRConfig } from 'swr';
-import { expect, userEvent, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import { http } from '@/lib/api/http';
 import { setSession } from '@/lib/auth/session';
 import type { EstimateRequestStatusRow } from '@/features/estimate-request-statuses/schemas/estimate-request-statuses.schema';
@@ -112,12 +112,23 @@ export const NoResults: Story = {
 
 async function openDelete(canvasElement: HTMLElement): Promise<HTMLElement> {
   const canvas = within(canvasElement);
-  await userEvent.click(await canvas.findByRole('button', { name: 'Actions for Approved' }));
-  await userEvent.click(await canvas.findByRole('menuitem', { name: 'Delete status Approved' }));
+  await userEvent.click(await canvas.findByRole('button', { name: 'Delete status Approved' }));
   return within(document.body).findByTestId('confirm-dialog');
 }
 
+const DESKTOP: Story = {
+  parameters: {
+    viewport: {
+      options: {
+        desktop1280: { name: 'Desktop 1280', styles: { width: '1280px', height: '800px' } },
+      },
+    },
+  },
+  globals: { viewport: { value: 'desktop1280', isRotated: false } },
+};
+
 export const DeleteConfirm: Story = {
+  ...DESKTOP,
   decorators: [withApi({ status: HTTP_OK, body: LIST })],
   play: async ({ canvasElement }) => {
     const dialog = await openDelete(canvasElement);
@@ -126,6 +137,7 @@ export const DeleteConfirm: Story = {
 };
 
 export const DeleteRefused: Story = {
+  ...DESKTOP,
   decorators: [
     withApi(
       { status: HTTP_OK, body: LIST },
@@ -165,7 +177,11 @@ export const FlaggedRow: Story = {
     const canvas = within(canvasElement);
     await canvas.findByText('Built in');
     await userEvent.click(await canvas.findByRole('button', { name: 'Actions for Built in' }));
-    await expect(canvas.queryByRole('menuitem', { name: 'Delete status Built in' })).toBeNull();
+    const body = within(document.body);
+    await waitFor(async () => {
+      await expect(body.getByRole('menuitem', { name: 'Edit Built in' })).toBeVisible();
+    });
+    await expect(body.queryByRole('menuitem', { name: 'Delete status Built in' })).toBeNull();
   },
 };
 

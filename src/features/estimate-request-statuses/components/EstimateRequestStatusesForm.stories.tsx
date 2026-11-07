@@ -100,7 +100,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-async function submitAndConfirm(root: HTMLElement): Promise<void> {
+async function submitAndConfirm(root: HTMLElement): Promise<HTMLElement> {
   const canvas = within(root);
   await userEvent.type(await canvas.findByRole('textbox', { name: /Status Name/ }), 'Review');
   await userEvent.click(canvas.getByRole('button', { name: /Create/ }));
@@ -110,15 +110,15 @@ async function submitAndConfirm(root: HTMLElement): Promise<void> {
     await expect(getComputedStyle(confirm).pointerEvents).not.toBe('none');
   });
   await userEvent.click(confirm);
+  return dialog;
 }
 
 export const Pending: Story = {
   decorators: [withApi('pending')],
   play: async ({ canvasElement }) => {
-    await submitAndConfirm(canvasElement);
+    const dialog = await submitAndConfirm(canvasElement);
     await waitFor(async () => {
-      const submit = within(canvasElement).getByRole('button', { name: /Creating/ });
-      await expect(submit).toBeDisabled();
+      await expect(within(dialog).getByTestId('confirm-dialog-confirm')).toBeDisabled();
     });
   },
 };

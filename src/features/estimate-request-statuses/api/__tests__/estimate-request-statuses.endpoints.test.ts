@@ -39,6 +39,7 @@ describe('Estimate Request Statuses API definitions', () => {
         'ERP-CORE-0004',
         'ERP-ESTIMATEREQUESTSTATUSES-0001',
         'ERP-ESTIMATEREQUESTSTATUSES-0002',
+        'ERP-ESTIMATEREQUESTSTATUSES-0003',
       ],
     });
   });

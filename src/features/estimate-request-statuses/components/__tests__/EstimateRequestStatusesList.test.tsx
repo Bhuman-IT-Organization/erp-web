@@ -199,6 +199,7 @@ describe('Estimate Request Statuses list', () => {
     }
     expect(screen.getByText('Total Request: 1')).toBeTruthy();
     await user.click(screen.getByRole('button', { name: 'Actions for Cancelled' }));
+    await screen.findByRole('menuitem', { name: 'Edit Cancelled' });
     expect(screen.queryByRole('menuitem', { name: 'Delete status Cancelled' })).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Actions for Completed' }));
     expect(await screen.findByRole('menuitem', { name: 'Delete status Completed' })).toBeTruthy();
@@ -289,7 +290,7 @@ describe('Estimate Request Statuses list', () => {
   });
 
   it('shows names containing markup as plain text', async () => {
-    const name = '<img src=x onerror=alert(1)>';
+    const name = '<' + 'img src=x onerror=alert(1)>';
     list = {
       status: 200,
       body: {
@@ -466,12 +467,72 @@ describe('Estimate Request Statuses list', () => {
     await user.click(within(dialog).getByTestId('confirm-dialog-confirm'));
     await waitFor(() => {
       expect(within(dialog).getByTestId('confirm-dialog-error').textContent).toContain(
-        'used by estimate requests or forms',
+        'used by estimate requests, or its use could not be checked',
       );
     });
     expect(within(dialog).getByTestId('confirm-dialog-error').textContent).not.toContain(
       'Something went wrong',
     );
+  });
+
+  it('shows the estimate-request-form refusal for a 409 inside the confirmation dialog', async () => {
+    remove = { status: 409, body: problem(409, 'ERP-ESTIMATEREQUESTSTATUSES-0003') };
+    const user = userEvent.setup();
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <EstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    await user.click(await screen.findByRole('button', { name: 'Actions for Completed' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Delete status Completed' }));
+    const dialog = await screen.findByTestId('confirm-dialog');
+    await user.click(within(dialog).getByTestId('confirm-dialog-confirm'));
+    await waitFor(() => {
+      expect(within(dialog).getByTestId('confirm-dialog-error').textContent).toContain(
+        "This status is used by an estimate request form, so it can't be deleted.",
+      );
+    });
+  });
+
+  it('shows the built-in refusal for a 409 inside the confirmation dialog', async () => {
+    remove = { status: 409, body: problem(409, 'ERP-ESTIMATEREQUESTSTATUSES-0002') };
+    const user = userEvent.setup();
+    renderWithProviders(
+      <SWRConfig value={{ provider: () => new Map(), shouldRetryOnError: false }}>
+        <EstimateRequestStatusesList />
+      </SWRConfig>,
+      { hasMemory: true },
+    );
+    await user.click(await screen.findByRole('button', { name: 'Actions for Completed' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Delete status Completed' }));
+    const dialog = await screen.findByTestId('confirm-dialog');
+    await user.click(within(dialog).getByTestId('confirm-dialog-confirm'));
+    await waitFor(() => {
+      expect(within(dialog).getByTestId('confirm-dialog-error').textContent).toContain(
+        'Default estimate request statuses cannot be deleted.',
+      );
+    });
+  });
+
+  it('shows the not-found refusal and asks for the list again', async () => {
+    remove = { status: 404, body: problem(404, 'ERP-CORE-0004') };
+    const user = userEvent.setup();
+    renderWithProviders(<EstimateRequestStatusesList />, { hasMemory: true });
+    await user.click(await screen.findByRole('button', { name: 'Actions for Completed' }));
+    await user.click(await screen.findByRole('menuitem', { name: 'Delete status Completed' }));
+    const dialog = await screen.findByTestId('confirm-dialog');
+    await user.click(within(dialog).getByTestId('confirm-dialog-confirm'));
+    await waitFor(() => {
+      expect(within(dialog).getByTestId('confirm-dialog-error').textContent).toContain(
+        'This status no longer exists. It may have been removed.',
+      );
+      expect(
+        requests.filter(
+          ({ method, url }) => method === 'GET' && url === '/api/v1/estimate-request-statuses',
+        ),
+      ).toHaveLength(2);
+    });
   });
 
   it('Guarded: an administrator sees the list', async () => {

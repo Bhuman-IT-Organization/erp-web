@@ -20,6 +20,7 @@
     "name_too_long": "Keep the status name to {maxN} {max, plural, one {character} other {characters}} or fewer.",
     "enter_color": "Enter a color using up to 10 characters.",
     "enter_order": "Enter a whole number for the status order.",
+    "order_out_of_range": "Enter a status order between -2147483648 and 2147483647.",
     "saved_toast": "Estimate Request status saved",
     "deleted_toast": "Estimate Request status deleted",
     "edit_action_named": "Edit {name}",
@@ -28,8 +29,9 @@
     "delete_body": "This action cannot be undone.",
     "errors": {
       "ERP-CORE-0004": "This status no longer exists. It may have been removed.",
-      "ERP-ESTIMATEREQUESTSTATUSES-0001": "This status is used by estimate requests or forms, or its use could not be checked.",
-      "ERP-ESTIMATEREQUESTSTATUSES-0002": "Default estimate request statuses cannot be deleted."
+      "ERP-ESTIMATEREQUESTSTATUSES-0001": "This status is used by estimate requests, or its use could not be checked.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0002": "Default estimate request statuses cannot be deleted.",
+      "ERP-ESTIMATEREQUESTSTATUSES-0003": "This status is used by an estimate request form, so it can't be deleted."
     }
   }
 }

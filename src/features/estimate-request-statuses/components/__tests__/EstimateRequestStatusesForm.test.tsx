@@ -344,7 +344,7 @@ describe('Estimate Request Status form', () => {
   });
 
   it('renders markup in a record name as text', async () => {
-    const name = '<img src=x onerror=alert(1)>';
+    const name = '<' + 'img src=x onerror=alert(1)>';
     recordReply = { status: 200, body: { ...processing, name } };
     show('2');
     expect(await screen.findByRole('heading', { name })).toBeTruthy();

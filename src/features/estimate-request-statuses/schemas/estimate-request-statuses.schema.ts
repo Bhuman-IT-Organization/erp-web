@@ -2,12 +2,15 @@ import { z } from 'zod';
 
 export const ESTIMATE_REQUEST_STATUS_NAME_MAX = 50;
 export const ESTIMATE_REQUEST_STATUS_COLOR_MAX = 10;
+export const ESTIMATE_REQUEST_STATUS_ORDER_MIN = -2_147_483_648;
+export const ESTIMATE_REQUEST_STATUS_ORDER_MAX = 2_147_483_647;
 
 export const ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS = {
   name: 'enter_name',
   nameTooLong: 'name_too_long',
   color: 'enter_color',
   statusorder: 'enter_order',
+  statusorderOutOfRange: 'order_out_of_range',
 } as const;
 
 export const estimateRequestStatusSchema = z
@@ -36,11 +39,27 @@ export const estimateRequestStatusFormSchema = z.object({
     .max(ESTIMATE_REQUEST_STATUS_COLOR_MAX, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.color),
   statusorder: z.union([
     z.literal(''),
-    z.number().int(ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder),
+    z
+      .number()
+      .int(ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
+      .min(
+        ESTIMATE_REQUEST_STATUS_ORDER_MIN,
+        ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange,
+      )
+      .max(
+        ESTIMATE_REQUEST_STATUS_ORDER_MAX,
+        ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange,
+      ),
     z
       .string()
       .regex(/^-?\d+$/, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
-      .transform((value) => String(Number(value))),
+      .transform((value) => String(Number(value)))
+      .refine((value) => {
+        const number = Number(value);
+        return (
+          number >= ESTIMATE_REQUEST_STATUS_ORDER_MIN && number <= ESTIMATE_REQUEST_STATUS_ORDER_MAX
+        );
+      }, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange),
   ]),
 });
 
