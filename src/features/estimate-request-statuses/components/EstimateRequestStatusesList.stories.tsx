@@ -127,6 +127,17 @@ const DESKTOP: Story = {
   globals: { viewport: { value: 'desktop1280', isRotated: false } },
 };
 
+const MOBILE: Story = {
+  parameters: {
+    viewport: {
+      options: {
+        mobile375: { name: 'Mobile 375', styles: { width: '375px', height: '740px' } },
+      },
+    },
+  },
+  globals: { viewport: { value: 'mobile375', isRotated: false } },
+};
+
 export const DeleteConfirm: Story = {
   ...DESKTOP,
   decorators: [withApi({ status: HTTP_OK, body: LIST })],
@@ -167,6 +178,7 @@ const FLAGGED: EstimateRequestStatusRow = {
 };
 
 export const FlaggedRow: Story = {
+  ...MOBILE,
   decorators: [
     withApi({
       status: HTTP_OK,

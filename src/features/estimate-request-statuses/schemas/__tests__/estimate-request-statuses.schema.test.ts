@@ -90,6 +90,16 @@ describe('Estimate Request Status schema', () => {
     ).toThrow();
   });
 
+  it('uses the order message for a decimal order string', () => {
+    expect(() =>
+      estimateRequestStatusFormSchema.parse({
+        name: 'Ready',
+        color: '#757575',
+        statusorder: '1.5',
+      }),
+    ).toThrow(/enter_order/);
+  });
+
   it('rejects an order outside the signed 32-bit integer range', () => {
     for (const statusorder of [-2_147_483_649, 2_147_483_648, '3000000000']) {
       expect(() =>

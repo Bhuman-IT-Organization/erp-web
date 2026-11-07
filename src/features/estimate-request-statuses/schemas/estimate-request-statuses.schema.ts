@@ -37,30 +37,34 @@ export const estimateRequestStatusFormSchema = z.object({
   color: z
     .string()
     .max(ESTIMATE_REQUEST_STATUS_COLOR_MAX, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.color),
-  statusorder: z.union([
-    z.literal(''),
-    z
-      .number()
-      .int(ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
-      .min(
-        ESTIMATE_REQUEST_STATUS_ORDER_MIN,
-        ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange,
-      )
-      .max(
-        ESTIMATE_REQUEST_STATUS_ORDER_MAX,
-        ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange,
-      ),
-    z
-      .string()
-      .regex(/^-?\d+$/, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
-      .transform((value) => String(Number(value)))
-      .refine((value) => {
-        const number = Number(value);
-        return (
-          number >= ESTIMATE_REQUEST_STATUS_ORDER_MIN && number <= ESTIMATE_REQUEST_STATUS_ORDER_MAX
-        );
-      }, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange),
-  ]),
+  statusorder: z.union(
+    [
+      z.literal(''),
+      z
+        .number()
+        .int(ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
+        .min(
+          ESTIMATE_REQUEST_STATUS_ORDER_MIN,
+          ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange,
+        )
+        .max(
+          ESTIMATE_REQUEST_STATUS_ORDER_MAX,
+          ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange,
+        ),
+      z
+        .string()
+        .regex(/^-?\d+$/, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder)
+        .transform((value) => String(Number(value)))
+        .refine((value) => {
+          const number = Number(value);
+          return (
+            number >= ESTIMATE_REQUEST_STATUS_ORDER_MIN &&
+            number <= ESTIMATE_REQUEST_STATUS_ORDER_MAX
+          );
+        }, ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorderOutOfRange),
+    ],
+    { error: ESTIMATE_REQUEST_STATUS_MESSAGE_KEYS.statusorder },
+  ),
 });
 
 export type EstimateRequestStatusFormInput = z.input<typeof estimateRequestStatusFormSchema>;
